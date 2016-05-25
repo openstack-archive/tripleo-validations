@@ -1,0 +1,7 @@
+[run]
+branch = True
+source = tripleo-validations
+omit = tripleo-validations/openstack/*
+
+[report]
+ignore_errors = True
