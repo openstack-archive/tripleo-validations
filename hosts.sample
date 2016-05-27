@@ -1,0 +1,33 @@
+# Your undercloud servers. This can be `localhost` if you cloned the
+# repository on the undercloud:
+[undercloud]
+undercloud.example.com
+
+[undercloud:vars]
+#controller_vip=
+
+[overcloud:children]
+controller
+compute
+
+[controller]
+controller.example.com
+
+[controller:vars]
+#put username here if different than compute nodes, ie stack user
+##ansible_ssh_user=stack
+
+[compute]
+compute-1.example.com
+compute-2.example.com
+
+[compute:vars]
+#put username here if different than compute nodes, ie stack user
+##ansible_ssh_user=heat-admin
+
+[all:vars]
+# Username to SSH as:
+ansible_ssh_user=stack
+# Set to `true` if the SSH user is not root. Ansible will run `sudo`
+# for commands requiring root:
+ansible_sudo=true
