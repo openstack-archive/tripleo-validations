@@ -14,7 +14,7 @@ available independently from the UI or the command line client.
 
 * Free software: Apache license
 * Source: http://git.openstack.org/cgit/openstack/tripleo-validations
-* Bugs: http://bugs.launchpad.net/tripleo-validations
+* Bugs: https://bugs.launchpad.net/tripleo/+bugs?field.tag=validations
 
 Prerequisites
 -------------

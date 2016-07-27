@@ -12,6 +12,6 @@ submitted for review via the Gerrit tool:
 
 Pull requests submitted through GitHub will be ignored.
 
-Bugs should be filed on Launchpad, not GitHub:
+Bugs should be filed on Launchpad, not GitHub, with the 'validations' tag:
 
-   https://bugs.launchpad.net/tripleo-validations
+   https://bugs.launchpad.net/tripleo
