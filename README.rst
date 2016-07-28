@@ -151,11 +151,25 @@ information.
 Ansible Inventory
 ~~~~~~~~~~~~~~~~~
 
+Dynamic inventory
++++++++++++++++++
+
+Tripleo-validations ships with a `dynamic inventory
+<http://docs.ansible.com/ansible/intro_dynamic_inventory.html>`__, which
+contacts the various OpenStack services to provide the addresses of the
+deployed nodes as well as the undercloud.
+
+Just pass ``-i tripleo-ansible-inventory`` to ``ansible-playbook`` command::
+
+    ansible-playbook -i tripleo-ansible-inventory validations/hello_world.yaml
+
 Hosts file
 ++++++++++
 
-The static inventory file lets you describe your environment. It should look
-something like this::
+When more flexibility than what the current dynamic inventory provides is
+needed or when running validations against a host that hasn't been deployed via
+heat (such as the ``prep`` validations), it is possible to write a custom hosts
+inventory file. It should look something like this::
 
     [undercloud]
     undercloud.example.com
@@ -236,7 +250,12 @@ Running the validations require ansible and a set of nodes to run them against.
 These nodes need to be reachable from the operator's machine and need to have
 an account it can ssh to and perform passwordless sudo.
 
-The nodes need to be present in the static inventory file.
+The nodes need to be present in the static inventory file or available from the
+dynamic inventory script depending on which one the operator choses to use.
+Check which nodes are available with::
+
+    $ source stackrc
+    $ tripleo-ansible-inventory --list
 
 In general, Ansible and the validations will be located on the *undercloud*,
 because it should have connectivity to all the *overcloud* nodes is already set
@@ -245,7 +264,7 @@ up to SSH to them.
 ::
 
     $ source ~/stackrc
-    $ ansible-playbook -i hosts path/to/validation.yaml
+    $ ansible-playbook -i tripleo-ansible-inventory path/to/validation.yaml
 
 Example: Verify Undercloud RAM requirements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -285,7 +304,7 @@ this under the same indentation as ``hosts`` and ``vars``::
 
 When running it, it should output something like this::
 
-    $ ansible-playbook -i hosts validations/undercloud-ram.yaml
+    $ ansible-playbook -i tripleo-ansible-inventory validations/undercloud-ram.yaml
 
     PLAY [undercloud] *************************************************************
 
@@ -303,7 +322,8 @@ When running it, it should output something like this::
 Writing the full validation code is quite easy in this case because Ansible has
 done all the hard work for us already. We can use the ``ansible_memtotal_mb``
 fact to get the amount of RAM (in megabytes) the tested server currently has.
-For other useful values, run ``ansible -i hosts undercloud -m setup``.
+For other useful values, run ``ansible -i tripleo-ansible-inventory
+undercloud -m setup``.
 
 So, let's replace the hello world task with a real one::
 
@@ -367,11 +387,11 @@ Let's do that to test both success and failure cases.
 
 This should succeed but saying the RAM requirement is 1 GB::
 
-    ansible-playbook -i hosts validations/undercloud-ram.yaml -e minimum_ram_gb=1
+    ansible-playbook -i tripleo-ansible-inventory validations/undercloud-ram.yaml -e minimum_ram_gb=1
 
 And this should fail by requiring much more RAM than is necessary::
 
-    ansible-playbook -i hosts validations/undercloud-ram.yaml -e minimum_ram_gb=128
+    ansible-playbook -i tripleo-ansible-inventory validations/undercloud-ram.yaml -e minimum_ram_gb=128
 
 (the actual values may be different in your configuration -- just make sure one
 is low enough and the other too high)

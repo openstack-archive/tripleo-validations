@@ -1,0 +1,210 @@
+#!/usr/bin/env python
+
+# Copyright (c) 2014 Hewlett-Packard Development Company, L.P.
+# Copyright 2016 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+# TODO(mandre)
+# If possible get info from ironic for hosts prior to deployment
+
+from __future__ import print_function
+
+import json
+import os
+import sys
+
+from heatclient.v1 import client as heat_client
+from keystoneclient.v3 import client as keystone_client
+from novaclient import client as nova_client
+from oslo_config import cfg
+
+opts = [
+    cfg.StrOpt('host', help='List details about the specific host'),
+    cfg.BoolOpt('list', help='List active hosts'),
+    cfg.StrOpt('username', default=os.environ.get('OS_USERNAME')),
+    cfg.StrOpt('password', default=os.environ.get('OS_PASSWORD')),
+    cfg.StrOpt('auth-url', default=os.environ.get('OS_AUTH_URL')),
+    cfg.StrOpt('auth-token', default=os.environ.get('OS_AUTH_TOKEN')),
+    cfg.StrOpt('project-name', default=os.environ.get('OS_TENANT_NAME')),
+    cfg.StrOpt('plan', default=os.environ.get('TRIPLEO_PLAN_NAME')),
+]
+
+
+def _parse_config():
+    default_config = os.environ.get('TRIPLEO_INVENTORY_CONFIG')
+    if default_config:
+        default_config = [default_config]
+
+    configs = cfg.ConfigOpts()
+    configs.register_cli_opts(opts)
+    configs(prog='tripleo-ansible-inventory',
+            default_config_files=default_config)
+    if configs.auth_url is None:
+        print('ERROR: auth-url not defined and OS_AUTH_URL environment '
+              'variable missing, unable to proceed.', file=sys.stderr)
+        sys.exit(1)
+    if '/v2.0' in configs.auth_url:
+        configs.auth_url = configs.auth_url.replace('/v2.0', '/v3')
+    if not configs.plan:
+        configs.plan = 'overcloud'
+    return configs
+
+
+class TripleoInventory(object):
+    def __init__(self, configs):
+        self.configs = configs
+        self._ksclient = None
+        self._hclient = None
+        self._nclient = None
+
+    def fetch_stack_resources(self, resource_name):
+        heatclient = self.hclient
+        novaclient = self.nclient
+        stack = self.configs.plan
+        ret = []
+        try:
+            resource_id = heatclient.resources.get(stack, resource_name) \
+                .physical_resource_id
+            for resource in heatclient.resources.list(resource_id):
+                node = heatclient.resources.get(resource_id,
+                                                resource.resource_name)
+                node_resource = node.attributes['nova_server_resource']
+                nova_server = novaclient.servers.get(node_resource)
+                if nova_server.status == 'ACTIVE':
+                    ret.append(nova_server.networks['ctlplane'][0])
+        except Exception:
+            # Ignore non existent stacks or resources
+            pass
+        return ret
+
+    def get_overcloud_output(self, output_name):
+        try:
+            stack = self.hclient.stacks.get(self.configs.plan)
+            for output in stack.outputs:
+                if output['output_key'] == output_name:
+                    return output['output_value']
+        except Exception:
+            return None
+
+    def list(self):
+        ret = {
+            'undercloud': {
+                'hosts': ['localhost'],
+                'vars': {
+                    'ansible_connection': 'local',
+                    'ansible_become': True,
+                },
+            }
+        }
+
+        public_vip = self.get_overcloud_output('PublicVip')
+        if public_vip:
+            ret['undercloud']['vars']['public_vip'] = public_vip
+
+        controller_group = self.fetch_stack_resources('Controller')
+        if controller_group:
+            ret['controller'] = controller_group
+
+        compute_group = self.fetch_stack_resources('Compute')
+        if compute_group:
+            ret['compute'] = compute_group
+
+        if any([controller_group, compute_group]):
+            ret['overcloud'] = {
+                'children': list(set(ret.keys()) - set(['undercloud'])),
+                'vars': {
+                    # TODO(mandre) retrieve SSH user from heat
+                    'ansible_ssh_user': 'heat-admin',
+                    'ansible_become': True,
+                }
+            }
+
+        print(json.dumps(ret))
+
+    def host(self):
+        # NOTE(mandre)
+        # Dynamic inventory scripts must return empty json if they don't
+        # provide detailed info for hosts:
+        # http://docs.ansible.com/ansible/developing_inventory.html
+        print(json.dumps({}))
+
+    @property
+    def ksclient(self):
+        if self._ksclient is None:
+            try:
+                if self.configs.auth_token:
+                    self._ksclient = keystone_client.Client(
+                        auth_url=self.configs.auth_url,
+                        username=self.configs.username,
+                        token=self.configs.auth_token,
+                        project_name=self.configs.project_name)
+                else:
+                    self._ksclient = keystone_client.Client(
+                        auth_url=self.configs.auth_url,
+                        username=self.configs.username,
+                        password=self.configs.password,
+                        project_name=self.configs.project_name)
+                self._ksclient.authenticate()
+            except Exception as e:
+                print("Error connecting to Keystone: {}".format(e.message),
+                      file=sys.stderr)
+                sys.exit(1)
+        return self._ksclient
+
+    @property
+    def hclient(self):
+        if self._hclient is None:
+            ksclient = self.ksclient
+            endpoint = ksclient.service_catalog.url_for(
+                service_type='orchestration', endpoint_type='publicURL')
+            try:
+                self._hclient = heat_client.Client(
+                    endpoint=endpoint,
+                    token=ksclient.auth_token)
+            except Exception as e:
+                print("Error connecting to Heat: {}".format(e.message),
+                      file=sys.stderr)
+                sys.exit(1)
+        return self._hclient
+
+    @property
+    def nclient(self):
+        if self._nclient is None:
+            ksclient = self.ksclient
+            endpoint = ksclient.service_catalog.url_for(
+                service_type='compute', endpoint_type='publicURL')
+            try:
+                self._nclient = nova_client.Client(
+                    '2',
+                    bypass_url=endpoint,
+                    auth_token=ksclient.auth_token)
+            except Exception as e:
+                print("Error connecting to Nova: {}".format(e.message),
+                      file=sys.stderr)
+                sys.exit(1)
+        return self._nclient
+
+
+def main():
+    configs = _parse_config()
+    inventory = TripleoInventory(configs)
+    if configs.list:
+        inventory.list()
+    elif configs.host:
+        inventory.host()
+    sys.exit(0)
+
+if __name__ == '__main__':
+    main()
