@@ -38,6 +38,7 @@ Validations that are run on a fresh machine *before* the undercloud is
 installed.
 
 - `undercloud-ram.yaml`: Verify the undercloud fits the RAM requirements
+- `undercloud-cpu.yaml`: Verify undercloud fits the CPU core requirements
 
 Pre Introspection
 ~~~~~~~~~~~~~~~~~
@@ -46,6 +47,7 @@ Validations that are run when the undercloud is ready to perform hardware
 introspection.
 
 - `undercloud-ram.yaml`: Verify the undercloud fits the RAM requirements
+- `undercloud-cpu.yaml`: Verify undercloud fits the CPU core requirements
 
 Pre Deployment
 ~~~~~~~~~~~~~~
