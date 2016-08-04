@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Updated the network environment validation to use the new schema-based
+    validation method that would detect more error cases.

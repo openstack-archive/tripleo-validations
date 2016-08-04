@@ -165,8 +165,7 @@ class TestNicConfigs(base.TestCase):
         nic_data = self.nic_data(None)
         errors = validation.check_nic_configs("controller.yaml", nic_data)
         self.assertEqual(len(errors), 1)
-        self.assertEqual("The 'network_config' property of 'foo' must be"
-                         " a list.", errors[0])
+        self.assertIn("'foo' must be a list", errors[0])
 
     def test_bridge_has_type(self):
         nic_data = self.nic_data([{
@@ -175,7 +174,15 @@ class TestNicConfigs(base.TestCase):
         }])
         errors = validation.check_nic_configs("controller.yaml", nic_data)
         self.assertEqual(len(errors), 1)
-        self.assertIn('must have a type', errors[0])
+        self.assertIn("'type' is a required property", errors[0])
+
+    def test_bridge_is_of_known_type(self):
+        nic_data = self.nic_data([{
+            'type': 'intreface'
+        }])
+        errors = validation.check_nic_configs("controller.yaml", nic_data)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("{'type': 'intreface'} is not valid", errors[0])
 
     def test_bridge_has_name(self):
         nic_data = self.nic_data([{
@@ -184,7 +191,18 @@ class TestNicConfigs(base.TestCase):
         }])
         errors = validation.check_nic_configs("controller.yaml", nic_data)
         self.assertEqual(len(errors), 1)
-        self.assertIn('must have a name', errors[0])
+        self.assertIn("'name' is a required property", errors[0])
+
+    def test_bridge_has_only_known_properties(self):
+        nic_data = self.nic_data([{
+            'type': 'ovs_bridge',
+            'name': 'storage',
+            'member': [],
+        }])
+        errors = validation.check_nic_configs("controller.yaml", nic_data)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("Additional properties are not allowed"
+                      " ('member' was unexpected)", errors[0])
 
     def test_ovs_bridge_has_members(self):
         nic_data = self.nic_data([{
@@ -194,7 +212,8 @@ class TestNicConfigs(base.TestCase):
         }])
         errors = validation.check_nic_configs("controller.yaml", nic_data)
         self.assertEqual(len(errors), 1)
-        self.assertIn("must contain a 'members' list", errors[0])
+        self.assertIn("members/type: 'None' is not of type 'array'",
+                      errors[0])
 
     def test_ovs_bridge_members_dict(self):
         nic_data = self.nic_data([{
@@ -203,42 +222,55 @@ class TestNicConfigs(base.TestCase):
             'members': [None],
         }])
         errors = validation.check_nic_configs("controller.yaml", nic_data)
-        self.assertEqual(len(errors), 2)
-        self.assertIn("must be a dictionary.", errors[0])
-        self.assertIn("at least 1 interface", errors[1])
+        self.assertEqual(len(errors), 1)
+        self.assertIn("members/items/oneOf: None is not valid under any"
+                      " of the given schemas", errors[0])
 
-    def test_bonds_have_type(self):
+    def test_bonds_have_known_type(self):
         nic_data = self.nic_data([{
-            'type': 'ovs_bridge',
+            'type': 'magic_bridge',
             'name': 'storage',
             'members': [{}],
         }])
         errors = validation.check_nic_configs("controller.yaml", nic_data)
-        self.assertEqual(len(errors), 2)
-        self.assertIn("must have a type.", errors[0])
-        self.assertIn("at least 1 interface", errors[1])
+        self.assertEqual(len(errors), 1)
+        self.assertIn("members/items/oneOf: {} is not valid under any"
+                      " of the given schemas", errors[0])
 
     def test_more_than_one_bond(self):
         nic_data = self.nic_data([{
             'type': 'ovs_bridge',
             'name': 'storage',
             'members': [
-                {'type': 'ovs_bond'},
-                {'type': 'ovs_bond'},
+                {
+                    'type': 'ovs_bond',
+                    'name': 'bond0',
+                    'members': [
+                        {'type': 'interface', 'name': 'eth0'},
+                        {'type': 'interface', 'name': 'eth1'},
+                    ]
+                }, {
+                    'type': 'ovs_bond',
+                    'name': 'bond1',
+                    'members': [
+                        {'type': 'interface', 'name': 'eth2'},
+                        {'type': 'interface', 'name': 'eth3'},
+                    ]
+                },
             ],
         }])
         errors = validation.check_nic_configs("controller.yaml", nic_data)
         self.assertEqual(len(errors), 1)
-        self.assertIn('Invalid bonding: There are 2 bonds for bridge storage',
-                      errors[0])
+        self.assertIn('Invalid bonding: There are >= 2 bonds for bridge '
+                      'storage', errors[0])
 
     def test_multiple_interfaces_without_bond(self):
         nic_data = self.nic_data([{
             'type': 'ovs_bridge',
             'name': 'storage',
             'members': [
-                {'type': 'interface'},
-                {'type': 'interface'},
+                {'type': 'interface', 'name': 'eth0'},
+                {'type': 'interface', 'name': 'eth1'},
             ],
         }])
         errors = validation.check_nic_configs("controller.yaml", nic_data)
@@ -251,7 +283,7 @@ class TestNicConfigs(base.TestCase):
             'type': 'ovs_bridge',
             'name': 'storage',
             'members': [
-                {'type': 'interface'},
+                {'type': 'interface', 'name': 'eth0'},
             ],
         }])
         errors = validation.check_nic_configs("controller.yaml", nic_data)
@@ -262,20 +294,28 @@ class TestNicConfigs(base.TestCase):
             'type': 'ovs_bridge',
             'name': 'storage',
             'members': [
-                {'type': 'ovs_bond'},
+                {'type': 'ovs_bond', 'name': 'bond0', 'members': []},
             ],
         }])
         errors = validation.check_nic_configs("controller.yaml", nic_data)
-        self.assertEqual([], errors)
+        self.assertEqual(len(errors), 1)
+        self.assertIn('members/minItems: [] is too short', errors[0])
 
     def test_one_bond_multiple_interfaces(self):
         nic_data = self.nic_data([{
             'type': 'ovs_bridge',
             'name': 'storage',
             'members': [
-                {'type': 'ovs_bond'},
-                {'type': 'interface'},
-                {'type': 'interface'},
+                {
+                    'type': 'ovs_bond',
+                    'name': 'bond0',
+                    'members': [
+                        {'type': 'interface', 'name': 'eth2'},
+                        {'type': 'interface', 'name': 'eth3'},
+                    ]
+                },
+                {'type': 'interface', 'name': 'eth0'},
+                {'type': 'interface', 'name': 'eth1'},
             ],
         }])
         errors = validation.check_nic_configs("controller.yaml", nic_data)

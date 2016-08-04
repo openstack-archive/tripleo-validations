@@ -23,6 +23,7 @@ import yaml
 import six
 
 from ansible.module_utils.basic import AnsibleModule
+from os_net_config import validator
 
 
 def open_network_environment_files(netenv_path, template_files):
@@ -149,47 +150,31 @@ def check_nic_configs(path, nic_data):
         # Not all resources contain a network config:
         if not bridges:
             continue
+
+        # Validate the os_net_config object against the schema
+        v_errors = validator.validate_config(bridges, path)
+        errors.extend(v_errors)
+        if len(v_errors) > 0:
+            continue
+
+        # If we get here, the nic config file conforms to the schema and
+        # there is no more need to check for existence and type of
+        # properties.
         for bridge in bridges:
-            if 'type' not in bridge:
-                errors.append("The bridge item {} in {} {} must have a type."
-                              .format(bridge, name, path))
-                continue
-            if 'name' not in bridge:
-                errors.append("The bridge item {} in {} {} must have a name."
-                              .format(bridge, name, path))
-                continue
             if bridge['type'] == 'ovs_bridge':
                 bond_count = 0
                 interface_count = 0
-                if not isinstance(bridge.get('members'), collections.Iterable):
-                    errors.append(
-                        "OVS bridge {} in {} {} must contain a 'members' list."
-                        .format(bridge, name, path))
-                    continue
                 for bridge_member in bridge['members']:
-                    if not isinstance(bridge_member, collections.Mapping):
-                        errors.append(
-                            "The {} bridge member in {} {} must be a "
-                            "dictionary."
-                            .format(bridge_member, name, path))
-                        continue
-                    if 'type' not in bridge_member:
-                        errors.append(
-                            "The {} bridge member in {} {} must have a type."
-                            .format(bridge_member, name, path))
-                        continue
                     if bridge_member['type'] in ('ovs_bond', 'ovs_dpdk_bond'):
                         bond_count += 1
                     elif bridge_member['type'] == 'interface':
                         interface_count += 1
                     else:
-                        # TODO(mandre) should we add an error for unknown
-                        # bridge member types?
                         pass
 
-                if bond_count == 2:
+                if bond_count >= 2:
                     errors.append(
-                        'Invalid bonding: There are 2 bonds for'
+                        'Invalid bonding: There are >= 2 bonds for'
                         ' bridge {} of resource {} in {}'.format(
                             bridge['name'], name, path))
                 if bond_count == 0 and interface_count > 1:
