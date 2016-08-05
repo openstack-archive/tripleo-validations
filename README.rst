@@ -37,8 +37,7 @@ Prep
 Validations that are run on a fresh machine *before* the undercloud is
 installed.
 
-- `undercloud-ram.yaml`: Verify the undercloud fits the RAM requirements
-- `undercloud-cpu.yaml`: Verify undercloud fits the CPU core requirements
+.. include:: validations-prep.rst
 
 Pre Introspection
 ~~~~~~~~~~~~~~~~~
@@ -46,18 +45,21 @@ Pre Introspection
 Validations that are run when the undercloud is ready to perform hardware
 introspection.
 
-- `undercloud-ram.yaml`: Verify the undercloud fits the RAM requirements
-- `undercloud-cpu.yaml`: Verify undercloud fits the CPU core requirements
+.. include:: validations-pre-introspection.rst
 
 Pre Deployment
 ~~~~~~~~~~~~~~
 
 Validation that are run right before deploying the overcloud.
 
+.. include:: validations-pre-deployment.rst
+
 Post Deployment
 ~~~~~~~~~~~~~~~
 
 Validations that are run after the overcloud deployment finished.
+
+.. include:: validations-post-deployment.rst
 
 
 Writing Validations

@@ -23,6 +23,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 extensions = [
     'sphinx.ext.autodoc',
     #'sphinx.ext.intersphinx',
+    'generate_validation_list',
     'oslosphinx'
 ]
 
