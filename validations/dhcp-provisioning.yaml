@@ -1,0 +1,24 @@
+---
+- hosts: undercloud
+  become: true
+  vars:
+    metadata:
+      name: DHCP on the Provisioning Network
+      description: >
+        An unexpected DHCP server on the provisioning network can
+        cause problems with deploying the Ironic nodes.
+
+        This validation checks for DHCP responses on the undercloud's
+        provisioning interface (eth1 by default) and fails if there
+        are any.
+      groups:
+        - pre-deployment
+  tasks:
+  - name: Get the path of tripleo undercloud config file
+    hiera: name="tripleo_undercloud_conf_file"
+  - name: Gather undercloud.conf values
+    undercloud_conf: undercloud_conf_path={{ tripleo_undercloud_conf_file }}
+  - name: Install scapy
+    pip: name=scapy state=present virtualenv=/tmp/validations-venv
+  - name: Look for DHCP responses
+    script: files/rogue_dhcp.py {{ undercloud_conf.DEFAULT.local_interface|default('eth1') }}
