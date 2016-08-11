@@ -1,0 +1,22 @@
+---
+- hosts: controller
+  vars:
+    metadata:
+      name: MySQL Open Files Limit
+      description: >
+        Verify the `open-files-limit` configuration is high enough
+
+        https://access.redhat.com/solutions/1598733
+      groups:
+        - post-deployment
+    min_open_files_limit: 16384
+  tasks:
+  - name: Get the open_files_limit value
+    mysql_variables: variable=open_files_limit
+    register: mysqld_open_files_limit
+  - name: Test the open-files-limit value
+    fail:
+      msg: >
+        The open_files_limit option for mysql must be higher than
+        {{ min_open_files_limit }}. Right now it's {{ mysqld_open_files_limit.msg }}.
+    failed_when: "{{ mysqld_open_files_limit.msg|int }} < {{ min_open_files_limit }}"
