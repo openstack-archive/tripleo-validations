@@ -1,0 +1,25 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Undercloud Services Debug Check
+      description: >
+        The undercloud's openstack services should _not_ have debug enabled.
+        This will check if debug is enabled on undercloud services.
+        If debug is enabled, the root filesystem can fill up quickly, and
+        is not a good thing.
+      groups:
+        - pre-deployment
+    debug_check: "True"
+  tasks:
+  - name: Check the services for debug flag
+    become: true
+    ini: path={{ item }} section=DEFAULT key=debug
+    register: config_result
+    with_items:
+      - /etc/nova/nova.conf
+      - /etc/neutron/neutron.conf
+      - /etc/ceilometer/ceilometer.conf
+      - /etc/heat/heat.conf
+      - /etc/ironic/ironic.conf
+    failed_when: "'{{ debug_check }}' in config_result.value"
