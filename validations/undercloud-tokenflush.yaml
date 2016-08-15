@@ -1,0 +1,21 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Verify token_flush is enabled in keystone users crontab.
+      description: >
+        Without a token_flush crontab enabled for the keystone user, the
+        keystone database can grow very large.  This validation checks that
+        the keystone token_flush crontab has been set up.
+      groups:
+      - post-deployment
+    cron_check: "keystone-manage token_flush"
+  tasks:
+  - name: Get keystone crontab
+    become: true
+    command: crontab -l -u keystone
+    register: cron_result
+  -
+    name: Check keystone crontab
+    fail: msg="keystone token_flush does not appear to be enabled via cron.  You should add '<desired interval > {{ cron_check }}' to the keystone users crontab."
+    failed_when: "'{{ cron_check }}' not in cron_result.stdout"
