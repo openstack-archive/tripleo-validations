@@ -14,7 +14,7 @@
   tasks:
   - name: Check the services for debug flag
     become: true
-    ini: path={{ item }} section=DEFAULT key=debug
+    ini: path={{ item }} section=DEFAULT key=debug ignore_missing_file=True
     register: config_result
     with_items:
       - /etc/nova/nova.conf
@@ -22,4 +22,4 @@
       - /etc/ceilometer/ceilometer.conf
       - /etc/heat/heat.conf
       - /etc/ironic/ironic.conf
-    failed_when: "'{{ debug_check }}' in config_result.value"
+    failed_when: "debug_check|bool  == config_result.value|bool"
