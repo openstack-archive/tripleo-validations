@@ -15,9 +15,9 @@
   tasks:
   - name: Check ceilomter.conf for a -1 TTL setting
     become: true
-    ini: path=/etc/ceilometer/ceilometer.conf section=database key={{ item }}
+    ini: path=/etc/ceilometer/ceilometer.conf section=database key={{ item }} ignore_missing_file=True
     register: config_result
     with_items:
       - "{{ metering_ttl_check }}"
       - "{{ event_ttl_check }}"
-    failed_when: "'{{ ttl_value }}' in config_result.value"
+    failed_when: "ttl_value == config_result.value"
