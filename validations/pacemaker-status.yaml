@@ -1,0 +1,19 @@
+---
+- hosts: controller
+  vars:
+    metadata:
+      name: Check the status of the pacemaker cluster
+      description: >
+        This runs `pcs status` and checks for any failed actions.
+
+        A failed status post-deployment indicates something is not configured
+        correctly. This should also be run before upgrade as the process will
+        likely fail with a cluster that's not completely healthy.
+      groups:
+        - post-deployment
+  tasks:
+  - name: Get pacemaker status
+    command: pcs status xml
+    register: pcs_status
+  - name: Check pacemaker status
+    pacemaker: status="{{ pcs_status.stdout }}"
