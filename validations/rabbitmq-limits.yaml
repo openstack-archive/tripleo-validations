@@ -1,0 +1,19 @@
+---
+- hosts: controller
+  vars:
+    metadata:
+      name: Rabbitmq limits
+      description: >
+        Make sure the rabbitmq file descriptor limits are set to reasonable values.
+      groups:
+        - post-deployment
+    min_fd_limit: 16384
+  tasks:
+  - name: Get file_descriptors total_limit
+    register: actual_fd_limit
+    command: "rabbitmqctl eval 'proplists:get_value(max_fds, erlang:system_info(check_io)).'"
+    changed_when: false
+  - name: Verify the actual limit exceeds the minimal value
+    fail:
+      msg: "{{ actual_fd_limit.stdout }} must be greater than or equal to {{ min_fd_limit }}"
+    failed_when: "{{ actual_fd_limit.stdout|int }} < {{ min_fd_limit }}"
