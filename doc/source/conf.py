@@ -15,7 +15,11 @@
 import os
 import sys
 
+# Add the project
 sys.path.insert(0, os.path.abspath('../..'))
+# Add the extensions
+sys.path.insert(0, os.path.join(os.path.abspath('.'), '_exts'))
+
 # -- General configuration ----------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
@@ -23,7 +27,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 extensions = [
     'sphinx.ext.autodoc',
     #'sphinx.ext.intersphinx',
-    'generate_validation_list',
+    'generate_validations_doc',
     'oslosphinx'
 ]
 
@@ -39,7 +43,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'tripleo-validations'
-copyright = u'2013, OpenStack Foundation'
+copyright = u'2016, OpenStack Foundation'
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 add_function_parentheses = True
