@@ -1,0 +1,48 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Undercloud Neutron Sanity Check
+      description: >
+        Run `neutron-sanity-check` on the undercloud node to find out
+        potential issues with Neutron's configuration.
+
+        The tool expects all the configuration files that are passed
+        to the Neutron services.
+
+      groups:
+        - pre-introspection
+
+    # The list of Neutron configuration files and directories that
+    # will be passed to the Neutron services. The order is important
+    # here: the values in later files take precedence.
+    configs:
+    - /etc/neutron/neutron.conf
+    - /usr/share/neutron/neutron-dist.conf
+    - /etc/neutron/metadata_agent.ini
+    - /etc/neutron/metering_agent.ini
+    - /etc/neutron/dhcp_agent.ini
+    - /etc/neutron/plugins/ml2/openvswitch_agent.ini
+    - /etc/neutron/conf.d/ml2_conf_cisco.ini
+    - /etc/neutron/conf.d/cisco_cfg_agent.ini
+    - /etc/neutron/conf.d/cisco_router_plugin.ini
+    - /usr/share/neutron/l3_agent
+    - /etc/neutron/conf.d/common
+    - /etc/neutron/conf.d/neutron-l3-agent
+    - /usr/share/neutron/neutron-lbaas-dist.conf
+    - /etc/neutron/lbaas_agent.ini
+    - /etc/neutron/conf.d/neutron-lbaas-agent
+    - /etc/neutron/conf.d/neutron-lbaasv2-agent
+    - /etc/neutron/conf.d/neutron-metadata-agent
+    - /etc/neutron/conf.d/neutron-metering-agent
+    - /etc/neutron/conf.d/neutron-netns-cleanup
+    - /etc/neutron/conf.d/neutron-openvswitch-agent
+    - /etc/neutron/conf.d/neutron-ovs-cleanup
+    - /etc/neutron/conf.d/neutron-bsn-agent
+    - /etc/neutron/conf.d/neutron-cisco-cfg-agent
+    - /etc/neutron/conf.d/neutron-dhcp-agent
+
+  tasks:
+  - name: Run neutron-sanity-check
+    become: true
+    neutron_sanity_check: configs={{ configs }}
