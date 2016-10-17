@@ -1,0 +1,19 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Advanced Format 512e Support
+      description: >
+        Detect whether the undercloud disks use Advanced Format. If they do,
+        the overcloud images may fail to upload to Glance.
+      groups:
+        - prep
+        - pre-deployment
+  tasks:
+  - name: List the available drives
+    register: drive_list
+    shell: "ls /sys/class/block/"
+  - name: Detect whether the drive uses Advanced Format
+    advanced_format: drive={{ item }}
+    when: '"{{ item }}" | match("^sd.$")'
+    with_items: "{{ drive_list.stdout_lines }}"
