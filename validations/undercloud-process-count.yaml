@@ -1,0 +1,38 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Check the number of OpenStack processes on undercloud
+      description: >
+        The default settings for OpenStack is to run one process (heat-engine,
+        keystone, etc.) per CPU core. On a machine with a lot of cores this is
+        both unnecessary and can consume a significant amount of RAM, leading
+        to crashes due to OOMKiller.
+      groups:
+        - pre-deployment
+    max_process_count: 8
+  tasks:
+  - name: Collect the number of running processes per OpenStack service
+    command: pgrep -f -c {{ item }}
+    ignore_errors: yes
+    register: "process_count"
+    with_items:
+    - heat-engine
+    - mistral
+    - ironic-api
+    - ironic-conductor
+    - nova-api
+    - nova-scheduler
+    - nova-conductor
+    - nova-compute
+    - glance-registry
+    - glance-api
+    - swift-proxy-server
+    - swift-object-server
+    - swift-container-server
+    - zaqar-server
+
+  - name: Verify the number of running processes per OpenStack service
+    fail: msg="There are {{ item.stdout }} {{ item.item }} processes running. Having more than {{ max_process_count }} risks running out of memory."
+    failed_when: "{{ item.stdout|int }} > {{ max_process_count|int }}"
+    with_items: "{{ process_count.results }}"
