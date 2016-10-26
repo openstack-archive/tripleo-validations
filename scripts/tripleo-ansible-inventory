@@ -173,7 +173,8 @@ class TripleoInventory(object):
             try:
                 self._hclient = heat_client.Client(
                     endpoint=endpoint,
-                    token=ksclient.auth_token)
+                    token=ksclient.auth_token,
+                    ca_file=self.configs.cacert)
             except Exception as e:
                 print("Error connecting to Heat: {}".format(e.message),
                       file=sys.stderr)
@@ -190,7 +191,8 @@ class TripleoInventory(object):
                 self._nclient = nova_client.Client(
                     '2',
                     bypass_url=endpoint,
-                    auth_token=ksclient.auth_token)
+                    auth_token=ksclient.auth_token,
+                    cacert=self.configs.cacert)
             except Exception as e:
                 print("Error connecting to Nova: {}".format(e.message),
                       file=sys.stderr)
