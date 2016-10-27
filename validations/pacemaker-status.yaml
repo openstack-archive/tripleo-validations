@@ -13,6 +13,7 @@
         - post-deployment
   tasks:
   - name: Get pacemaker status
+    become: true
     command: pcs status xml
     register: pcs_status
   - name: Check pacemaker status
