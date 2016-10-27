@@ -10,6 +10,7 @@
     min_fd_limit: 16384
   tasks:
   - name: Get file_descriptors total_limit
+    become: true
     register: actual_fd_limit
     command: "rabbitmqctl eval 'proplists:get_value(max_fds, erlang:system_info(check_io)).'"
     changed_when: false
