@@ -13,6 +13,7 @@
     become: true
     hiera: name="tripleo_undercloud_conf_file"
   - name: Gather undercloud.conf values
+    become: true
     undercloud_conf: undercloud_conf_path={{ tripleo_undercloud_conf_file }}
   - name: "Test network_gateway if different from local_ip"
     icmp_ping: host={{ undercloud_conf.DEFAULT.network_gateway }}
