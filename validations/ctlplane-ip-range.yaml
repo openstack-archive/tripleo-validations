@@ -14,6 +14,7 @@
     become: true
     hiera: name="tripleo_undercloud_conf_file"
   - name: Gather undercloud.conf values
+    become: true
     undercloud_conf: undercloud_conf_path={{ tripleo_undercloud_conf_file }}
   - name: Check the size of the DHCP range for overcloud nodes
     ip_range:
