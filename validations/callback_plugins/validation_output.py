@@ -144,9 +144,23 @@ class CallbackModule(CallbackBase):
 
         hosts = sorted(stats.processed.keys())
         failed_hosts = [host for host in hosts if failed(host)]
-        if failed_hosts:
-            print("Failure! The validation failed for the following hosts:")
-            for host in hosts:
-                print("*", host)
+
+        if hosts:
+            if failed_hosts:
+                if len(failed_hosts) == len(hosts):
+                    print("Failure! The validation failed for all hosts:")
+                    for failed_host in failed_hosts:
+                        print("*", failed_host)
+                else:
+                    print("Failure! The validation failed for hosts:")
+                    for failed_host in failed_hosts:
+                        print("*", failed_host)
+                    print("and passed for hosts:")
+                    for host in [h for h in hosts if h not in failed_hosts]:
+                        print("*", host)
+            else:
+                print("Success! The validation passed for all hosts:")
+                for host in hosts:
+                    print("*", host)
         else:
-            print("Success! The validation passed for all hosts.")
+            print("Warning! The validation did not run on any host.")
