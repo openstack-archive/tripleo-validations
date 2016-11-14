@@ -18,7 +18,9 @@
     hiera: name="tripleo_undercloud_conf_file"
   - name: Gather undercloud.conf values
     undercloud_conf: undercloud_conf_path={{ tripleo_undercloud_conf_file }}
+  - name: Install python-virtualenv
+    package: name=python-virtualenv state=present
   - name: Install scapy
-    pip: name=scapy state=present virtualenv=/tmp/validations-venv
+    pip: name=scapy version=2.3.2 state=present virtualenv=/tmp/validations-venv
   - name: Look for DHCP responses
     script: files/rogue_dhcp.py {{ undercloud_conf.DEFAULT.local_interface|default('eth1') }}
