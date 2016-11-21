@@ -1,0 +1,21 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Verify existence of deployment images.
+      description: >
+        This validation checks that images bm-deploy-kernel and
+        bm-deploy-ramdisk exist before deploying the overcloud.
+      groups:
+      - pre-deployment
+  tasks:
+  - name: Fetch available images
+    shell: openstack image list --format value --column Name
+    register: shell_result
+
+  - name: Check for required images
+    fail: msg="The image {{ item }} is missing."
+    when: '"{{ item }}" not in "{{ shell_result.stdout }}"'
+    with_items:
+    - bm-deploy-kernel
+    - bm-deploy-ramdisk
