@@ -27,6 +27,8 @@ import sys
 
 from heatclient.v1 import client as heat_client
 from keystoneclient.v3 import client as keystone_client
+import mistralclient.api.base
+import mistralclient.api.client
 from novaclient import client as nova_client
 from oslo_config import cfg
 
@@ -68,6 +70,7 @@ class TripleoInventory(object):
         self.configs = configs
         self._ksclient = None
         self._hclient = None
+        self._mclient = None
         self._nclient = None
 
     def fetch_stack_resources(self, resource_name):
@@ -99,6 +102,13 @@ class TripleoInventory(object):
         except Exception:
             return None
 
+    def get_overcloud_environment(self):
+        try:
+            environment = self.mclient.environments.get(self.configs.plan)
+            return environment.variables
+        except mistralclient.api.base.APIException:
+            return {}
+
     def list(self):
         ret = {
             'undercloud': {
@@ -111,7 +121,20 @@ class TripleoInventory(object):
 
         public_vip = self.get_overcloud_output('PublicVip')
         if public_vip:
-            ret['undercloud']['vars']['public_vip'] = public_vip
+            ret['undercloud']['vars']['overcloud_public_vip'] = public_vip
+        keystone_url = self.get_overcloud_output('KeystoneURL')
+        if public_vip:
+            ret['undercloud']['vars']['overcloud_keystone_url'] = keystone_url
+        overcloud_environment = self.get_overcloud_environment()
+        passwords = overcloud_environment.get('passwords', {})
+        admin_password = passwords.get('AdminPassword', '')
+        if admin_password:
+            ret['undercloud']['vars']['overcloud_admin_password'] = admin_password
+        endpoint_map = self.get_overcloud_output('EndpointMap')
+        if endpoint_map:
+            horizon_endpoint = endpoint_map.get('HorizonPublic', {}).get('uri')
+            if horizon_endpoint:
+                ret['undercloud']['vars']['overcloud_horizon_url'] = horizon_endpoint
 
         controller_group = self.fetch_stack_resources('Controller')
         if controller_group:
@@ -198,6 +221,23 @@ class TripleoInventory(object):
                       file=sys.stderr)
                 sys.exit(1)
         return self._nclient
+
+    @property
+    def mclient(self):
+        if self._mclient is None:
+            ksclient = self.ksclient
+            endpoint = ksclient.service_catalog.url_for(
+                service_type='workflowv2', endpoint_type='publicURL')
+            try:
+                self._mclient = mistralclient.api.client.client(
+                    mistral_url=endpoint,
+                    auth_token=ksclient.auth_token)
+            except Exception as e:
+                print("Error connecting to Mistral: {}".format(e.message),
+                      file=sys.stderr)
+                sys.exit(1)
+        return self._mclient
+
 
 
 def main():
