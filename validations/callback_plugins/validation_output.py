@@ -34,6 +34,12 @@ Host: {}
 Warnings:
 """
 
+DEBUG_TEMPLATE = """\
+Task: Debug
+Host: {}
+{}
+"""
+
 
 def indent(text):
     '''Indent the given text by four spaces.'''
@@ -113,6 +119,28 @@ class CallbackModule(CallbackBase):
             print(WARNING_TEMPLATE.format(task_name, host_name))
             for warning in warnings:
                 print("*", warning)
+
+        # Print the result of debug module
+        if (('invocation' in results) and
+           ('module_name' in results['invocation'])):
+
+            if ((results['invocation']['module_name'] == 'debug') and
+               ('module_args' in results['invocation'])):
+
+                output = ""
+
+                # Variable and its value
+                if 'var' in results['invocation']['module_args']:
+                    variable = results['invocation']['module_args']['var']
+                    value = results[variable]
+                    output = "{}: {}".format(variable, str(value))
+
+                # Debug message
+                elif 'msg' in results['invocation']['module_args']:
+                    output = "Message: {}".format(
+                             results['invocation']['module_args']['msg'])
+
+                print(DEBUG_TEMPLATE.format(host_name, output))
 
     def v2_runner_on_failed(self, result, **kwargs):
         host_name = result._host
