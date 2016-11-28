@@ -15,7 +15,6 @@
 from glob import glob
 import os
 
-import six
 import yaml
 
 DEFAULT_METADATA = {
@@ -57,7 +56,7 @@ def build_summary(group, validations):
 
 def format_dict(my_dict):
     return ''.join(['\n\n  - **{}**: {}'.format(key, value)
-                    for key, value in six.iteritems(my_dict)])
+                    for key, value in my_dict.items()])
 
 
 def build_detail(group, validations):
