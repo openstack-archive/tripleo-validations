@@ -3,10 +3,10 @@
   vars:
     metadata:
       name: Check connectivity to various OpenStack services
+      # TODO: this could also check for undercloud endpoints
       description: >
-        # TODO: this could also check for undercloud encpoints
-        This will attempt to connect to each service endpoint defined in
-        your hosts file's controller_vip variable.
+        This validation gets the PublicVip address from the deployment and
+        tries to access Horizon and get a Keystone token.
       groups:
       - post-deployment
   tasks:
