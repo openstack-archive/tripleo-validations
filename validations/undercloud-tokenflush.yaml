@@ -13,7 +13,7 @@
   tasks:
   - name: Get keystone crontab
     become: true
-    command: crontab -l -u keystone
+    shell: 'crontab -l -u keystone | grep -v "^#"'
     register: cron_result
   -
     name: Check keystone crontab
