@@ -4,20 +4,26 @@
     metadata:
       name: Ceilometer Database Size Check
       description: >
-        The undercloud's ceilometer database can grow to a substantial size
-        if metering_time_to_live and event_time_to_live is set to -1 (infinite).
-        We check each setting and fail if -1 is set.
+        The undercloud's ceilometer database can grow to a substantial
+        size if metering_time_to_live and event_time_to_live is set to
+        a negative value (infinite limit).
+        This validation checks each setting and fails if variables are
+        set to a negative value or if they have no custom setting
+        (their value is -1 by default).
       groups:
         - pre-deployment
-    ttl_value: "-1"
     metering_ttl_check: "metering_time_to_live"
     event_ttl_check: "event_time_to_live"
   tasks:
-  - name: Check ceilomter.conf for a -1 TTL setting
+  - name: Get TTL setting values from ceilometer.conf
     become: true
     ini: path=/etc/ceilometer/ceilometer.conf section=database key={{ item }} ignore_missing_file=True
     register: config_result
     with_items:
       - "{{ metering_ttl_check }}"
       - "{{ event_ttl_check }}"
-    failed_when: "ttl_value == config_result.value"
+
+  - name: Check values
+    fail: msg="Value of {{ item.item }} is set to {{ item.value or "-1" }}."
+    when: item.value|int < 0 or item.value  == None
+    with_items: "{{ config_result.results }}"
