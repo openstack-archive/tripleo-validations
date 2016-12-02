@@ -7,7 +7,7 @@
         If `network_gateway` in `undercloud.conf` is different from `local_ip`,
         verify that the gateway exists and is reachable.
       groups:
-        - pre-instrospection
+        - pre-introspection
   tasks:
   - name: Get the path of tripleo undercloud config file
     become: true
