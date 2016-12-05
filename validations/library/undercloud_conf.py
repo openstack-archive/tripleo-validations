@@ -23,6 +23,7 @@ from ansible.module_utils.basic import *  # noqa
 def main():
     module = AnsibleModule(argument_spec=dict(
         undercloud_conf_path=dict(required=True, type='str'),
+        ignore_missing=dict(type='bool'),
     ))
 
     undercloud_conf_path = module.params.get('undercloud_conf_path')
@@ -37,6 +38,9 @@ def main():
 
         module.exit_json(changed=False,
                          ansible_facts={u'undercloud_conf': result})
+    elif module.params.get('ignore_missing'):
+        module.exit_json(changed=False,
+                         ansible_facts={u'undercloud_conf': {'DEFAULT': {}}})
     else:
         module.fail_json(msg="Could not open the undercloud.conf file at '%s'"
                          % undercloud_conf_path)
