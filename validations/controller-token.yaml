@@ -1,0 +1,18 @@
+---
+- hosts: undercloud, controller
+  vars:
+    metadata:
+      Name: Verify that keystone admin token is disabled.
+      description: >
+        This validation checks that keystone admin token is disabled on both
+        undercloud and overcloud controller after deployment.
+      groups:
+      - post-deployment
+  tasks:
+  - name: Fetch token value
+    become: true
+    ini: path=/etc/keystone/keystone.conf section=DEFAULT key=admin_token ignore_missing_file=True
+    register: token_result
+  - name: Check if token value is disabled.
+    fail: msg="Keystone admin token is not disabled."
+    when: token_result.value != None
