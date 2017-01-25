@@ -15,5 +15,4 @@
 import pbr.version
 
 
-__version__ = pbr.version.VersionInfo(
-    'tripleo-validations').version_string()
+__version__ = pbr.version.VersionInfo('tripleo-validations')

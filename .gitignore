@@ -54,3 +54,6 @@ ChangeLog
 .*.swp
 .*sw?
 doc/source/validations-*.rst
+
+# Files created by releasenotes build
+releasenotes/build
