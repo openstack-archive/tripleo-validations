@@ -260,7 +260,7 @@ These nodes need to be reachable from the operator's machine and need to have
 an account it can ssh to and perform passwordless sudo.
 
 The nodes need to be present in the static inventory file or available from the
-dynamic inventory script depending on which one the operator choses to use.
+dynamic inventory script depending on which one the operator chooses to use.
 Check which nodes are available with::
 
     $ source stackrc
