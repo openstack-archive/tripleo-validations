@@ -13,10 +13,6 @@
       groups:
         - pre-introspection
   tasks:
-  - name: Install python-virtualenv
-    package: name=python-virtualenv state=present
-  - name: Install scapy
-    pip: name=scapy version=2.3.2 state=present virtualenv=/tmp/validations-venv
   - name: Look up the introspection interface
     ini: path=/etc/ironic-inspector/inspector.conf section=firewall key=dnsmasq_interface
     register: interface
