@@ -25,8 +25,9 @@ import json
 import os
 import sys
 
-from heatclient.v1 import client as heat_client
-from keystoneclient.v3 import client as keystone_client
+from heatclient import client as heat_client
+from keystoneauth1.identity import v3
+from keystoneauth1 import session
 import mistralclient.api.base
 import mistralclient.api.client
 from novaclient import client as nova_client
@@ -68,6 +69,7 @@ def _parse_config():
 class TripleoInventory(object):
     def __init__(self, configs):
         self.configs = configs
+        self._session = None
         self._ksclient = None
         self._hclient = None
         self._mclient = None
@@ -163,41 +165,31 @@ class TripleoInventory(object):
         print(json.dumps({}))
 
     @property
-    def ksclient(self):
-        if self._ksclient is None:
-            try:
-                if self.configs.auth_token:
-                    self._ksclient = keystone_client.Client(
-                        auth_url=self.configs.auth_url,
-                        username=self.configs.username,
-                        token=self.configs.auth_token,
-                        project_name=self.configs.project_name,
-                        cacert=self.configs.cacert)
-                else:
-                    self._ksclient = keystone_client.Client(
-                        auth_url=self.configs.auth_url,
-                        username=self.configs.username,
-                        password=self.configs.password,
-                        project_name=self.configs.project_name,
-                        cacert=self.configs.cacert)
-                self._ksclient.authenticate()
-            except Exception as e:
-                print("Error connecting to Keystone: {}".format(e.message),
-                      file=sys.stderr)
-                sys.exit(1)
-        return self._ksclient
+    def session(self):
+        if self._session is None:
+            if self.configs.auth_token:
+                auth = v3.Token(auth_url=self.configs.auth_url,
+                                token=self.configs.auth_token,
+                                project_name=self.configs.project_name,
+                                user_domain_id='default',
+                                project_domain_id='default')
+            else:
+                auth = v3.Password(auth_url=self.configs.auth_url,
+                                   username=self.configs.username,
+                                   password=self.configs.password,
+                                   project_name=self.configs.project_name,
+                                   user_domain_id='default',
+                                   project_domain_id='default')
+
+            self._session = session.Session(auth=auth,
+                                            verify=self.configs.cacert)
+        return self._session
 
     @property
     def hclient(self):
         if self._hclient is None:
-            ksclient = self.ksclient
-            endpoint = ksclient.service_catalog.url_for(
-                service_type='orchestration', endpoint_type='publicURL')
             try:
-                self._hclient = heat_client.Client(
-                    endpoint=endpoint,
-                    token=ksclient.auth_token,
-                    ca_file=self.configs.cacert)
+                self._hclient = heat_client.Client('1', session=self.session)
             except Exception as e:
                 print("Error connecting to Heat: {}".format(e.message),
                       file=sys.stderr)
@@ -207,15 +199,8 @@ class TripleoInventory(object):
     @property
     def nclient(self):
         if self._nclient is None:
-            ksclient = self.ksclient
-            endpoint = ksclient.service_catalog.url_for(
-                service_type='compute', endpoint_type='publicURL')
             try:
-                self._nclient = nova_client.Client(
-                    '2',
-                    bypass_url=endpoint,
-                    auth_token=ksclient.auth_token,
-                    cacert=self.configs.cacert)
+                self._nclient = nova_client.Client('2', session=self.session)
             except Exception as e:
                 print("Error connecting to Nova: {}".format(e.message),
                       file=sys.stderr)
@@ -225,19 +210,16 @@ class TripleoInventory(object):
     @property
     def mclient(self):
         if self._mclient is None:
-            ksclient = self.ksclient
-            endpoint = ksclient.service_catalog.url_for(
-                service_type='workflowv2', endpoint_type='publicURL')
             try:
+                endpoint = self.session.get_endpoint(service_type='workflowv2')
                 self._mclient = mistralclient.api.client.client(
                     mistral_url=endpoint,
-                    auth_token=ksclient.auth_token)
+                    auth_token=self.session.get_token())
             except Exception as e:
                 print("Error connecting to Mistral: {}".format(e.message),
                       file=sys.stderr)
                 sys.exit(1)
         return self._mclient
-
 
 
 def main():
