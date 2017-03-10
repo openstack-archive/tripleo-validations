@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Adds a ceph-health check which prints a warning message if Ceph cluster
+    is in HEALTH_WARN state at the end of the Overcloud deployment

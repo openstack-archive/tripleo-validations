@@ -1,0 +1,29 @@
+---
+- hosts: controller
+  vars:
+    metadata:
+      name: Check the status of the ceph cluster
+      description: >
+        Uses `ceph health` to check if cluster is in HEALTH_WARN state
+        and prints a debug message.
+
+      groups:
+        - post-deployment
+  tasks:
+  - name: Check if ceph_mon is deployed
+    become: true
+    shell: hiera -c /etc/puppet/hiera.yaml enabled_services | egrep -sq ceph_mon
+    ignore_errors: true
+    register: ceph_mon_enabled
+  - name: Get ceph health
+    become: true
+    shell: ceph health | awk '{print $1}'
+    register: ceph_health
+    when:
+      - ceph_mon_enabled|succeeded
+  - name: Check ceph health
+    warn:
+      msg: Ceph is in {{ ceph_health.stdout }} state.
+    when:
+      - ceph_mon_enabled|succeeded
+      - ceph_health.stdout == 'HEALTH_WARN'
