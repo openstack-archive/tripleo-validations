@@ -26,7 +26,7 @@ import os
 import sys
 
 from heatclient import client as heat_client
-from keystoneauth1.identity import v3
+from keystoneauth1.identity import generic as ks_id
 from keystoneauth1 import session
 import mistralclient.api.base
 import mistralclient.api.client
@@ -168,18 +168,18 @@ class TripleoInventory(object):
     def session(self):
         if self._session is None:
             if self.configs.auth_token:
-                auth = v3.Token(auth_url=self.configs.auth_url,
-                                token=self.configs.auth_token,
-                                project_name=self.configs.project_name,
-                                user_domain_id='default',
-                                project_domain_id='default')
-            else:
-                auth = v3.Password(auth_url=self.configs.auth_url,
-                                   username=self.configs.username,
-                                   password=self.configs.password,
+                auth = ks_id.Token(auth_url=self.configs.auth_url,
+                                   token=self.configs.auth_token,
                                    project_name=self.configs.project_name,
                                    user_domain_id='default',
                                    project_domain_id='default')
+            else:
+                auth = ks_id.Password(auth_url=self.configs.auth_url,
+                                      username=self.configs.username,
+                                      password=self.configs.password,
+                                      project_name=self.configs.project_name,
+                                      user_domain_id='default',
+                                      project_domain_id='default')
 
             self._session = session.Session(auth=auth,
                                             verify=self.configs.cacert)
