@@ -168,9 +168,9 @@ Tripleo-validations ships with a `dynamic inventory
 contacts the various OpenStack services to provide the addresses of the
 deployed nodes as well as the undercloud.
 
-Just pass ``-i tripleo-ansible-inventory`` to ``ansible-playbook`` command::
+Just pass ``-i /usr/bin/tripleo-ansible-inventory`` to ``ansible-playbook`` command::
 
-    ansible-playbook -i tripleo-ansible-inventory validations/hello_world.yaml
+    ansible-playbook -i /usr/bin/tripleo-ansible-inventory validations/hello_world.yaml
 
 Hosts file
 ++++++++++
@@ -273,7 +273,7 @@ up to SSH to them.
 ::
 
     $ source ~/stackrc
-    $ ansible-playbook -i tripleo-ansible-inventory path/to/validation.yaml
+    $ ansible-playbook -i /usr/bin/tripleo-ansible-inventory path/to/validation.yaml
 
 Example: Verify Undercloud RAM requirements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -313,7 +313,7 @@ this under the same indentation as ``hosts`` and ``vars``::
 
 When running it, it should output something like this::
 
-    $ ansible-playbook -i tripleo-ansible-inventory validations/undercloud-ram.yaml
+    $ ansible-playbook -i /usr/bin/tripleo-ansible-inventory validations/undercloud-ram.yaml
 
     PLAY [undercloud] *************************************************************
 
@@ -331,7 +331,7 @@ When running it, it should output something like this::
 Writing the full validation code is quite easy in this case because Ansible has
 done all the hard work for us already. We can use the ``ansible_memtotal_mb``
 fact to get the amount of RAM (in megabytes) the tested server currently has.
-For other useful values, run ``ansible -i tripleo-ansible-inventory
+For other useful values, run ``ansible -i /usr/bin/tripleo-ansible-inventory
 undercloud -m setup``.
 
 So, let's replace the hello world task with a real one::
@@ -396,11 +396,11 @@ Let's do that to test both success and failure cases.
 
 This should succeed but saying the RAM requirement is 1 GB::
 
-    ansible-playbook -i tripleo-ansible-inventory validations/undercloud-ram.yaml -e minimum_ram_gb=1
+    ansible-playbook -i /usr/bin/tripleo-ansible-inventory validations/undercloud-ram.yaml -e minimum_ram_gb=1
 
 And this should fail by requiring much more RAM than is necessary::
 
-    ansible-playbook -i tripleo-ansible-inventory validations/undercloud-ram.yaml -e minimum_ram_gb=128
+    ansible-playbook -i /usr/bin/tripleo-ansible-inventory validations/undercloud-ram.yaml -e minimum_ram_gb=128
 
 (the actual values may be different in your configuration -- just make sure one
 is low enough and the other too high)
