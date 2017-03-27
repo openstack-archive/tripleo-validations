@@ -21,16 +21,14 @@
 
 from __future__ import print_function
 
-import json
 import os
 import sys
 
 from heatclient import client as heat_client
-import mistralclient.api.base
 import mistralclient.api.client
-from novaclient import client as nova_client
 from oslo_config import cfg
 
+from tripleo_validations.inventory import TripleoInventory
 from tripleo_validations.utils import get_auth_session
 
 
@@ -42,10 +40,22 @@ opts = [
     cfg.StrOpt('auth-url', default=os.environ.get('OS_AUTH_URL')),
     cfg.StrOpt('auth-token', default=os.environ.get('OS_AUTH_TOKEN')),
     cfg.StrOpt('project-name', default=os.environ.get(
-        'OS_PROJECT_NAME',os.environ.get('OS_TENANT_NAME'))),
+        'OS_PROJECT_NAME', os.environ.get('OS_TENANT_NAME'))),
     cfg.StrOpt('cacert', default=os.environ.get('OS_CACERT')),
     cfg.StrOpt('plan', default=os.environ.get('TRIPLEO_PLAN_NAME')),
 ]
+
+
+def _get_mclient(session):
+    try:
+        endpoint = session.get_endpoint(service_type='workflowv2')
+        return mistralclient.api.client.client(
+            mistral_url=endpoint,
+            auth_token=session.get_token())
+    except Exception as e:
+        print("Error connecting to Mistral: {}".format(e.message),
+              file=sys.stderr)
+        sys.exit(1)
 
 
 def _parse_config():
@@ -68,170 +78,26 @@ def _parse_config():
     return configs
 
 
-class TripleoInventory(object):
-    def __init__(self, configs):
-        self.configs = configs
-        self._session = None
-        self._hclient = None
-        self._mclient = None
-        self._nclient = None
-
-    def fetch_stack_resources(self, resource_name):
-        heatclient = self.hclient
-        novaclient = self.nclient
-        stack = self.configs.plan
-        ret = []
-        try:
-            resource_id = heatclient.resources.get(stack, resource_name) \
-                .physical_resource_id
-            for resource in heatclient.resources.list(resource_id):
-                node = heatclient.resources.get(resource_id,
-                                                resource.resource_name)
-                node_resource = node.attributes['nova_server_resource']
-                nova_server = novaclient.servers.get(node_resource)
-                if nova_server.status == 'ACTIVE':
-                    ret.append(nova_server.networks['ctlplane'][0])
-        except Exception:
-            # Ignore non existent stacks or resources
-            pass
-        return ret
-
-    def get_overcloud_output(self, output_name):
-        try:
-            stack = self.hclient.stacks.get(self.configs.plan)
-            for output in stack.outputs:
-                if output['output_key'] == output_name:
-                    return output['output_value']
-        except Exception:
-            return None
-
-    def get_overcloud_environment(self):
-        try:
-            environment = self.mclient.environments.get(self.configs.plan)
-            return environment.variables
-        except mistralclient.api.base.APIException:
-            return {}
-
-    def list(self):
-        ret = {
-            'undercloud': {
-                'hosts': ['localhost'],
-                'vars': {
-                    'ansible_connection': 'local',
-                    'os_auth_token': self.session.get_token(),
-                    'plan': self.configs.plan,
-                },
-            }
-        }
-
-        swift_url = self.session.get_endpoint(service_type='object-store',
-                                              endpoint_type='publicURL')
-        if swift_url:
-            ret['undercloud']['vars']['undercloud_swift_url'] = swift_url
-
-        public_vip = self.get_overcloud_output('PublicVip')
-        if public_vip:
-            ret['undercloud']['vars']['overcloud_public_vip'] = public_vip
-        keystone_url = self.get_overcloud_output('KeystoneURL')
-        if public_vip:
-            ret['undercloud']['vars']['overcloud_keystone_url'] = keystone_url
-        overcloud_environment = self.get_overcloud_environment()
-        passwords = overcloud_environment.get('passwords', {})
-        admin_password = passwords.get('AdminPassword', '')
-        if admin_password:
-            ret['undercloud']['vars']['overcloud_admin_password'] = \
-                admin_password
-        endpoint_map = self.get_overcloud_output('EndpointMap')
-        if endpoint_map:
-            horizon_endpoint = endpoint_map.get('HorizonPublic', {}).get('uri')
-            if horizon_endpoint:
-                ret['undercloud']['vars']['overcloud_horizon_url'] = \
-                    horizon_endpoint
-
-        controller_group = self.fetch_stack_resources('Controller')
-        if controller_group:
-            ret['controller'] = controller_group
-
-        compute_group = self.fetch_stack_resources('Compute')
-        if compute_group:
-            ret['compute'] = compute_group
-
-        if any([controller_group, compute_group]):
-            ret['overcloud'] = {
-                'children': list(set(ret.keys()) - set(['undercloud'])),
-                'vars': {
-                    # TODO(mandre) retrieve SSH user from heat
-                    'ansible_ssh_user': 'heat-admin',
-                }
-            }
-
-        print(json.dumps(ret))
-
-    def host(self):
-        # NOTE(mandre)
-        # Dynamic inventory scripts must return empty json if they don't
-        # provide detailed info for hosts:
-        # http://docs.ansible.com/ansible/developing_inventory.html
-        print(json.dumps({}))
-
-    @property
-    def session(self):
-        if self._session is None:
-            try:
-                self._session = get_auth_session(self.configs.auth_url,
-                                                 self.configs.username,
-                                                 self.configs.project_name,
-                                                 self.configs.password,
-                                                 self.configs.auth_token,
-                                                 self.configs.cacert)
-            except Exception as e:
-                print("Error connecting to Keystone: {}".format(e.message),
-                      file=sys.stderr)
-                sys.exit(1)
-        return self._session
-
-    @property
-    def hclient(self):
-        if self._hclient is None:
-            try:
-                self._hclient = heat_client.Client('1', session=self.session)
-            except Exception as e:
-                print("Error connecting to Heat: {}".format(e.message),
-                      file=sys.stderr)
-                sys.exit(1)
-        return self._hclient
-
-    @property
-    def nclient(self):
-        if self._nclient is None:
-            try:
-                self._nclient = nova_client.Client('2', session=self.session)
-            except Exception as e:
-                print("Error connecting to Nova: {}".format(e.message),
-                      file=sys.stderr)
-                sys.exit(1)
-        return self._nclient
-
-    @property
-    def mclient(self):
-        if self._mclient is None:
-            try:
-                endpoint = self.session.get_endpoint(service_type='workflowv2')
-                self._mclient = mistralclient.api.client.client(
-                    mistral_url=endpoint,
-                    auth_token=self.session.get_token())
-            except Exception as e:
-                print("Error connecting to Mistral: {}".format(e.message),
-                      file=sys.stderr)
-                sys.exit(1)
-        return self._mclient
-
-
 def main():
     configs = _parse_config()
-    inventory = TripleoInventory(configs)
+    session = get_auth_session(configs.auth_url,
+                               configs.username,
+                               configs.project_name,
+                               configs.password,
+                               configs.auth_token,
+                               configs.cacert)
+    hclient = heat_client.Client('1', session=session)
+    inventory = TripleoInventory(configs,
+                                 session,
+                                 hclient,
+                                 _get_mclient(session))
     if configs.list:
-        inventory.list()
+        try:
+            inventory.list()
+        except Exception as e:
+            print("Error creating inventory: {}".format(e.message),
+                  file=sys.stderr)
+            sys.exit(1)
     elif configs.host:
         inventory.host()
     sys.exit(0)
