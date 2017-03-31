@@ -171,7 +171,6 @@ class TripleoInventory(object):
                 auth = ks_id.Token(auth_url=self.configs.auth_url,
                                    token=self.configs.auth_token,
                                    project_name=self.configs.project_name,
-                                   user_domain_id='default',
                                    project_domain_id='default')
             else:
                 auth = ks_id.Password(auth_url=self.configs.auth_url,
