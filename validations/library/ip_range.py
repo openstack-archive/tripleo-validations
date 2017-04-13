@@ -19,6 +19,48 @@ import netaddr
 from ansible.module_utils.basic import *  # NOQA
 
 
+def check_arguments(start, end, min_size):
+    '''Validate format of arguments'''
+
+    errors = []
+
+    # Check format of arguments
+    try:
+        startIP = netaddr.IPAddress(start)
+    except netaddr.core.AddrFormatError:
+        errors.append('Argument start ({}) must be an IP'.format(start))
+
+    try:
+        endIP = netaddr.IPAddress(end)
+    except netaddr.core.AddrFormatError:
+        errors.append('Argument end ({}) must be an IP'.format(end))
+
+    if (not errors) and (startIP.version != endIP.version):
+        errors.append('Arguments start, end must share the same IP version')
+
+    if min_size < 0:
+        errors.append('Argument min_size({}) must be greater than 0'
+                      .format(min_size))
+
+    return errors
+
+
+def check_IP_range(start, end, min_size):
+    '''Compare IP range with minimum size'''
+
+    warnings = []
+    iprange = netaddr.IPRange(start, end)
+
+    if len(iprange) < min_size:
+        warnings = [
+            'The IP range {} - {} contains {} addresses.'.format(
+                start, end, len(iprange)),
+            'This might not be enough for the deployment or later scaling.'
+        ]
+
+    return warnings
+
+
 def main():
     module = AnsibleModule(argument_spec=dict(
         start=dict(required=True, type='str'),
@@ -28,19 +70,20 @@ def main():
 
     start = module.params.get('start')
     end = module.params.get('end')
+    min_size = module.params.get('min_size')
 
-    iprange = netaddr.IPRange(start, end)
-
-    if len(iprange) < module.params.get('min_size'):
-        module.exit_json(
-            changed=True,
-            warnings=[
-                'The IP range {} - {} contains {} addresses.'.format(
-                    start, end, len(iprange)),
-                'This might not be enough for the deployment or later scaling.'
-            ])
+    # Check arguments
+    errors = check_arguments(start, end, min_size)
+    if errors:
+        module.fail_json(msg='\n'.join(errors))
     else:
-        module.exit_json(msg='success')
+        # Check IP range
+        warnings = check_IP_range(start, end, min_size)
+
+        if warnings:
+            module.exit_json(changed=True, warnings=warnings)
+        else:
+            module.exit_json(msg='success')
 
 
 if __name__ == '__main__':
