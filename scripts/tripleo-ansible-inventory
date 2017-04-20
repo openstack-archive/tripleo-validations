@@ -26,12 +26,13 @@ import os
 import sys
 
 from heatclient import client as heat_client
-from keystoneauth1.identity import generic as ks_id
-from keystoneauth1 import session
 import mistralclient.api.base
 import mistralclient.api.client
 from novaclient import client as nova_client
 from oslo_config import cfg
+
+from tripleo_validations.utils import get_auth_session
+
 
 opts = [
     cfg.StrOpt('host', help='List details about the specific host'),
@@ -70,7 +71,6 @@ class TripleoInventory(object):
     def __init__(self, configs):
         self.configs = configs
         self._session = None
-        self._ksclient = None
         self._hclient = None
         self._mclient = None
         self._nclient = None
@@ -117,9 +117,16 @@ class TripleoInventory(object):
                 'hosts': ['localhost'],
                 'vars': {
                     'ansible_connection': 'local',
+                    'os_auth_token': self.session.get_token(),
+                    'plan': self.configs.plan,
                 },
             }
         }
+
+        swift_url = self.session.get_endpoint(service_type='object-store',
+                                              endpoint_type='publicURL')
+        if swift_url:
+            ret['undercloud']['vars']['undercloud_swift_url'] = swift_url
 
         public_vip = self.get_overcloud_output('PublicVip')
         if public_vip:
@@ -131,12 +138,14 @@ class TripleoInventory(object):
         passwords = overcloud_environment.get('passwords', {})
         admin_password = passwords.get('AdminPassword', '')
         if admin_password:
-            ret['undercloud']['vars']['overcloud_admin_password'] = admin_password
+            ret['undercloud']['vars']['overcloud_admin_password'] = \
+                admin_password
         endpoint_map = self.get_overcloud_output('EndpointMap')
         if endpoint_map:
             horizon_endpoint = endpoint_map.get('HorizonPublic', {}).get('uri')
             if horizon_endpoint:
-                ret['undercloud']['vars']['overcloud_horizon_url'] = horizon_endpoint
+                ret['undercloud']['vars']['overcloud_horizon_url'] = \
+                    horizon_endpoint
 
         controller_group = self.fetch_stack_resources('Controller')
         if controller_group:
@@ -167,21 +176,17 @@ class TripleoInventory(object):
     @property
     def session(self):
         if self._session is None:
-            if self.configs.auth_token:
-                auth = ks_id.Token(auth_url=self.configs.auth_url,
-                                   token=self.configs.auth_token,
-                                   project_name=self.configs.project_name,
-                                   project_domain_id='default')
-            else:
-                auth = ks_id.Password(auth_url=self.configs.auth_url,
-                                      username=self.configs.username,
-                                      password=self.configs.password,
-                                      project_name=self.configs.project_name,
-                                      user_domain_id='default',
-                                      project_domain_id='default')
-
-            self._session = session.Session(auth=auth,
-                                            verify=self.configs.cacert)
+            try:
+                self._session = get_auth_session(self.configs.auth_url,
+                                                 self.configs.username,
+                                                 self.configs.project_name,
+                                                 self.configs.password,
+                                                 self.configs.auth_token,
+                                                 self.configs.cacert)
+            except Exception as e:
+                print("Error connecting to Keystone: {}".format(e.message),
+                      file=sys.stderr)
+                sys.exit(1)
         return self._session
 
     @property
@@ -229,6 +234,7 @@ def main():
     elif configs.host:
         inventory.host()
     sys.exit(0)
+
 
 if __name__ == '__main__':
     main()
