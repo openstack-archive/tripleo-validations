@@ -15,6 +15,7 @@
     defaults_timeout_check: '10s'
   tasks:
   - name: Gather the HAProxy config
+    become: true
     haproxy_conf: path="{{ config_file }}"
   - name: Verify global maxconn
     fail: msg="The 'global maxconn' value '{{ haproxy_conf.global.maxconn}}' must be greater than {{ global_maxconn_min }}"
