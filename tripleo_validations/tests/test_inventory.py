@@ -166,7 +166,21 @@ class TestInventory(base.TestCase):
                                  'overcloud_keystone_url': 'xyz://keystone',
                                  'overcloud_admin_password': 'theadminpw',
                                  'plan': 'overcloud',
-                                 'undercloud_swift_url': 'anendpoint'}}}
+                                 'undercloud_swift_url': 'anendpoint',
+                                 'undercloud_service_list': [
+                                     'openstack-nova-compute',
+                                     'openstack-nova-api',
+                                     'openstack-heat-engine',
+                                     'openstack-heat-api',
+                                     'openstack-ironic-conductor',
+                                     'openstack-ironic-api',
+                                     'openstack-swift-container',
+                                     'openstack-swift-object',
+                                     'openstack-zaqar',
+                                     'openstack-glance-api',
+                                     'openstack-mistral-engine',
+                                     'openstack-mistral-api.service',
+                                     'openstack-glance-api'], }}}
         inv_list = self.inventory.list()
         for k in expected:
             self.assertEqual(expected[k], inv_list[k])

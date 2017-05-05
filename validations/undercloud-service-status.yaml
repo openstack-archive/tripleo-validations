@@ -1,0 +1,21 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Verify undercloud services state before running update or upgrade
+      description: >
+        Check undercloud status before running a stack update - especially minor update and major upgrade.
+      groups:
+        - pre-update
+        - pre-upgrade
+  tasks:
+  - name: Check Services are running
+    command: "/usr/bin/systemctl show {{ item }} --property ActiveState"
+    become: true
+    with_items: "{{ undercloud_service_list }}"
+    register: "check_services"
+    ignore_errors: true
+  - name: Fail if services were not running
+    fail: msg="One of the undercloud services was not active. Please check {{ item.item }} first and then confirm the status of undercloud services in general before attempting to update or upgrade the environment."
+    failed_when: "{{ item.stdout  != 'ActiveState=active' }}"
+    with_items: "{{ check_services.results }}"
