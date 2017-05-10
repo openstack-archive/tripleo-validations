@@ -97,10 +97,9 @@ class TripleoInventory(object):
 
     def get_overcloud_output(self, output_name):
         try:
-            stack = self.hclient.stacks.get(self.configs.plan)
-            for output in stack.outputs:
-                if output['output_key'] == output_name:
-                    return output['output_value']
+            output = self.hclient.stacks.output_show(self.configs.plan,
+                                                     output_name)
+            return output['output']['output_value']
         except Exception:
             return None
 
