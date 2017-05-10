@@ -41,7 +41,8 @@ opts = [
     cfg.StrOpt('password', default=os.environ.get('OS_PASSWORD')),
     cfg.StrOpt('auth-url', default=os.environ.get('OS_AUTH_URL')),
     cfg.StrOpt('auth-token', default=os.environ.get('OS_AUTH_TOKEN')),
-    cfg.StrOpt('project-name', default=os.environ.get('OS_TENANT_NAME')),
+    cfg.StrOpt('project-name', default=os.environ.get(
+        'OS_PROJECT_NAME',os.environ.get('OS_TENANT_NAME'))),
     cfg.StrOpt('cacert', default=os.environ.get('OS_CACERT')),
     cfg.StrOpt('plan', default=os.environ.get('TRIPLEO_PLAN_NAME')),
 ]
