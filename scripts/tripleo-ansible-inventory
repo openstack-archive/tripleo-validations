@@ -32,10 +32,14 @@ import mistralclient.api.base
 import mistralclient.api.client
 from novaclient import client as nova_client
 from oslo_config import cfg
+from six.moves import configparser
 
 opts = [
     cfg.StrOpt('host', help='List details about the specific host'),
     cfg.BoolOpt('list', help='List active hosts'),
+    cfg.StrOpt('static-inventory', help=('output the active hosts '
+                                         'to a static inventory '
+                                         'file.')),
     cfg.StrOpt('username', default=os.environ.get('OS_USERNAME')),
     cfg.StrOpt('password', default=os.environ.get('OS_PASSWORD')),
     cfg.StrOpt('auth-url', default=os.environ.get('OS_AUTH_URL')),
@@ -154,14 +158,14 @@ class TripleoInventory(object):
                 }
             }
 
-        print(json.dumps(ret))
+        return ret
 
     def host(self):
         # NOTE(mandre)
         # Dynamic inventory scripts must return empty json if they don't
         # provide detailed info for hosts:
         # http://docs.ansible.com/ansible/developing_inventory.html
-        print(json.dumps({}))
+        return {}
 
     @property
     def session(self):
@@ -219,14 +223,48 @@ class TripleoInventory(object):
                 sys.exit(1)
         return self._mclient
 
+def write_static_inventory(inventory_file_path, inventory):
+    with open(inventory_file_path, 'w') as inventory_file:
+        config = configparser.ConfigParser(allow_no_value=True)
+        for section_name, section in inventory.items():
+            # NOTE(jaosorior): The section might be a list containing the
+            # explicit list of nodes or a dict with several subsections. So
+            # if it's a list, we process that and continue to the next
+            # section.
+            if isinstance(section, list):
+                config.add_section(section_name)
+                for host in section:
+                    config.set(section_name, host)
+                continue
+            if 'hosts' in section:
+                config.add_section(section_name)
+                for host in section['hosts']:
+                    config.set(section_name, host)
+            if 'vars' in section:
+                vars_section_name = "%s:%s" % (section_name, 'vars')
+                config.add_section(vars_section_name)
+                for var, value in section['vars'].items():
+                    config.set(vars_section_name, var, value)
+            if 'children' in section:
+                children_section_name = "%s:%s" % (section_name, 'children')
+                config.add_section(children_section_name)
+                for child in section['children']:
+                    config.set(children_section_name, child)
+        config.write(inventory_file)
+
 
 def main():
     configs = _parse_config()
     inventory = TripleoInventory(configs)
-    if configs.list:
-        inventory.list()
+    if configs.list or configs.static_inventory:
+        inventory_list = inventory.list()
+        if configs.list:
+            print(json.dumps(inventory_list))
+        elif configs.static_inventory:
+            write_static_inventory(configs.static_inventory,
+                                   inventory_list)
     elif configs.host:
-        inventory.host()
+        print(json.dumps(inventory.host()))
     sys.exit(0)
 
 if __name__ == '__main__':
