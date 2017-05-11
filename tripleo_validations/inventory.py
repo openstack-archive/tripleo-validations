@@ -15,11 +15,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from __future__ import print_function
-
-import json
-
-
 HOST_NETWORK = 'ctlplane'
 
 
@@ -123,11 +118,11 @@ class TripleoInventory(object):
                 'children': children
             }
 
-        print(json.dumps(ret))
+        return ret
 
     def host(self):
         # NOTE(mandre)
         # Dynamic inventory scripts must return empty json if they don't
         # provide detailed info for hosts:
         # http://docs.ansible.com/ansible/developing_inventory.html
-        print(json.dumps({}))
+        return {}

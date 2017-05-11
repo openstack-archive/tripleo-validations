@@ -23,6 +23,7 @@ from __future__ import print_function
 
 import os
 import sys
+import json
 
 from heatclient import client as heat_client
 import mistralclient.api.client
@@ -93,13 +94,13 @@ def main():
                                  _get_mclient(session))
     if configs.list:
         try:
-            inventory.list()
+            print(json.dumps(inventory.list()))
         except Exception as e:
             print("Error creating inventory: {}".format(e.message),
                   file=sys.stderr)
             sys.exit(1)
     elif configs.host:
-        inventory.host()
+        print(json.dumps(inventory.host()))
     sys.exit(0)
 
 
