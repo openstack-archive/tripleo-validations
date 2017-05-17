@@ -116,22 +116,28 @@ class TripleoInventory(object):
                     horizon_endpoint
 
         role_net_ip_map = self.stack_outputs.get('RoleNetIpMap', {})
+        role_net_hostname_map = self.stack_outputs.get(
+            'RoleNetHostnameMap', {})
         children = []
-
-        # Collect host ips for each role
-        for role, ips in role_net_ip_map.items():
-            if ips and ips.get(HOST_NETWORK):
+        for role, hostnames in role_net_hostname_map.items():
+            if hostnames:
+                names = hostnames.get(HOST_NETWORK) or []
+                shortnames = [n.split(".%s." % HOST_NETWORK)[0] for n in names]
                 children.append(role.lower())
                 ret[role.lower()] = {
-                    'hosts': ips.get(HOST_NETWORK),
+                    'children': sorted(shortnames),
                     'vars': {
                         'ansible_ssh_user': 'heat-admin',
                     }
                 }
+                # Create a group per hostname to map hostname to IP
+                ips = role_net_ip_map[role][HOST_NETWORK]
+                for idx, name in enumerate(shortnames):
+                    ret[name] = {'hosts': [ips[idx]]}
 
         if children:
             ret['overcloud'] = {
-                'children': children
+                'children': sorted(children)
             }
 
         # Associate services with roles
