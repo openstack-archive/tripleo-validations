@@ -54,17 +54,16 @@ class StackOutputs(object):
 
 
 class TripleoInventory(object):
-    def __init__(self, configs, session, hclient, mclient):
+    def __init__(self, configs, session, hclient):
         self.configs = configs
         self.session = session
         self.hclient = hclient
-        self.mclient = mclient
         self.stack_outputs = StackOutputs(self.configs.plan, self.hclient)
 
     def get_overcloud_environment(self):
         try:
-            environment = self.mclient.environments.get(self.configs.plan)
-            return environment.variables
+            environment = self.hclient.stacks.environment(self.configs.plan)
+            return environment
         except Exception:
             return {}
 
@@ -88,9 +87,8 @@ class TripleoInventory(object):
         keystone_url = self.stack_outputs.get('KeystoneURL')
         if keystone_url:
             ret['undercloud']['vars']['overcloud_keystone_url'] = keystone_url
-        overcloud_environment = self.get_overcloud_environment()
-        passwords = overcloud_environment.get('passwords', {})
-        admin_password = passwords.get('AdminPassword', '')
+        admin_password = self.get_overcloud_environment().get(
+            'parameter_defaults', {}).get('AdminPassword')
         if admin_password:
             ret['undercloud']['vars']['overcloud_admin_password'] = \
                 admin_password
