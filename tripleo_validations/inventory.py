@@ -60,6 +60,22 @@ class TripleoInventory(object):
         self.hclient = hclient
         self.stack_outputs = StackOutputs(self.configs.plan, self.hclient)
 
+    @staticmethod
+    def get_roles_by_service(enabled_services):
+        # Flatten the lists of services for each role into a set
+        services = set(
+            [item for role_services in enabled_services.values()
+             for item in role_services])
+
+        roles_by_services = {}
+        for service in services:
+            roles_by_services[service] = []
+            for role, val in enabled_services.items():
+                if service in val:
+                    roles_by_services[service].append(role)
+            roles_by_services[service] = sorted(roles_by_services[service])
+        return roles_by_services
+
     def get_overcloud_environment(self):
         try:
             environment = self.hclient.stacks.environment(self.configs.plan)
@@ -101,6 +117,8 @@ class TripleoInventory(object):
 
         role_net_ip_map = self.stack_outputs.get('RoleNetIpMap', {})
         children = []
+
+        # Collect host ips for each role
         for role, ips in role_net_ip_map.items():
             if ips and ips.get(HOST_NETWORK):
                 children.append(role.lower())
@@ -115,6 +133,20 @@ class TripleoInventory(object):
             ret['overcloud'] = {
                 'children': children
             }
+
+        # Associate services with roles
+        roles_by_service = self.get_roles_by_service(
+            self.stack_outputs.get('EnabledServices'))
+        for service, roles in roles_by_service.items():
+            service_children = [role.lower() for role in roles
+                                if ret.get(role.lower()) is not None]
+            if service_children:
+                ret[service.lower()] = {
+                    'children': service_children,
+                    'vars': {
+                        'ansible_ssh_user': 'heat-admin'
+                    }
+                }
 
         return ret
 

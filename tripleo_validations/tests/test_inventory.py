@@ -12,11 +12,57 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-
 from mock import MagicMock
 
 from tripleo_validations.inventory import StackOutputs
+from tripleo_validations.inventory import TripleoInventory
 from tripleo_validations.tests import base
+
+
+MOCK_ENABLED_SERVICES = {
+    "ObjectStorage": [
+        "kernel",
+        "swift_storage",
+        "tripleo_packages"
+    ],
+    "Controller": [
+        "kernel",
+        "keystone",
+        "tripleo_packages"
+    ],
+    "Compute": [
+        "nova_compute",
+        "kernel",
+        "tripleo_packages"
+    ],
+    "CephStorage": [
+        "kernel",
+        "tripleo_packages"
+    ],
+    "BlockStorage": [
+        "cinder_volume",
+        "kernel",
+        "tripleo_packages"
+    ]
+}
+
+
+class TestInventory(base.TestCase):
+
+    def test_get_roles_by_service(self):
+        services = TripleoInventory.get_roles_by_service(
+            MOCK_ENABLED_SERVICES)
+        expected = {
+            'kernel': ['BlockStorage', 'CephStorage', 'Compute', 'Controller',
+                       'ObjectStorage'],
+            'swift_storage': ['ObjectStorage'],
+            'tripleo_packages': ['BlockStorage', 'CephStorage', 'Compute',
+                                 'Controller', 'ObjectStorage'],
+            'keystone': ['Controller'],
+            'nova_compute': ['Compute'],
+            'cinder_volume': ['BlockStorage'],
+        }
+        self.assertDictEqual(services, expected)
 
 
 class TestStackOutputs(base.TestCase):
