@@ -109,8 +109,12 @@ class TripleoInventory(object):
                 'hosts': ['localhost'],
                 'vars': {
                     'ansible_connection': 'local',
+                    'auth_url': self.configs.auth_url,
+                    'cacert': self.configs.cacert,
                     'os_auth_token': self.session.get_token(),
                     'plan': self.configs.plan,
+                    'project_name': self.configs.project_name,
+                    'username': self.configs.username,
                 },
             }
         }

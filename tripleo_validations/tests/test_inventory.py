@@ -95,6 +95,10 @@ class TestInventory(base.TestCase):
 
         self.configs = MagicMock()
         self.configs.plan = self.plan_name
+        self.configs.auth_url = 'xyz://keystone.local'
+        self.configs.cacert = 'acacert'
+        self.configs.project_name = 'admin'
+        self.configs.username = 'admin'
 
         self.session = MagicMock()
         self.session.get_token.return_value = 'atoken'
@@ -168,11 +172,13 @@ class TestInventory(base.TestCase):
                     'undercloud': {
                         'hosts': ['localhost'],
                         'vars': {'ansible_connection': 'local',
+                                 'auth_url': 'xyz://keystone.local',
+                                 'cacert': 'acacert',
                                  'os_auth_token': 'atoken',
                                  'overcloud_keystone_url': 'xyz://keystone',
                                  'overcloud_admin_password': 'theadminpw',
                                  'plan': 'overcloud',
-                                 'undercloud_swift_url': 'anendpoint',
+                                 'project_name': 'admin',
                                  'undercloud_service_list': [
                                      'openstack-nova-compute',
                                      'openstack-nova-api',
@@ -186,7 +192,9 @@ class TestInventory(base.TestCase):
                                      'openstack-glance-api',
                                      'openstack-mistral-engine',
                                      'openstack-mistral-api.service',
-                                     'openstack-glance-api'], }}}
+                                     'openstack-glance-api'],
+                                 'undercloud_swift_url': 'anendpoint',
+                                 'username': 'admin'}}}
         inv_list = self.inventory.list()
         for k in expected:
             self.assertEqual(expected[k], inv_list[k])
