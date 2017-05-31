@@ -15,6 +15,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from heatclient.exc import HTTPNotFound
+
 HOST_NETWORK = 'ctlplane'
 
 
@@ -30,9 +32,12 @@ class StackOutputs(object):
         self.plan = plan
         self.outputs = {}
         self.hclient = hclient
-        self.output_list = [
-            output['output_key'] for output in
-            self.hclient.stacks.output_list(plan)['outputs']]
+        try:
+            self.output_list = [
+                output['output_key'] for output in
+                self.hclient.stacks.output_list(plan)['outputs']]
+        except HTTPNotFound:
+            self.output_list = []
 
     def __getitem__(self, key):
         if key not in self.output_list:
@@ -80,7 +85,7 @@ class TripleoInventory(object):
         try:
             environment = self.hclient.stacks.environment(self.configs.plan)
             return environment
-        except Exception:
+        except HTTPNotFound:
             return {}
 
     def list(self):
@@ -106,13 +111,13 @@ class TripleoInventory(object):
         admin_password = self.get_overcloud_environment().get(
             'parameter_defaults', {}).get('AdminPassword')
         if admin_password:
-            ret['undercloud']['vars']['overcloud_admin_password'] = \
+            ret['undercloud']['vars']['overcloud_admin_password'] =\
                 admin_password
         endpoint_map = self.stack_outputs.get('EndpointMap')
         if endpoint_map:
             horizon_endpoint = endpoint_map.get('HorizonPublic', {}).get('uri')
             if horizon_endpoint:
-                ret['undercloud']['vars']['overcloud_horizon_url'] = \
+                ret['undercloud']['vars']['overcloud_horizon_url'] =\
                     horizon_endpoint
 
         role_net_ip_map = self.stack_outputs.get('RoleNetIpMap', {})
@@ -142,7 +147,7 @@ class TripleoInventory(object):
 
         # Associate services with roles
         roles_by_service = self.get_roles_by_service(
-            self.stack_outputs.get('EnabledServices'))
+            self.stack_outputs.get('EnabledServices', {}))
         for service, roles in roles_by_service.items():
             service_children = [role.lower() for role in roles
                                 if ret.get(role.lower()) is not None]

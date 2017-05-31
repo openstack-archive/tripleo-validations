@@ -12,6 +12,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from heatclient.exc import HTTPNotFound
 from mock import MagicMock
 
 from tripleo_validations.inventory import StackOutputs
@@ -118,6 +119,11 @@ class TestInventory(base.TestCase):
             'cinder_volume': ['BlockStorage'],
         }
         self.assertDictEqual(services, expected)
+
+    def test_outputs_are_empty_if_stack_doesnt_exist(self):
+        self.hclient.stacks.output_list.side_effect = HTTPNotFound('not found')
+        stack_outputs = StackOutputs('no-plan', self.hclient)
+        self.assertEqual(list(stack_outputs), [])
 
     def test_outputs_valid_key_calls_api(self):
         expected = 'xyz://keystone'
