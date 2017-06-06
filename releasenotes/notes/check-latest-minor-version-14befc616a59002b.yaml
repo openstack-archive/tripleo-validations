@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    New validation to check for latest minor version of python-tripleoclient
+  - |
+    New module to check for new minor and major versions of a package
