@@ -2,9 +2,10 @@
 - hosts: undercloud
   vars:
     metadata:
-      name: Verify undercloud fits the disk space requirements
+      name: Verify undercloud fits the disk space requirements to perform an upgrade
       description: >
-        Make sure that the root partition on the undercloud node is large enough.
+        Make sure that the root partition on the undercloud node is large
+        enough before starting an upgrade
 
         We first check for an explicit `/var` mount point since that's
         where we store logs and images and if it doesn't exist, we
@@ -12,8 +13,7 @@
 
         http://tripleo.org/environments/environments.html#id5
       groups:
-        - prep
-        - pre-introspection
-    min_undercloud_disk_gb: 60
+        - pre-upgrade
+    min_undercloud_disk_gb: 10
   tasks:
   - include: tasks/disk_space.yaml

@@ -1,0 +1,19 @@
+- name: Set a constant defining number of Bytes in 1 GB
+  set_fact:
+    const_bytes_in_gb: 1073741824
+
+- name: Verify disk space in /var (if it exists)
+  fail: msg="The available space on the /var partition is {{ (item.size_available|int / const_bytes_in_gb|int)|round(1) }} GB, but it should be at least {{ min_undercloud_disk_gb }} GB."
+  with_items: "{{ ansible_mounts }}"
+  when: "'/var' == '{{ item.mount }}'"
+  failed_when: "{{ min_undercloud_disk_gb|int * const_bytes_in_gb|int }} >= {{ item.size_available|int }}"
+  # Notify the next task that we've checked /var (and that it exists)
+  changed_when: True
+  register: previous
+
+- name: Verify root disk space
+  fail: msg="The available space on the root partition is {{ (item.size_available|int / const_bytes_in_gb|int)|round(1) }} GB, but it should be at least {{ min_undercloud_disk_gb }} GB."
+  with_items: "{{ ansible_mounts }}"
+  # Only run this when /var doesn't exist
+  when: "{{ not previous.changed }} and '/' == '{{ item.mount }}'"
+  failed_when: "{{ min_undercloud_disk_gb|int * const_bytes_in_gb|int }} >= {{ item.size_available|int }}"
