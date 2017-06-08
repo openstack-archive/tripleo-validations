@@ -88,6 +88,21 @@ class TripleoInventory(object):
         except HTTPNotFound:
             return {}
 
+    UNDERCLOUD_SERVICES = [
+        'openstack-nova-compute', 'openstack-nova-api',
+        'openstack-heat-engine', 'openstack-heat-api',
+        'openstack-ironic-conductor', 'openstack-ironic-api',
+        'openstack-swift-container', 'openstack-swift-object',
+        'openstack-zaqar', 'openstack-glance-api', 'openstack-mistral-engine',
+        'openstack-mistral-api.service', 'openstack-glance-api']
+
+    def get_undercloud_service_list(self):
+        """Return list of undercloud services - currently static
+
+        Replace this when we have a better way - e.g. heat deploys undercloud
+        """
+        return self.UNDERCLOUD_SERVICES
+
     def list(self):
         ret = {
             'undercloud': {
@@ -114,6 +129,10 @@ class TripleoInventory(object):
             ret['undercloud']['vars']['overcloud_admin_password'] =\
                 admin_password
         endpoint_map = self.stack_outputs.get('EndpointMap')
+
+        ret['undercloud']['vars']['undercloud_service_list'] = \
+            self.get_undercloud_service_list()
+
         if endpoint_map:
             horizon_endpoint = endpoint_map.get('HorizonPublic', {}).get('uri')
             if horizon_endpoint:
