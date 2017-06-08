@@ -25,6 +25,8 @@ Existing validations:
    validations-pre-introspection-details
    validations-pre-deployment-details
    validations-post-deployment-details
+   validations-pre-update-details
+   validations-pre-upgrade-details
 
 Indices and tables
 ==================

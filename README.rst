@@ -70,6 +70,20 @@ Validations that are run after the overcloud deployment finished.
 
 .. include:: validations-post-deployment.rst
 
+Pre Update
+~~~~~~~~~~
+
+Validations that are run right before a minor update of the undercloud or overcloud.
+
+.. include:: validations-pre-update.rst
+
+Pre Upgrade
+~~~~~~~~~~~
+
+Validations that are run right before a major upgrade of the undercloud or overcloud.
+
+.. include:: validations-pre-upgrade.rst
+
 
 Writing Validations
 -------------------
