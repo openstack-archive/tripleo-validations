@@ -97,7 +97,8 @@ def build_detail(group, validations):
 def setup(app):
     # Seed it with the known groups:
     groups = set(('prep', 'pre-introspection',
-                  'pre-deployment', 'post-deployment'))
+                  'pre-deployment', 'post-deployment',
+                  'pre-update', 'pre-upgrade'))
     validations = []
     for validation_path in sorted(glob('validations/*.yaml')):
         with open(validation_path) as f:
