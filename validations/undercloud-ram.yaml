@@ -10,6 +10,7 @@
       groups:
         - prep
         - pre-introspection
+        - pre-upgrade
     min_undercloud_ram_gb: 16
   tasks:
   - name: Verify the RAM requirements
