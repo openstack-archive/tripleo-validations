@@ -25,10 +25,59 @@
 #
 # You can register the result and use it later with `{{ my_ini.value }}`
 
-import ConfigParser
-from os import path
+try:
+    import configparser as ConfigParser
+except ImportError:
+    import ConfigParser
+
+from enum import Enum
+import os
 
 from ansible.module_utils.basic import *  # NOQA
+
+
+# Possible return values
+class ReturnValue(Enum):
+    OK = 0
+    INVALID_FORMAT = 1
+    KEY_NOT_FOUND = 2
+
+
+def check_file(path, ignore_missing):
+    '''Validate entered path'''
+
+    if not (os.path.exists(path) and os.path.isfile(path)):
+        return "Could not open the ini file: '{}'".format(path)
+    else:
+        return ''
+
+
+def get_result(path, section, key):
+    '''Get value based on section and key'''
+
+    msg = ''
+    value = None
+    config = ConfigParser.SafeConfigParser()
+
+    try:
+        config.read(path)
+    except Exception:
+        msg = "The file '{}' is not in a valid INI format.".format(path)
+        ret = ReturnValue.INVALID_FORMAT
+        return (ret, msg, value)
+
+    try:
+        value = config.get(section, key)
+        msg = ("The key '{}' under the section '{}' in file {} "
+               "has the value: '{}'").format(key, section, path, value)
+        ret = ReturnValue.OK
+        return (ret, msg, value)
+    except ConfigParser.Error:
+        value = None
+        msg = "There is no key '{}' under the section '{}' in file {}.".format(
+              key, section, path)
+        ret = ReturnValue.KEY_NOT_FOUND
+        return (ret, msg, value)
 
 DOCUMENTATION = '''
 ---
@@ -77,36 +126,30 @@ def main():
     ))
 
     ini_file_path = module.params.get('path')
+    ignore_missing = module.params.get('ignore_missing_file')
 
-    if path.exists(ini_file_path) and path.isfile(ini_file_path):
-        config = ConfigParser.SafeConfigParser()
-        try:
-            config.read(ini_file_path)
-        except Exception:
-            module.fail_json(msg="The file '{}' is not in a valid INI format."
-                             .format(ini_file_path))
+    # Check that file exists
+    msg = check_file(ini_file_path, ignore_missing)
 
+    if msg != '':
+        # Opening file failed
+        if ignore_missing:
+            module.exit_json(msg=msg, changed=False, value=None)
+        else:
+            module.fail_json(msg=msg)
+    else:
+        # Try to parse the result from ini file
         section = module.params.get('section')
         key = module.params.get('key')
-        try:
-            value = config.get(section, key)
-            msg = ("The key '{}' under the section '{}' in file {} "
-                   "has the value: '{}'"
-                   .format(key, section, ini_file_path, value))
-            module.exit_json(msg=msg, changed=False, value=value)
-        except ConfigParser.Error:
-            msg = ("There is no key '{}' under the section '{}' in file {}."
-                   .format(key, section, ini_file_path))
-            module.exit_json(msg=msg, changed=False, value=None)
 
-    else:
-        missing_file_message = "Could not open the ini file: '{}'".format(
-            ini_file_path)
-        if module.params.get('ignore_missing_file'):
-            module.exit_json(msg=missing_file_message, changed=False,
-                             value=None)
-        else:
-            module.fail_json(msg=missing_file_message)
+        ret, msg, value = get_result(ini_file_path, section, key)
+
+        if ret == ReturnValue.INVALID_FORMAT:
+            module.fail_json(msg=msg)
+        elif ret == ReturnValue.KEY_NOT_FOUND:
+            module.exit_json(msg=msg, changed=False, value=None)
+        elif ret == ReturnValue.OK:
+            module.exit_json(msg=msg, changed=False, value=value)
 
 
 if __name__ == '__main__':
