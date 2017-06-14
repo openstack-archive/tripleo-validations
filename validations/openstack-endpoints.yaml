@@ -9,6 +9,8 @@
         tries to access Horizon and get a Keystone token.
       groups:
       - post-deployment
+      - pre-upgrade
+      - pre-update
   tasks:
   # Check connectivity to horizon
   - name: Check Horizon
