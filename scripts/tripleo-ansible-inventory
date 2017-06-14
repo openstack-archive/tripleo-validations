@@ -124,11 +124,8 @@ class TripleoInventory(object):
             }
         }
 
-        public_vip = self.get_overcloud_output('PublicVip')
-        if public_vip:
-            ret['undercloud']['vars']['overcloud_public_vip'] = public_vip
         keystone_url = self.get_overcloud_output('KeystoneURL')
-        if public_vip:
+        if keystone_url:
             ret['undercloud']['vars']['overcloud_keystone_url'] = keystone_url
         overcloud_environment = self.get_overcloud_environment()
         passwords = overcloud_environment.get('passwords', {})
