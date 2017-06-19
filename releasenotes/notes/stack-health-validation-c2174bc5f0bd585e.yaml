@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    New validation to check the health of the current stack; to be run before
+    an update or upgrade.
+  - |
+    New lookup plugin to access the current stack's resources in Ansible
+    playbooks.
