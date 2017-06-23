@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    Adds a validation to the pre-upgrade group that checks if current
+    repositories can be connected to and if there is at least one repo
+    configured in yum repolist.

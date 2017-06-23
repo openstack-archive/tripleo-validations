@@ -1,0 +1,23 @@
+---
+- hosts: undercloud, overcloud
+  vars:
+    metadata:
+      name: Check availability of current repositories
+      description: >
+        Detect whether the repositories listed in `yum repolist`
+        can be connected to and that there is at least one repo
+        configured.
+      groups:
+        - pre-upgrade
+  tasks:
+  - name: Find repository URLs
+    shell: 'yum repolist -v | grep Repo-baseurl | sed  "s/Repo-baseurl.*\(http[^ ]*\).*/\1/g"'
+    register: repository_urls
+  - name: Check if there is at least one repository baseurl
+    fail:
+      msg: No repository found in yum repolist
+    when: repository_urls.stdout_lines|length < 1
+  - name: Call repository URLs
+    uri:
+      url: "{{ item }}"
+    with_items: repository_urls.stdout_lines
