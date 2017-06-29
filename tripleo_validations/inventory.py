@@ -159,6 +159,7 @@ class TripleoInventory(object):
                         'ansible_ssh_user': 'heat-admin',
                         'bootstrap_server_id': role_node_id_map.get(
                             'bootstrap_server_id'),
+                        'role_name': role,
                     }
                 }
                 # Create a group per hostname to map hostname to IP
