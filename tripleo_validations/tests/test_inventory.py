@@ -59,6 +59,13 @@ class TestInventory(base.TestCase):
                  'CustomRole': ['g', 'h', 'i']}},
             {'output_key': 'KeystoneURL',
              'output_value': 'xyz://keystone'},
+            {'output_key': 'ServerIdData',
+             'output_value': {
+                 'server_ids': {
+                     'Controller': ['a', 'b', 'c'],
+                     'Compute': ['d'],
+                     'CustomRole': ['e']},
+                 'bootstrap_server_id': 'a'}},
             {'output_key': 'RoleNetHostnameMap',
              'output_value': {
                  'Controller': {
@@ -148,25 +155,33 @@ class TestInventory(base.TestCase):
 
     def test_outputs_iterating_returns_list_of_output_keys(self):
         self.assertEqual(
-            ['EnabledServices', 'KeystoneURL',
+            ['EnabledServices', 'KeystoneURL', 'ServerIdData',
              'RoleNetHostnameMap', 'RoleNetIpMap'],
             [o for o in self.outputs])
 
     def test_inventory_list(self):
-        expected = {'c-0': {'hosts': ['x.x.x.1']},
-                    'c-1': {'hosts': ['x.x.x.2']},
-                    'c-2': {'hosts': ['x.x.x.3']},
+        expected = {'c-0': {'hosts': ['x.x.x.1'],
+                            'vars': {'deploy_server_id': 'a'}},
+                    'c-1': {'hosts': ['x.x.x.2'],
+                            'vars': {'deploy_server_id': 'b'}},
+                    'c-2': {'hosts': ['x.x.x.3'],
+                            'vars': {'deploy_server_id': 'c'}},
                     'compute': {
                         'children': ['cp-0'],
-                        'vars': {'ansible_ssh_user': 'heat-admin'}},
+                        'vars': {'ansible_ssh_user': 'heat-admin',
+                                 'bootstrap_server_id': 'a'}},
                     'controller': {
                         'children': ['c-0', 'c-1', 'c-2'],
-                        'vars': {'ansible_ssh_user': 'heat-admin'}},
-                    'cp-0': {'hosts': ['y.y.y.1']},
-                    'cs-0': {'hosts': ['z.z.z.1']},
+                        'vars': {'ansible_ssh_user': 'heat-admin',
+                                 'bootstrap_server_id': 'a'}},
+                    'cp-0': {'hosts': ['y.y.y.1'],
+                             'vars': {'deploy_server_id': 'd'}},
+                    'cs-0': {'hosts': ['z.z.z.1'],
+                             'vars': {'deploy_server_id': 'e'}},
                     'customrole': {
                         'children': ['cs-0'],
-                        'vars': {'ansible_ssh_user': 'heat-admin'}},
+                        'vars': {'ansible_ssh_user': 'heat-admin',
+                                 'bootstrap_server_id': 'a'}},
                     'overcloud': {
                         'children': ['compute', 'controller', 'customrole']},
                     'undercloud': {
