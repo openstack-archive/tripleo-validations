@@ -92,7 +92,7 @@ All validations are written in standard Ansible with a couple of extra
 meta-data to provide information to the Mistral validation framework.
 
 For people not familiar with Ansible, get started with their `excellent
-documentation <http://docs.ansible.com/ansible/>`_.
+documentation <https://docs.ansible.com/ansible/>`_.
 
 After the generic explanation on writing validations is a couple of concrete
 examples.
@@ -168,7 +168,7 @@ Module can be any module that ships with Ansible or any of the custom
 ones in the ``library`` subdirectory.
 
 The `Ansible documentation on playbooks
-<http://docs.ansible.com/ansible/playbooks.html>`__ provides more detailed
+<https://docs.ansible.com/ansible/playbooks.html>`__ provides more detailed
 information.
 
 Ansible Inventory
@@ -178,7 +178,7 @@ Dynamic inventory
 +++++++++++++++++
 
 Tripleo-validations ships with a `dynamic inventory
-<http://docs.ansible.com/ansible/intro_dynamic_inventory.html>`__, which
+<https://docs.ansible.com/ansible/intro_dynamic_inventory.html>`__, which
 contacts the various OpenStack services to provide the addresses of the
 deployed nodes as well as the undercloud.
 
@@ -228,13 +228,13 @@ does not have root privileges, it is possible to instruct it to use ``sudo`` by
 setting ``ansible_sudo`` to ``true``.
 
 Learn more at the `Ansible documentation page for the Inventory
-<http://docs.ansible.com/ansible/intro_inventory.html>`__
+<https://docs.ansible.com/ansible/intro_inventory.html>`__
 
 Custom Modules
 ~~~~~~~~~~~~~~
 
 In case the `available Ansible modules
-<http://docs.ansible.com/ansible/modules_by_category.html>`__ don't cover your
+<https://docs.ansible.com/ansible/modules_by_category.html>`__ don't cover your
 needs, it is possible to write your own. Modules belong to the
 ``validations/library`` directory.
 
@@ -264,7 +264,7 @@ The custom modules can accept parameters and do more complex reporting.  Please
 refer to the guide on writing modules in the Ansible documentation.
 
 Learn more at the `Ansible documentation page about writing custom modules
-<http://docs.ansible.com/ansible/developing_modules.html>`__.
+<https://docs.ansible.com/ansible/developing_modules.html>`__.
 
 Running a validation
 ~~~~~~~~~~~~~~~~~~~~
