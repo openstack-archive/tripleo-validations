@@ -28,7 +28,7 @@ extensions = [
     'sphinx.ext.autodoc',
     #'sphinx.ext.intersphinx',
     'generate_validations_doc',
-    'oslosphinx'
+    'openstackdocstheme'
 ]
 
 # autodoc generation is a bit aggressive and a nuisance when doing heavy
@@ -52,9 +52,6 @@ add_function_parentheses = True
 # unit titles (such as .. function::).
 add_module_names = True
 
-# The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
-
 # -- Options for HTML output --------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
@@ -65,6 +62,10 @@ pygments_style = 'sphinx'
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = '%sdoc' % project
+html_theme = 'openstackdocs'
+
+# Must set this variable to include year, month, day, hours, and minutes.
+html_last_updated_fmt = '%Y-%m-%d %H:%M'
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass
@@ -78,3 +79,8 @@ latex_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 #intersphinx_mapping = {'http://docs.python.org/': None}
+
+# openstackdocstheme options
+repository_name = 'openstack/tripleo-validations'
+bug_project = 'tripleo'
+bug_tag = 'documentation'
