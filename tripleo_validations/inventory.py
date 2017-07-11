@@ -89,12 +89,9 @@ class TripleoInventory(object):
             return {}
 
     UNDERCLOUD_SERVICES = [
-        'openstack-nova-compute', 'openstack-nova-api',
-        'openstack-heat-engine', 'openstack-heat-api',
-        'openstack-ironic-conductor', 'openstack-ironic-api',
-        'openstack-swift-container', 'openstack-swift-object',
-        'openstack-zaqar', 'openstack-glance-api', 'openstack-mistral-engine',
-        'openstack-mistral-api.service', 'openstack-glance-api']
+        'openstack-nova-compute', 'openstack-heat-engine',
+        'openstack-ironic-conductor', 'openstack-swift-container',
+        'openstack-swift-object', 'openstack-mistral-engine']
 
     def get_undercloud_service_list(self):
         """Return list of undercloud services - currently static

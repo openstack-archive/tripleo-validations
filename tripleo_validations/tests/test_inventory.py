@@ -199,18 +199,11 @@ class TestInventory(base.TestCase):
                                  'project_name': 'admin',
                                  'undercloud_service_list': [
                                      'openstack-nova-compute',
-                                     'openstack-nova-api',
                                      'openstack-heat-engine',
-                                     'openstack-heat-api',
                                      'openstack-ironic-conductor',
-                                     'openstack-ironic-api',
                                      'openstack-swift-container',
                                      'openstack-swift-object',
-                                     'openstack-zaqar',
-                                     'openstack-glance-api',
-                                     'openstack-mistral-engine',
-                                     'openstack-mistral-api.service',
-                                     'openstack-glance-api'],
+                                     'openstack-mistral-engine'],
                                  'undercloud_swift_url': 'anendpoint',
                                  'username': 'admin'}}}
         inv_list = self.inventory.list()
