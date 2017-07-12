@@ -15,7 +15,7 @@
 
   - name: Check for required images
     fail: msg="The image {{ item }} is missing."
-    when: '"{{ item }}" not in "{{ shell_result.stdout }}"'
+    when: "item not in shell_result.stdout"
     with_items:
     - bm-deploy-kernel
     - bm-deploy-ramdisk
