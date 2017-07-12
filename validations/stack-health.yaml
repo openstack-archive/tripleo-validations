@@ -8,6 +8,7 @@
         an upgrade.
       groups:
         - pre-upgrade
+        - post-upgrade
   tasks:
   - name: Check stack resource statuses
     assert:

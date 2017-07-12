@@ -10,7 +10,7 @@
       groups:
       - post-deployment
       - pre-upgrade
-      - pre-update
+      - post-upgrade
   tasks:
   # Check connectivity to horizon
   - name: Check Horizon
