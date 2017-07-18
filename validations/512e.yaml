@@ -15,5 +15,5 @@
     shell: "ls /sys/class/block/"
   - name: Detect whether the drive uses Advanced Format
     advanced_format: drive={{ item }}
-    when: '"{{ item }}" | match("^sd.$")'
+    when: item|match("^sd.$")
     with_items: "{{ drive_list.stdout_lines }}"

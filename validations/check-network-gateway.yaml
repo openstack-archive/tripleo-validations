@@ -20,6 +20,6 @@
   - name: "Test network_gateway if different from local_ip"
     icmp_ping: host={{ undercloud_conf.DEFAULT.network_gateway }}
     when: >
-      "{{ undercloud_conf.DEFAULT.local_ip | default('0.0.0.0') | ipaddr('address') }}"
+      "undercloud_conf.DEFAULT.local_ip | default('0.0.0.0') | ipaddr('address')"
       !=
-      "{{ undercloud_conf.DEFAULT.network_gateway | default('0.0.0.0') | ipaddr('address') }}"
+      "undercloud_conf.DEFAULT.network_gateway | default('0.0.0.0') | ipaddr('address')"

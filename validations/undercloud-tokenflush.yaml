@@ -18,4 +18,4 @@
   -
     name: Check keystone crontab
     fail: msg="keystone token_flush does not appear to be enabled via cron.  You should add '<desired interval > {{ cron_check }}' to the keystone users crontab."
-    failed_when: "'{{ cron_check }}' not in cron_result.stdout"
+    failed_when: "cron_check not in cron_result.stdout"

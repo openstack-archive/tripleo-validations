@@ -19,4 +19,4 @@
         The firewall_driver value in /etc/nova/nova.conf is
         {{ nova_firewall_driver.value or 'unset' }}, but it must be set to:
         nova.virt.firewall.NoopFirewallDriver
-    failed_when: "{{ nova_firewall_driver.value != 'nova.virt.firewall.NoopFirewallDriver' }}"
+    failed_when: "nova_firewall_driver.value != 'nova.virt.firewall.NoopFirewallDriver'"

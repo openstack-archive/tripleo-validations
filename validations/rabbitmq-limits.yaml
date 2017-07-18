@@ -17,4 +17,4 @@
   - name: Verify the actual limit exceeds the minimal value
     fail:
       msg: "{{ actual_fd_limit.stdout }} must be greater than or equal to {{ min_fd_limit }}"
-    failed_when: "{{ actual_fd_limit.stdout|int }} < {{ min_fd_limit }}"
+    failed_when: "actual_fd_limit.stdout|int < min_fd_limit"
