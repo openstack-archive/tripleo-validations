@@ -22,7 +22,7 @@
       msg: >
         nofiles is set to {{ nofilesval.stdout }}.  It should be at least
         {{ nofiles_min }} or higher, depending on available resources.
-    failed_when: "{{ nofilesval.stdout|int }} < {{ nofiles_min }}"
+    failed_when: "nofilesval.stdout|int < nofiles_min"
 
   - name: Get nproc limit
     become: true
@@ -35,4 +35,4 @@
       msg: >
         nproc is set to {{ nprocval.stdout }}.  It should be at least
         {{ nproc_min }} or higher, depending on available resources.
-    failed_when: "{{ nprocval.stdout|int }} < {{ nproc_min }}"
+    failed_when: "nprocval.stdout|int < nproc_min"

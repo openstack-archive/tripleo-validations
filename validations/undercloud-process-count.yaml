@@ -36,10 +36,10 @@
     command: echo "There are {{ item.stdout }} {{ item.item }} processes running. Having more than {{ max_process_count }} risks running out of memory."
     register: process_warnings
     with_items: "{{ process_count.results }}"
-    when: "{{ item.stdout|int }} > {{ max_process_count }}"
+    when: "item.stdout|int > max_process_count"
 
   - name: Output warning message
     warn: msg={{ warning_msg }}
-    when: "{{ warning_msg|length > 0}}"
+    when: "warning_msg|length > 0"
     vars:
       warning_msg: "{{ process_warnings.results|selectattr('changed')|map(attribute='stdout')|join('\n') }}"
