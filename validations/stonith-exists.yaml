@@ -1,6 +1,6 @@
 ---
 - name: Validate stonith devices
-  hosts: controller
+  hosts: Controller
   vars:
     metadata:
       name: stonith-exists

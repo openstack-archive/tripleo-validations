@@ -149,8 +149,8 @@ class TripleoInventory(object):
             if hostnames:
                 names = hostnames.get(HOST_NETWORK) or []
                 shortnames = [n.split(".%s." % HOST_NETWORK)[0] for n in names]
-                children.append(role.lower())
-                ret[role.lower()] = {
+                children.append(role)
+                ret[role] = {
                     'children': sorted(shortnames),
                     'vars': {
                         'ansible_ssh_user': 'heat-admin',
@@ -177,8 +177,8 @@ class TripleoInventory(object):
         roles_by_service = self.get_roles_by_service(
             self.stack_outputs.get('EnabledServices', {}))
         for service, roles in roles_by_service.items():
-            service_children = [role.lower() for role in roles
-                                if ret.get(role.lower()) is not None]
+            service_children = [role for role in roles
+                                if ret.get(role) is not None]
             if service_children:
                 ret[service.lower()] = {
                     'children': service_children,

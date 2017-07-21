@@ -1,5 +1,5 @@
 ---
-- hosts: undercloud, controller
+- hosts: undercloud, Controller
   vars:
     metadata:
       Name: Verify that keystone admin token is disabled.

@@ -1,5 +1,5 @@
 ---
-- hosts: compute
+- hosts: Compute
   vars:
     metadata:
       name: Verify NoOpFirewallDriver is set in Nova
