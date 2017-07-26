@@ -166,12 +166,12 @@ class TestInventory(base.TestCase):
                             'vars': {'deploy_server_id': 'b'}},
                     'c-2': {'hosts': ['x.x.x.3'],
                             'vars': {'deploy_server_id': 'c'}},
-                    'compute': {
+                    'Compute': {
                         'children': ['cp-0'],
                         'vars': {'ansible_ssh_user': 'heat-admin',
                                  'bootstrap_server_id': 'a',
                                  'role_name': 'Compute'}},
-                    'controller': {
+                    'Controller': {
                         'children': ['c-0', 'c-1', 'c-2'],
                         'vars': {'ansible_ssh_user': 'heat-admin',
                                  'bootstrap_server_id': 'a',
@@ -180,13 +180,13 @@ class TestInventory(base.TestCase):
                              'vars': {'deploy_server_id': 'd'}},
                     'cs-0': {'hosts': ['z.z.z.1'],
                              'vars': {'deploy_server_id': 'e'}},
-                    'customrole': {
+                    'CustomRole': {
                         'children': ['cs-0'],
                         'vars': {'ansible_ssh_user': 'heat-admin',
                                  'bootstrap_server_id': 'a',
                                  'role_name': 'CustomRole'}},
                     'overcloud': {
-                        'children': ['compute', 'controller', 'customrole']},
+                        'children': ['Compute', 'Controller', 'CustomRole']},
                     'undercloud': {
                         'hosts': ['localhost'],
                         'vars': {'ansible_connection': 'local',

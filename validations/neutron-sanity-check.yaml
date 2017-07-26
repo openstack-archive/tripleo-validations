@@ -1,5 +1,5 @@
 ---
-- hosts: controller
+- hosts: Controller
   vars:
     metadata:
       name: Neutron Sanity Check
