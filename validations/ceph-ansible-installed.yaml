@@ -1,0 +1,19 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Check if ceph-ansible is installed on the undercloud
+      description: >
+        Prints a message if ceph-ansible isn't installed
+      groups:
+        - pre-deployment
+  tasks:
+  - name: Check if ceph-ansible is installed
+    shell: yum list installed ceph-ansible
+    ignore_errors: true
+    register: ceph_ansible_installed
+  - name: Warn about missing ceph-ansible
+    warn:
+      msg: If planning to use Ceph, it is necessary to install the ceph-ansible on the undercloud
+    when:
+      - ceph_ansible_installed|failed
