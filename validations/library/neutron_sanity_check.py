@@ -19,6 +19,36 @@ import subprocess
 from ansible.module_utils.basic import AnsibleModule
 from os import path
 
+DOCUMENTATION = '''
+---
+module: neutron_sanity_check
+short_description: Run neutron-sanity-check on a number of config files
+description:
+    - Run neutron-sanity-check on a number of config files
+options:
+    configs:
+        required: true
+        description:
+           - The config file paths
+        type: list
+author: "Tomas Sedovic"
+'''
+
+EXAMPLES = '''
+- hosts: webservers
+  vars:
+    configs:
+      - /etc/neutron/neutron.conf
+      - /usr/share/neutron/neutron-dist.conf
+      - /etc/neutron/metadata_agent.ini
+      - /etc/neutron/metering_agent.ini
+      - /etc/neutron/dhcp_agent.ini
+  tasks:
+  - name: Run neutron-sanity-check
+    become: true
+    neutron_sanity_check: configs={{ configs }}
+'''
+
 
 def main():
     module = AnsibleModule(argument_spec=dict(
