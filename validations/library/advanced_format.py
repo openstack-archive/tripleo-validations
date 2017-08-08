@@ -18,6 +18,28 @@ from os import path
 
 from ansible.module_utils.basic import *  # noqa
 
+DOCUMENTATION = '''
+---
+module: advanced_format
+short_description: Check for advanced disk format
+description:
+    - Check whether a drive uses advanced format
+options:
+    drive:
+        required: true
+        description:
+            - drive name
+        type: str
+author: "Martin Andre (@mandre)"
+'''
+
+EXAMPLES = '''
+- hosts: webservers
+  tasks:
+    - name: Detect whether the drive uses Advanced Format
+      advanced_format: drive=vda
+'''
+
 
 def read_int(module, file_path):
     '''Read a file and convert its value to int.

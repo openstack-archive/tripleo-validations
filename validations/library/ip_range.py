@@ -18,6 +18,41 @@ import netaddr
 
 from ansible.module_utils.basic import *  # NOQA
 
+DOCUMENTATION = '''
+---
+module: ip_range
+short_description: Check the size of an IP range
+description:
+    - Check if the size of an IP range against a minimum value.
+options:
+    start:
+        required: true
+        description:
+            - Start IP
+        type: str
+    end:
+        required: true
+        description:
+            - End IP
+        type: str
+    min_size:
+        required: true
+        description:
+            - Minum size of the range
+        type: int
+author: "Tomas Sedovic"
+'''
+
+EXAMPLES = '''
+- hosts: webservers
+  tasks:
+    - name: Check the IP range
+      ip_range:
+        start: 192.0.2.5
+        end: 192.0.2.24
+        min_size: 15
+'''
+
 
 def check_arguments(start, end, min_size):
     '''Validate format of arguments'''

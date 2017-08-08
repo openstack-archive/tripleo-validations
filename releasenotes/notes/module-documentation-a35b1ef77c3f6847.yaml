@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Ansible-style module documentation has been added to our custom modules
+    so they can be described with the ansible-doc command.
