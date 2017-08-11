@@ -106,6 +106,7 @@ class TestInventory(base.TestCase):
         self.configs.cacert = 'acacert'
         self.configs.project_name = 'admin'
         self.configs.username = 'admin'
+        self.configs.ansible_ssh_user = 'heat-admin'
 
         self.session = MagicMock()
         self.session.get_token.return_value = 'atoken'
@@ -206,6 +207,63 @@ class TestInventory(base.TestCase):
                                      'openstack-mistral-engine'],
                                  'undercloud_swift_url': 'anendpoint',
                                  'username': 'admin'}}}
+        inv_list = self.inventory.list()
+        for k in expected:
+            self.assertEqual(expected[k], inv_list[k])
+
+    def test_ansible_ssh_user(self):
+        self.configs.ansible_ssh_user = 'my-custom-admin'
+        self.inventory = TripleoInventory(
+            self.configs, self.session, self.hclient)
+        self.inventory.stack_outputs = self.outputs
+
+        expected = {'c-0': {'hosts': ['x.x.x.1'],
+                            'vars': {'deploy_server_id': 'a'}},
+                    'c-1': {'hosts': ['x.x.x.2'],
+                            'vars': {'deploy_server_id': 'b'}},
+                    'c-2': {'hosts': ['x.x.x.3'],
+                            'vars': {'deploy_server_id': 'c'}},
+                    'Compute': {
+                        'children': ['cp-0'],
+                        'vars': {'ansible_ssh_user': 'my-custom-admin',
+                                 'bootstrap_server_id': 'a',
+                                 'role_name': 'Compute'}},
+                    'Controller': {
+                        'children': ['c-0', 'c-1', 'c-2'],
+                        'vars': {'ansible_ssh_user': 'my-custom-admin',
+                                 'bootstrap_server_id': 'a',
+                                 'role_name': 'Controller'}},
+                    'cp-0': {'hosts': ['y.y.y.1'],
+                             'vars': {'deploy_server_id': 'd'}},
+                    'cs-0': {'hosts': ['z.z.z.1'],
+                             'vars': {'deploy_server_id': 'e'}},
+                    'CustomRole': {
+                        'children': ['cs-0'],
+                        'vars': {'ansible_ssh_user': 'my-custom-admin',
+                                 'bootstrap_server_id': 'a',
+                                 'role_name': 'CustomRole'}},
+                    'overcloud': {
+                        'children': ['Compute', 'Controller', 'CustomRole']},
+                    'undercloud': {
+                        'hosts': ['localhost'],
+                        'vars': {'ansible_connection': 'local',
+                                 'auth_url': 'xyz://keystone.local',
+                                 'cacert': 'acacert',
+                                 'os_auth_token': 'atoken',
+                                 'overcloud_keystone_url': 'xyz://keystone',
+                                 'overcloud_admin_password': 'theadminpw',
+                                 'plan': 'overcloud',
+                                 'project_name': 'admin',
+                                 'undercloud_service_list': [
+                                     'openstack-nova-compute',
+                                     'openstack-heat-engine',
+                                     'openstack-ironic-conductor',
+                                     'openstack-swift-container',
+                                     'openstack-swift-object',
+                                     'openstack-mistral-engine'],
+                                 'undercloud_swift_url': 'anendpoint',
+                                 'username': 'admin'}}}
+
         inv_list = self.inventory.list()
         for k in expected:
             self.assertEqual(expected[k], inv_list[k])

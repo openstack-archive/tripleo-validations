@@ -153,7 +153,7 @@ class TripleoInventory(object):
                 ret[role] = {
                     'children': sorted(shortnames),
                     'vars': {
-                        'ansible_ssh_user': 'heat-admin',
+                        'ansible_ssh_user': self.configs.ansible_ssh_user,
                         'bootstrap_server_id': role_node_id_map.get(
                             'bootstrap_server_id'),
                         'role_name': role,
@@ -183,7 +183,7 @@ class TripleoInventory(object):
                 ret[service.lower()] = {
                     'children': service_children,
                     'vars': {
-                        'ansible_ssh_user': 'heat-admin'
+                        'ansible_ssh_user': self.configs.ansible_ssh_user
                     }
                 }
 

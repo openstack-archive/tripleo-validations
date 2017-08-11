@@ -1,0 +1,5 @@
+---
+fixes:
+  - The ansible_ssh_user in the generated inventory by
+    tripleo-ansible-inventory is now configurable instead
+    of hardcoded to heat-admin. The default is still heat-admin.
