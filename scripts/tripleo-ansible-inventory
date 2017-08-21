@@ -92,7 +92,8 @@ def write_static_inventory(inventory_file_path, inventory):
                 vars_section_name = "%s:%s" % (section_name, 'vars')
                 config.add_section(vars_section_name)
                 for var, value in section['vars'].items():
-                    config.set(vars_section_name, var, value)
+                    if value != None:
+                        config.set(vars_section_name, var, value)
             if 'children' in section:
                 children_section_name = "%s:%s" % (section_name, 'children')
                 config.add_section(children_section_name)
