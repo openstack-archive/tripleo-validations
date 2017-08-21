@@ -74,6 +74,8 @@ def _parse_config():
 def write_static_inventory(inventory_file_path, inventory):
     with open(inventory_file_path, 'w') as inventory_file:
         config = configparser.ConfigParser(allow_no_value=True)
+        # Keep case formating.
+        config.optionxform = str
         for section_name, section in inventory.items():
             # NOTE(jaosorior): The section might be a list containing the
             # explicit list of nodes or a dict with several subsections. So
