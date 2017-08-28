@@ -48,17 +48,17 @@ def check_arguments(start, end, min_size):
 def check_IP_range(start, end, min_size):
     '''Compare IP range with minimum size'''
 
-    warnings = []
+    errors = []
     iprange = netaddr.IPRange(start, end)
 
     if len(iprange) < min_size:
-        warnings = [
+        errors = [
             'The IP range {} - {} contains {} addresses.'.format(
                 start, end, len(iprange)),
             'This might not be enough for the deployment or later scaling.'
         ]
 
-    return warnings
+    return errors
 
 
 def main():
@@ -78,10 +78,10 @@ def main():
         module.fail_json(msg='\n'.join(errors))
     else:
         # Check IP range
-        warnings = check_IP_range(start, end, min_size)
+        range_errors = check_IP_range(start, end, min_size)
 
-        if warnings:
-            module.exit_json(changed=True, warnings=warnings)
+        if range_errors:
+            module.fail_json(msg='\n'.join(range_errors))
         else:
             module.exit_json(msg='success')
 

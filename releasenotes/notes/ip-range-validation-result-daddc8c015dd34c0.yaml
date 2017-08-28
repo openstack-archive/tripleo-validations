@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    Instead of only outputting a warning, the IP range validation now fails if
+    the number of available addresses is lower than the recommended minimum. 
+    (Fixes https://bugs.launchpad.net/tripleo/+bug/1713483)
