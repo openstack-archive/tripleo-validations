@@ -198,6 +198,9 @@ class TripleoInventory(object):
                     }
                 }
 
+        # Prevent Ansible from repeatedly calling us to get empty host details
+        ret['_meta'] = {'hostvars': {}}
+
         return ret
 
     def host(self):
