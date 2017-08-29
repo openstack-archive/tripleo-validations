@@ -23,32 +23,43 @@ HOST_NETWORK = 'ctlplane'
 class StackOutputs(object):
     """Item getter for stack outputs.
 
-    Some stack outputs take a while to return via the API. This class
-    makes sure all outputs of a stack are fully recognized, while only
-    calling `stack.output_get` for the ones we're really using.
+    It takes a long time to resolve stack outputs.  This class ensures that
+    we only have to do it once and then reuse the results from that call in
+    subsequent lookups.  It also lazy loads the outputs so we don't spend time
+    on unnecessary Heat calls.
     """
 
     def __init__(self, plan, hclient):
         self.plan = plan
         self.outputs = {}
         self.hclient = hclient
-        try:
-            self.output_list = [
-                output['output_key'] for output in
-                self.hclient.stacks.output_list(plan)['outputs']]
-        except HTTPNotFound:
-            self.output_list = []
+        self.stack = None
+
+    def _load_outputs(self):
+        """Load outputs from the stack if necessary
+
+        Retrieves the stack outputs if that has not already happened.  If it
+        has then this is a noop.
+
+        Sets the outputs to an empty dict if the stack is not found.
+        """
+        if not self.stack:
+            try:
+                self.stack = self.hclient.stacks.get(self.plan)
+            except HTTPNotFound:
+                self.outputs = {}
+                return
+            self.outputs = {i['output_key']: i['output_value']
+                            for i in self.stack.outputs
+                            }
 
     def __getitem__(self, key):
-        if key not in self.output_list:
-            raise KeyError(key)
-        if key not in self.outputs:
-            self.outputs[key] = self.hclient.stacks.output_show(
-                self.plan, key)['output']['output_value']
+        self._load_outputs()
         return self.outputs[key]
 
     def __iter__(self):
-        return iter(self.output_list)
+        self._load_outputs()
+        return iter(self.outputs.keys())
 
     def get(self, key, default=None):
         try:
