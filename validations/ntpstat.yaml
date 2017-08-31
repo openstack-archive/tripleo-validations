@@ -2,7 +2,7 @@
 - hosts: overcloud
   vars:
     metadata:
-      name: Verify all deployed nodes have their clock synchronised.
+      name: Verify all deployed nodes have their clock synchronised
       description: >
         Each overcloud node should have their clocks synchronised.
 

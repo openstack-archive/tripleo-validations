@@ -1,9 +1,8 @@
 ---
-- name: Validate stonith devices
-  hosts: Controller
+- hosts: Controller
   vars:
     metadata:
-      name: stonith-exists
+      name: Validate stonith devices
       description: >
         Verify that stonith devices are configured for your OpenStack Platform HA cluster.
         We don't configure stonith device with TripleO Installer. Because the hardware
