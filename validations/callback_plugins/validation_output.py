@@ -17,6 +17,7 @@
 from __future__ import print_function
 
 import pprint
+import sys
 
 from ansible.plugins.callback import CallbackBase
 
@@ -192,3 +193,4 @@ class CallbackModule(CallbackBase):
                     print("*", host)
         else:
             print("Warning! The validation did not run on any host.")
+            sys.exit(10)
