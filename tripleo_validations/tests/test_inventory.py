@@ -88,17 +88,12 @@ class TestInventory(base.TestCase):
                      'ctlplane': ['z.z.z.1']}}}]}
         self.plan_name = 'overcloud'
 
-        def _mock_out_show(plan_name, key):
-            self.assertEqual(self.plan_name, plan_name)
-            out_data = [o for o in self.outputs_data['outputs']
-                        if o['output_key'] == key][0]
-            return {'output': out_data}
-
         self.hclient = MagicMock()
-        self.hclient.stacks.output_list.return_value = self.outputs_data
-        self.hclient.stacks.output_show.side_effect = _mock_out_show
         self.hclient.stacks.environment.return_value = {
             'parameter_defaults': {'AdminPassword': 'theadminpw'}}
+        self.mock_stack = MagicMock()
+        self.mock_stack.outputs = self.outputs_data['outputs']
+        self.hclient.stacks.get.return_value = self.mock_stack
 
         self.configs = MagicMock()
         self.configs.plan = self.plan_name
@@ -133,7 +128,7 @@ class TestInventory(base.TestCase):
         self.assertDictEqual(services, expected)
 
     def test_outputs_are_empty_if_stack_doesnt_exist(self):
-        self.hclient.stacks.output_list.side_effect = HTTPNotFound('not found')
+        self.hclient.stacks.get.side_effect = HTTPNotFound('not found')
         stack_outputs = StackOutputs('no-plan', self.hclient)
         self.assertEqual(list(stack_outputs), [])
 
@@ -156,9 +151,9 @@ class TestInventory(base.TestCase):
 
     def test_outputs_iterating_returns_list_of_output_keys(self):
         self.assertEqual(
-            ['EnabledServices', 'KeystoneURL', 'ServerIdData',
-             'RoleNetHostnameMap', 'RoleNetIpMap'],
-            [o for o in self.outputs])
+            {'EnabledServices', 'KeystoneURL', 'ServerIdData',
+             'RoleNetHostnameMap', 'RoleNetIpMap'},
+            set([o for o in self.outputs]))
 
     def test_inventory_list(self):
         expected = {'c-0': {'hosts': ['x.x.x.1'],
