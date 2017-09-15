@@ -15,9 +15,17 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import os
+
 from ansible.plugins.lookup import LookupBase
 
 from tripleo_validations.utils import get_swift_client
+
+
+EXCLUDED_EXT = (
+    '.pyc',
+    '.pyo',
+)
 
 
 class LookupModule(LookupBase):
@@ -34,6 +42,7 @@ class LookupModule(LookupBase):
         container = swift_client.get_container(variables['plan'])
         for item in container[1]:
             obj = swift_client.get_object(variables['plan'], item['name'])
-            ret.append((item['name'], obj))
+            if os.path.splitext(item['name'])[-1] not in EXCLUDED_EXT:
+                ret.append((item['name'], obj))
 
         return ret
