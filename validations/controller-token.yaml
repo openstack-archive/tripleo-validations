@@ -2,7 +2,7 @@
 - hosts: undercloud, Controller
   vars:
     metadata:
-      Name: Verify that keystone admin token is disabled
+      name: Verify that keystone admin token is disabled
       description: >
         This validation checks that keystone admin token is disabled on both
         undercloud and overcloud controller after deployment.
