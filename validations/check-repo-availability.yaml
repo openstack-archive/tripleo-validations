@@ -20,4 +20,4 @@
   - name: Call repository URLs
     uri:
       url: "{{ item }}"
-    with_items: repository_urls.stdout_lines
+    with_items: "{{ repository_urls.stdout_lines }}"
