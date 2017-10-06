@@ -57,3 +57,7 @@ doc/source/validations-*.rst
 
 # Files created by releasenotes build
 releasenotes/build
+
+# Ansible specific
+hosts
+*.retry
