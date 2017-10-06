@@ -70,8 +70,13 @@ def check_arguments(start, end, min_size):
     except netaddr.core.AddrFormatError:
         errors.append('Argument end ({}) must be an IP'.format(end))
 
-    if (not errors) and (startIP.version != endIP.version):
-        errors.append('Arguments start, end must share the same IP version')
+    if not errors:
+        if startIP.version != endIP.version:
+            errors.append("Arguments start, end must share the same IP "
+                          "version")
+        if startIP > endIP:
+            errors.append("Lower IP bound ({}) must be smaller than upper "
+                          "bound ({})".format(startIP, endIP))
 
     if min_size < 0:
         errors.append('Argument min_size({}) must be greater than 0'

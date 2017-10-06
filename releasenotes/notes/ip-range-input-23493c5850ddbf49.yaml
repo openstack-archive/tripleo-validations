@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    Added additional input validation to the ctlplane-ip-range validation.
+    The validation now ensures the lower IP bound is smaller than the upper
+    bound.
