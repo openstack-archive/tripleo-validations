@@ -1,0 +1,35 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Node health check
+      description: >
+        Check if all overcloud nodes can be connected to before starting a
+        scale-up or an upgrade.
+      groups:
+        - pre-upgrade
+  tasks:
+  - name: Ping all overcloud nodes
+    icmp_ping:
+        host: "{{ item }}"
+    with_items: "{{ groups.overcloud }}"
+    ignore_errors: true
+    register: ping_results
+  - name: Extract failed pings
+    set_fact:
+      failed_ips: "{{ ping_results.results | selectattr('failed', 'equalto', True) | map(attribute='item') | list }}"
+  - name: Lookup nova servers for each failed IP
+    set_fact:
+      servers: "{{ lookup('nova_servers', 'ip', 'ctlplane', failed_ips, wantlist=True) }}"
+  - name: Extract nova ids
+    set_fact:
+      server_ids: "{{ servers | map(attribute='id') | list }}"
+  - name: Lookup ironic nodes for unreachable nova servers
+    set_fact:
+      nodes: "{{ lookup('ironic_nodes', 'instance_uuid', server_ids, wantlist=True) }}"
+  - name: Fail if there are unreachable nodes
+    fail:
+      msg: |
+           {{ lookup('template', './templates/unreachable_nodes.j2',
+           template_vars=dict(nodes=nodes)) }}
+    when: nodes|length > 0

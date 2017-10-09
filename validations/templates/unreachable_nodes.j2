@@ -1,0 +1,9 @@
+The following nodes could not be reached ({{ nodes|length}} nodes):
+
+{% for node in nodes %}
+* {{ node.name }}
+    UUID: {{ node.uuid }}
+    Instance: {{ node.instance_uuid }}
+    Last Error: {{ node.last_error }}
+    Power State: {{ node.power_state }}
+{% endfor %}
