@@ -19,13 +19,12 @@
     with_items:
     - heat-engine
     - mistral
-    - ironic-api
+    - ironic-inspector
     - ironic-conductor
     - nova-api
     - nova-scheduler
     - nova-conductor
     - nova-compute
-    - glance-registry
     - glance-api
     - swift-proxy-server
     - swift-object-server
