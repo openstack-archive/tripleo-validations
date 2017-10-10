@@ -12,7 +12,8 @@
   tasks:
   - name: List the available drives
     register: drive_list
-    shell: "ls /sys/class/block/"
+    command: "ls /sys/class/block/"
+    changed_when: False
   - name: Detect whether the drive uses Advanced Format
     advanced_format: drive={{ item }}
     when: item|match("^sd.$")

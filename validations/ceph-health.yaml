@@ -15,6 +15,7 @@
     shell: hiera -c /etc/puppet/hiera.yaml enabled_services | egrep -sq ceph_mon
     ignore_errors: true
     register: ceph_mon_enabled
+    changed_when: False
   - name: Get ceph health
     become: true
     shell: ceph health | awk '{print $1}'
