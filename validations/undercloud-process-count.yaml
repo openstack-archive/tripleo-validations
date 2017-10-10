@@ -16,6 +16,7 @@
     command: pgrep -f -c {{ item }}
     ignore_errors: yes
     register: "process_count"
+    changed_when: False
     with_items:
     - heat-engine
     - mistral

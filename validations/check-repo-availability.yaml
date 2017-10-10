@@ -13,6 +13,7 @@
   - name: Find repository URLs
     shell: 'yum repolist -v | grep Repo-baseurl | sed  "s/Repo-baseurl.*\(http[^ ]*\).*/\1/g"'
     register: repository_urls
+    changed_when: False
   - name: Check if there is at least one repository baseurl
     fail:
       msg: No repository found in yum repolist
