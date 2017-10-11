@@ -1,0 +1,35 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Undercloud SELinux Enforcing Mode Check
+      description: >
+        Check if the Undercloud is running SELinux in Enforcing mode.
+      groups:
+        - prep
+        - pre-introspection
+  tasks:
+    - name:  Get current SELinux mode
+      command: getenforce
+      become: true
+      register: sestatus
+      changed_when: False
+
+    - name: Fail if SELinux is not in Enforced mode (RHEL)
+      fail:
+        msg: >-
+          SELinux is running in {{ sestatus.stdout }} mode on the Undercloud.
+          Ensure that SELinux is enabled and running in Enforcing mode.
+      when:
+        - "sestatus.stdout != 'Enforcing'"
+        - "ansible_distribution == 'RedHat'"
+
+    - name: Warn if SELinux is not in Enforced mode (CentOS)
+      warn:
+        msg: >-
+          SELinux is running in {{ sestatus.stdout }} mode on the Undercloud.
+          Ensure that SELinux is enabled and running in Enforcing mode.
+      when:
+        - "sestatus.stdout != 'Enforcing'"
+        - "ansible_distribution == 'CentOS'"
+
