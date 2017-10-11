@@ -15,8 +15,12 @@
       groups:
         - pre-deployment
     network_environment_path: environments/network-environment.yaml
+    plan_env_path: plan-environment.yaml
+    ip_pools_path: environments/ips-from-pool-all.yaml
   tasks:
   - name: Validate the network environment files
     network_environment:
-      path: "{{ network_environment_path }}"
+      netenv_path: "{{ network_environment_path }}"
+      plan_env_path: "{{ plan_env_path }}"
+      ip_pools_path: "{{ ip_pools_path }}"
       template_files: "{{ lookup('tht') }}"

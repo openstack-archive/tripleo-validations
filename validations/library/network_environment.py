@@ -33,10 +33,20 @@ short_description: Validate networking templates
 description:
     - Performs networking-related checks on a set of TripleO templates
 options:
-    path:
+    netenv_path:
         required: true
         description:
             - The path of the base network environment file
+        type: str
+    plan_env_path:
+        required: true
+        description:
+            - The path of the plan environment file
+        type: str
+    ip_pools_path:
+        required: true
+        description:
+            - The path of the IP pools network environment file
         type: str
     template_files:
         required: true
@@ -51,8 +61,10 @@ EXAMPLES = '''
   tasks:
     - name: Check the Network environment
       network_environment:
-        path: environments/network-environment.yaml
+        netenv_path: environments/network-environment.yaml
         template_files: "{{ lookup('tht') }}"
+        plan_env_path: plan-environment.yaml
+        ip_pools_path: environments/ips-from-pool-all.yaml
 '''
 
 
@@ -446,23 +458,82 @@ def duplicate_static_ips(static_ips):
     return errors
 
 
+def validate_node_pool_size(plan_env_path, ip_pools_path, template_files):
+    warnings = []
+    plan_env = yaml.load(template_files[plan_env_path])
+    ip_pools = yaml.load(template_files[ip_pools_path])
+
+    param_defaults = plan_env.get('parameter_defaults')
+    node_counts = {
+        param.replace('Count', ''): count
+        for param, count in six.iteritems(param_defaults)
+        if param.endswith('Count') and count > 0
+    }
+
+    # TODO(akrivoka): There are a lot of inconsistency issues with parameter
+    # naming in THT :( Once those issues are fixed, this block should be
+    # removed.
+    if 'ObjectStorage' in node_counts:
+        node_counts['SwiftStorage'] = node_counts['ObjectStorage']
+        del node_counts['ObjectStorage']
+
+    param_defaults = ip_pools.get('parameter_defaults')
+    role_pools = {
+        param.replace('IPs', ''): pool
+        for param, pool in six.iteritems(param_defaults)
+        if param.endswith('IPs') and param.replace('IPs', '') in node_counts
+    }
+
+    for role, node_count in six.iteritems(node_counts):
+        try:
+            pools = role_pools[role]
+        except KeyError:
+            warnings.append(
+                "Found {} node(s) assigned to '{}' role, but no static IP "
+                "pools defined.".format(node_count, role)
+            )
+            continue
+        for pool_name, pool_ips in six.iteritems(pools):
+            if len(pool_ips) < node_count:
+                warnings.append(
+                    "Insufficient number of IPs in '{}' pool for '{}' role: "
+                    "{} IP(s) found in pool, but {} nodes assigned to role."
+                        .format(pool_name, role, len(pool_ips), node_count)
+                )
+
+    return warnings
+
+
 def main():
     module = AnsibleModule(argument_spec=dict(
-        path=dict(required=True, type='str'),
+        netenv_path=dict(required=True, type='str'),
+        plan_env_path=dict(required=True, type='str'),
+        ip_pools_path=dict(required=True, type='str'),
         template_files=dict(required=True, type='list')
     ))
 
-    netenv_path = module.params.get('path')
+    netenv_path = module.params.get('netenv_path')
+    plan_env_path = module.params.get('plan_env_path')
+    ip_pools_path = module.params.get('ip_pools_path')
     template_files = {name: content[1] for (name, content) in
                       module.params.get('template_files')}
 
     errors = validate(netenv_path, template_files)
+    warnings = []
+
+    try:
+        warnings = validate_node_pool_size(plan_env_path, ip_pools_path,
+                                           template_files)
+    except Exception as e:
+        errors.append("{}".format(e))
 
     if errors:
         module.fail_json(msg="\n".join(errors))
     else:
-        module.exit_json(msg="No errors found for the '{}' file.".format(
-            netenv_path))
+        module.exit_json(
+            msg="No errors found for the '{}' file.".format(netenv_path),
+            warnings=warnings,
+        )
 
 
 if __name__ == '__main__':
