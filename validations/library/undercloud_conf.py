@@ -23,6 +23,36 @@ from os import path
 
 from ansible.module_utils.basic import *  # noqa
 
+DOCUMENTATION = '''
+---
+module: undercloud_conf
+short_description: Read undercloud config file
+description:
+    - Add contents of the undercloud config file to ansible_facts.
+options:
+    undercloud_conf_path:
+        required: true
+        description:
+           - Path to the undercloud_conf file
+        type: str
+    ignore_missing:
+        required: false
+        description:
+           - Ignore missing file
+        type: bool
+author: "Martin Andre (@mandre)"
+'''
+
+EXAMPLES = '''
+- hosts: undercloud
+  tasks:
+  - name: Gather undercloud.conf values
+    become: true
+    undercloud_conf:
+      undercloud_conf_path=/home/stack/undercloud.conf
+      ignore_missing=true
+'''
+
 
 def check_arguments(undercloud_conf_path, ignore_missing):
     '''Validate format of arguments
