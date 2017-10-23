@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Adds a lookup plugin to retrieve server information from
+    the Nova API. Results can be filtered by server attributes.
