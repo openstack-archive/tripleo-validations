@@ -242,7 +242,7 @@ Here is a sample module that will always fail::
 
     #!/usr/bin/env python
 
-    from ansible.module_utils.basic import *
+    from ansible.module_utils.basic import AnsibleModule
 
     if __name__ == '__main__':
         module = AnsibleModule(argument_spec={})
