@@ -15,6 +15,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from collections import OrderedDict
+
 from heatclient.exc import HTTPNotFound
 
 HOST_NETWORK = 'ctlplane'
@@ -112,7 +114,7 @@ class TripleoInventory(object):
         return self.UNDERCLOUD_SERVICES
 
     def list(self):
-        ret = {
+        ret = OrderedDict({
             'undercloud': {
                 'hosts': ['localhost'],
                 'vars': {
@@ -125,7 +127,7 @@ class TripleoInventory(object):
                     'username': self.configs.username,
                 },
             }
-        }
+        })
 
         swift_url = self.session.get_endpoint(service_type='object-store',
                                               interface='public')
@@ -160,6 +162,15 @@ class TripleoInventory(object):
             if hostnames:
                 names = hostnames.get(HOST_NETWORK) or []
                 shortnames = [n.split(".%s." % HOST_NETWORK)[0] for n in names]
+                # Create a group per hostname to map hostname to IP
+                ips = role_net_ip_map[role][HOST_NETWORK]
+                for idx, name in enumerate(shortnames):
+                    ret[name] = {'hosts': [ips[idx]]}
+                    if 'server_ids' in role_node_id_map:
+                        ret[name]['vars'] = {
+                            'deploy_server_id': role_node_id_map[
+                                'server_ids'][role][idx]}
+
                 children.append(role)
                 ret[role] = {
                     'children': sorted(shortnames),
@@ -170,14 +181,6 @@ class TripleoInventory(object):
                         'role_name': role,
                     }
                 }
-                # Create a group per hostname to map hostname to IP
-                ips = role_net_ip_map[role][HOST_NETWORK]
-                for idx, name in enumerate(shortnames):
-                    ret[name] = {'hosts': [ips[idx]]}
-                    if 'server_ids' in role_node_id_map:
-                        ret[name]['vars'] = {
-                            'deploy_server_id': role_node_id_map[
-                                'server_ids'][role][idx]}
 
         if children:
             ret['overcloud'] = {
