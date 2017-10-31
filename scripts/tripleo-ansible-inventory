@@ -90,17 +90,17 @@ def write_static_inventory(inventory_file_path, inventory):
                 config.add_section(section_name)
                 for host in section['hosts']:
                     config.set(section_name, host)
+            if 'children' in section:
+                children_section_name = "%s:%s" % (section_name, 'children')
+                config.add_section(children_section_name)
+                for child in section['children']:
+                    config.set(children_section_name, child)
             if 'vars' in section:
                 vars_section_name = "%s:%s" % (section_name, 'vars')
                 config.add_section(vars_section_name)
                 for var, value in section['vars'].items():
                     if value != None:
                         config.set(vars_section_name, var, value)
-            if 'children' in section:
-                children_section_name = "%s:%s" % (section_name, 'children')
-                config.add_section(children_section_name)
-                for child in section['children']:
-                    config.set(children_section_name, child)
         config.write(inventory_file)
 
 
