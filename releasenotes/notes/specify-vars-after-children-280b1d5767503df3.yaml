@@ -1,0 +1,6 @@
+---
+fixes:
+  - tripleo-ansible-inventory has been updated to output the vars sections
+    after the children sections. Due to a change in ansible 2.4, having them
+    in the other order caused no hosts to match the generated static inventory.
+    See https://bugs.launchpad.net/tripleo/+bug/1729058
