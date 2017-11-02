@@ -16,4 +16,4 @@
         - pre-upgrade
     min_undercloud_disk_gb: 10
   tasks:
-  - include: tasks/disk_space.yaml
+  - include_tasks: tasks/disk_space.yaml
