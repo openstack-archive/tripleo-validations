@@ -19,9 +19,9 @@ from ansible.module_utils.basic import *  # NOQA
 DOCUMENTATION = '''
 ---
 module: pacemaker
-short_description: Return status from a pacemaker stauts XML
+short_description: Return status from a pacemaker status XML
 description:
-    - Return status from a pacemaker stauts XML
+    - Return status from a pacemaker status XML
 options:
     status:
         required: true
