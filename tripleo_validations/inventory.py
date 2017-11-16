@@ -170,6 +170,9 @@ class TripleoInventory(object):
                         ret[name]['vars'] = {
                             'deploy_server_id': role_node_id_map[
                                 'server_ids'][role][idx]}
+                    # Add variable for listing enabled networks in the node
+                    ret[name]['vars']['enabled_networks'] = \
+                        [str(net) for net in role_net_ip_map[role]]
                     # Add variable for IP on each network
                     for net in role_net_ip_map[role]:
                         ret[name]['vars']["%s_ip" % net] = \
