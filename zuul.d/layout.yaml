@@ -1,0 +1,7 @@
+---
+
+- project:
+    name: openstack/tripleo-validations
+    templates:
+      - tripleo-multinode-baremetal-minimal
+      - tripleo-multinode-container-minimal
