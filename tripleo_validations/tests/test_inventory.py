@@ -157,11 +157,14 @@ class TestInventory(base.TestCase):
 
     def test_inventory_list(self):
         expected = {'c-0': {'hosts': ['x.x.x.1'],
-                            'vars': {'deploy_server_id': 'a'}},
+                            'vars': {'deploy_server_id': 'a',
+                                     'ctlplane_ip': 'x.x.x.1'}},
                     'c-1': {'hosts': ['x.x.x.2'],
-                            'vars': {'deploy_server_id': 'b'}},
+                            'vars': {'deploy_server_id': 'b',
+                                     'ctlplane_ip': 'x.x.x.2'}},
                     'c-2': {'hosts': ['x.x.x.3'],
-                            'vars': {'deploy_server_id': 'c'}},
+                            'vars': {'deploy_server_id': 'c',
+                                     'ctlplane_ip': 'x.x.x.3'}},
                     'Compute': {
                         'children': ['cp-0'],
                         'vars': {'ansible_ssh_user': 'heat-admin',
@@ -173,9 +176,11 @@ class TestInventory(base.TestCase):
                                  'bootstrap_server_id': 'a',
                                  'role_name': 'Controller'}},
                     'cp-0': {'hosts': ['y.y.y.1'],
-                             'vars': {'deploy_server_id': 'd'}},
+                             'vars': {'deploy_server_id': 'd',
+                                      'ctlplane_ip': 'y.y.y.1'}},
                     'cs-0': {'hosts': ['z.z.z.1'],
-                             'vars': {'deploy_server_id': 'e'}},
+                             'vars': {'deploy_server_id': 'e',
+                                      'ctlplane_ip': 'z.z.z.1'}},
                     'CustomRole': {
                         'children': ['cs-0'],
                         'vars': {'ansible_ssh_user': 'heat-admin',
@@ -213,11 +218,14 @@ class TestInventory(base.TestCase):
         self.inventory.stack_outputs = self.outputs
 
         expected = {'c-0': {'hosts': ['x.x.x.1'],
-                            'vars': {'deploy_server_id': 'a'}},
+                            'vars': {'deploy_server_id': 'a',
+                                     'ctlplane_ip': 'x.x.x.1'}},
                     'c-1': {'hosts': ['x.x.x.2'],
-                            'vars': {'deploy_server_id': 'b'}},
+                            'vars': {'deploy_server_id': 'b',
+                                     'ctlplane_ip': 'x.x.x.2'}},
                     'c-2': {'hosts': ['x.x.x.3'],
-                            'vars': {'deploy_server_id': 'c'}},
+                            'vars': {'deploy_server_id': 'c',
+                                     'ctlplane_ip': 'x.x.x.3'}},
                     'Compute': {
                         'children': ['cp-0'],
                         'vars': {'ansible_ssh_user': 'my-custom-admin',
@@ -229,9 +237,11 @@ class TestInventory(base.TestCase):
                                  'bootstrap_server_id': 'a',
                                  'role_name': 'Controller'}},
                     'cp-0': {'hosts': ['y.y.y.1'],
-                             'vars': {'deploy_server_id': 'd'}},
+                             'vars': {'deploy_server_id': 'd',
+                                      'ctlplane_ip': 'y.y.y.1'}},
                     'cs-0': {'hosts': ['z.z.z.1'],
-                             'vars': {'deploy_server_id': 'e'}},
+                             'vars': {'deploy_server_id': 'e',
+                                      'ctlplane_ip': 'z.z.z.1'}},
                     'CustomRole': {
                         'children': ['cs-0'],
                         'vars': {'ansible_ssh_user': 'my-custom-admin',
