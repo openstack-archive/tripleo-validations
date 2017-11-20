@@ -30,6 +30,43 @@ from os import path
 
 from ansible.module_utils.basic import *  # NOQA
 
+DOCUMENTATION = '''
+---
+module: ini
+short_description: Get data from an ini file
+description:
+    - Get data from an ini file
+options:
+    path:
+        required: true
+        description:
+            - File path
+        type: str
+    section:
+        required: true
+        description:
+            - Section to look up
+        type: str
+    key:
+        required: true
+        description:
+            - Section key to look up
+        type: str
+    ignore_missing_file:
+        required: false
+        description:
+            - Flag if a missing file should be ignored
+        type: bool
+author: "Tomas Sedovic"
+'''
+
+EXAMPLES = '''
+- hosts: webservers
+  tasks:
+    - name: Lookup bar value
+      ini: path=config.ini section=foo key=bar ignore_missing_file=True
+'''
+
 
 def main():
     module = AnsibleModule(argument_spec=dict(

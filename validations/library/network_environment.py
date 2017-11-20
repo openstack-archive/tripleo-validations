@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 # Copyright 2016 Red Hat, Inc.
 # All Rights Reserved.
 #
@@ -24,6 +25,35 @@ import six
 
 from ansible.module_utils.basic import AnsibleModule
 from os_net_config import validator
+
+DOCUMENTATION = '''
+---
+module: network_environment
+short_description: Validate networking templates
+description:
+    - Performs networking-related checks on a set of TripleO templates
+options:
+    path:
+        required: true
+        description:
+            - The path of the base network environment file
+        type: str
+    template_files:
+        required: true
+        description:
+            - A list of template files and contents
+        type: list
+author: "Tomas Sedovic, Martin André, Florian Fuchs"
+'''
+
+EXAMPLES = '''
+- hosts: webservers
+  tasks:
+    - name: Check the Network environment
+      network_environment:
+        path: environments/network-environment.yaml
+        template_files: "{{ lookup('tht') }}"
+'''
 
 
 def open_network_environment_files(netenv_path, template_files):

@@ -19,6 +19,28 @@ from ansible.module_utils.basic import *  # NOQA
 import os.path
 import subprocess
 
+DOCUMENTATION = '''
+---
+module: overcloudrc
+short_description: Source the overcloudrc file
+description:
+    - Source the overcloudrc file
+options:
+    path:
+        required: true
+        description:
+           - The file path
+        type: str
+author: "Tomas Sedovic"
+'''
+
+EXAMPLES = '''
+- hosts: webservers
+  tasks:
+  - name: Source overcloudrc
+    overcloudrc: path=/home/stack/overcloudrc
+'''
+
 
 def main():
     module = AnsibleModule(argument_spec=dict(

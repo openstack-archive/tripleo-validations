@@ -18,6 +18,28 @@ import subprocess
 
 from ansible.module_utils.basic import *  # noqa
 
+DOCUMENTATION = '''
+---
+module: hiera
+short_description: Get data from hiera
+description:
+    - Get data from hiera
+options:
+    name:
+        required: true
+        description:
+            - Name to lookup
+        type: str
+author: "Martin Andre (@mandre)"
+'''
+
+EXAMPLES = '''
+- hosts: webservers
+  tasks:
+    - name: Lookup foo
+      hiera: name=foo
+'''
+
 
 def main():
     module = AnsibleModule(argument_spec=dict(

@@ -16,6 +16,32 @@ from xml.etree import ElementTree
 
 from ansible.module_utils.basic import *  # NOQA
 
+DOCUMENTATION = '''
+---
+module: pacemaker
+short_description: Return status from a pacemaker stauts XML
+description:
+    - Return status from a pacemaker stauts XML
+options:
+    status:
+        required: true
+        description:
+           - pacemaker status XML
+        type: str
+author: "Tomas Sedovic"
+'''
+
+EXAMPLES = '''
+- hosts: webservers
+  tasks:
+  - name: Get pacemaker status
+    become: true
+    command: pcs status xml
+    register: pcs_status
+  - name: Check pacemaker status
+    pacemaker: status="{{ pcs_status.stdout }}"
+'''
+
 
 def parse_pcs_status(pcs_status_xml):
     root = ElementTree.fromstring(pcs_status_xml)

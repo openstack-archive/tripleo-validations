@@ -18,6 +18,28 @@ import re
 
 from ansible.module_utils.basic import *  # NOQA
 
+DOCUMENTATION = '''
+---
+module: haproxy_conf
+short_description: Gather the HAProxy config
+description:
+    - Gather the HAProxy config
+options:
+    path:
+        required: true
+        description:
+            - file path to the config file
+        type: str
+author: "Tomas Sedovic"
+'''
+
+EXAMPLES = '''
+- hosts: webservers
+  tasks:
+    - name: Gather the HAProxy config
+      haproxy_conf: path=/etc/haproxy/haproxy.cfg
+'''
+
 
 # ConfigParser chokes on both mariadb and haproxy files. Luckily They have
 # a syntax approaching ini config file so they are relatively easy to parse.
