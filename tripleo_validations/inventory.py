@@ -155,6 +155,7 @@ class TripleoInventory(object):
 
         role_net_ip_map = self.stack_outputs.get('RoleNetIpMap', {})
         role_node_id_map = self.stack_outputs.get('ServerIdData', {})
+        networks = set()
         role_net_hostname_map = self.stack_outputs.get(
             'RoleNetHostnameMap', {})
         children = []
@@ -177,6 +178,7 @@ class TripleoInventory(object):
                     for net in role_net_ip_map[role]:
                         ret[name]['vars']["%s_ip" % net] = \
                             role_net_ip_map[role][net][idx]
+                    networks.update(ret[name]['vars']['enabled_networks'])
 
                 children.append(role)
                 ret[role] = {
@@ -190,8 +192,13 @@ class TripleoInventory(object):
                 }
 
         if children:
+            vip_map = self.stack_outputs.get('VipMap', {})
+            vips = {(vip_name + "_vip"): vip
+                    for vip_name, vip in vip_map.items()
+                    if vip and (vip_name in networks or vip_name == 'redis')}
             ret['overcloud'] = {
-                'children': sorted(children)
+                'children': sorted(children),
+                'vars': vips
             }
 
         # Associate services with roles
