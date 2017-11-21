@@ -10,6 +10,8 @@
   tasks:
   - name: Check if ceph-ansible is installed
     shell: yum list installed ceph-ansible
+    args:
+      warn: no
     ignore_errors: true
     register: ceph_ansible_installed
   - name: Warn about missing ceph-ansible
