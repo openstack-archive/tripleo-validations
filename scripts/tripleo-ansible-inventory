@@ -47,7 +47,8 @@ opts = [
         'OS_PROJECT_NAME', os.environ.get('OS_TENANT_NAME'))),
     cfg.StrOpt('cacert', default=os.environ.get('OS_CACERT')),
     cfg.StrOpt('plan', default=os.environ.get('TRIPLEO_PLAN_NAME')),
-    cfg.StrOpt('ansible_ssh_user', default='heat-admin'),
+    cfg.StrOpt('ansible_ssh_user', default=os.environ.get('ANSIBLE_SSH_USER',
+        'heat-admin')),
 ]
 
 
