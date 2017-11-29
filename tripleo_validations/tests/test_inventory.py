@@ -85,7 +85,11 @@ class TestInventory(base.TestCase):
                  'Compute': {
                      'ctlplane': ['y.y.y.1']},
                  'CustomRole': {
-                     'ctlplane': ['z.z.z.1']}}}]}
+                     'ctlplane': ['z.z.z.1']}}},
+            {'output_key': 'VipMap',
+             'output_value': {
+                 'ctlplane': 'x.x.x.4',
+                 'redis': 'x.x.x.6'}}]}
         self.plan_name = 'overcloud'
 
         self.hclient = MagicMock()
@@ -152,7 +156,7 @@ class TestInventory(base.TestCase):
     def test_outputs_iterating_returns_list_of_output_keys(self):
         self.assertEqual(
             {'EnabledServices', 'KeystoneURL', 'ServerIdData',
-             'RoleNetHostnameMap', 'RoleNetIpMap'},
+             'RoleNetHostnameMap', 'RoleNetIpMap', 'VipMap'},
             set([o for o in self.outputs]))
 
     def test_inventory_list(self):
@@ -192,7 +196,10 @@ class TestInventory(base.TestCase):
                                  'bootstrap_server_id': 'a',
                                  'role_name': 'CustomRole'}},
                     'overcloud': {
-                        'children': ['Compute', 'Controller', 'CustomRole']},
+                        'children': ['Compute', 'Controller', 'CustomRole'],
+                        'vars': {
+                            'ctlplane_vip': 'x.x.x.4',
+                            'redis_vip': 'x.x.x.6'}},
                     'undercloud': {
                         'hosts': ['localhost'],
                         'vars': {'ansible_connection': 'local',
@@ -258,7 +265,10 @@ class TestInventory(base.TestCase):
                                  'bootstrap_server_id': 'a',
                                  'role_name': 'CustomRole'}},
                     'overcloud': {
-                        'children': ['Compute', 'Controller', 'CustomRole']},
+                        'children': ['Compute', 'Controller', 'CustomRole'],
+                        'vars': {
+                            'ctlplane_vip': 'x.x.x.4',
+                            'redis_vip': 'x.x.x.6'}},
                     'undercloud': {
                         'hosts': ['localhost'],
                         'vars': {'ansible_connection': 'local',
