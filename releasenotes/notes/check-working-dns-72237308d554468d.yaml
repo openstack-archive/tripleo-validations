@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Add a new validation to ensure DNS resolution working on both undercloud
+    and overcloud nodes.
