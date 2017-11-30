@@ -3,7 +3,7 @@
 # process, which may cause wedges in the gate later.
 
 pbr!=2.1.0,>=2.0.0 # Apache-2.0
-oslo.config>=4.6.0 # Apache-2.0
+oslo.config>=5.1.0 # Apache-2.0
 keystoneauth1>=3.2.0 # Apache-2.0
 python-heatclient>=1.10.0 # Apache-2.0
 os-net-config>=7.1.0 # Apache-2.0
