@@ -9,7 +9,7 @@
     config_file: '/etc/haproxy/haproxy.cfg'
     global_maxconn_min: 20480
     defaults_maxconn_min: 4096
-    defaults_timeout_queue: '1m'
+    defaults_timeout_queue: '2m'
     defaults_timeout_client: '2m'
     defaults_timeout_server: '2m'
     defaults_timeout_check: '10s'
