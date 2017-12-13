@@ -37,6 +37,9 @@ def parse_args():
 
     p.add_argument('--quiet', '-q',
                    action='count',
+                   # TODO(akrivoka): Python3 sets this default to None instead
+                   # of 0. Remove this when this bug is fixed in Python3.
+                   default=0,
                    help='output warnings and errors (-q) or only errors (-qq)')
 
     p.add_argument('path_args',
