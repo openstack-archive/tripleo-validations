@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    Enhanced the network environment validation to validate the node IP pool
+    size. Warnings are issued if there are not enough IPs in any pools for all
+    assigned nodes.

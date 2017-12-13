@@ -819,3 +819,119 @@ class TestDuplicateStaticIps(base.TestCase):
         }
         errors = validation.duplicate_static_ips(static_ips)
         self.assertEqual([], errors)
+
+
+class TestNodePoolSize(base.TestCase):
+    def test_pool_size_ok(self):
+
+        plan_env_path = 'plan-environment.yaml'
+        ip_pools_path = 'environments/ips-from-pool-all.yaml'
+        plan_env_content = """parameter_defaults:
+  BlockStorageCount: 0
+  CephStorageCount: 0
+  ComputeCount: 1
+  ControllerCount: 1
+  ObjectStorageCount: 0"""
+        ip_pools_content = """parameter_defaults:
+  ControllerIPs:
+    external:
+    - 10.0.0.251
+    internal_api:
+    - 172.16.2.251
+    storage:
+    - 172.16.1.251
+    storage_mgmt:
+    - 172.16.3.251
+    tenant:
+    - 172.16.0.251
+  ComputeIPs:
+    internal_api:
+    - 172.16.2.252
+    storage:
+    - 172.16.1.252
+    tenant:
+    - 172.16.0.252"""
+        template_files = {
+            plan_env_path: plan_env_content,
+            ip_pools_path: ip_pools_content
+        }
+        warnings = validation.validate_node_pool_size(
+            plan_env_path, ip_pools_path, template_files)
+        self.assertEqual(len(warnings), 0)
+
+    def test_pool_size_pool_too_small(self):
+        plan_env_path = 'plan-environment.yaml'
+        ip_pools_path = 'environments/ips-from-pool-all.yaml'
+        plan_env_content = """parameter_defaults:
+    BlockStorageCount: 0
+    CephStorageCount: 0
+    ComputeCount: 2
+    ControllerCount: 1
+    ObjectStorageCount: 0"""
+        ip_pools_content = """parameter_defaults:
+    ControllerIPs:
+      external:
+      - 10.0.0.251
+      internal_api:
+      - 172.16.2.251
+      storage:
+      - 172.16.1.251
+      storage_mgmt:
+      - 172.16.3.251
+      tenant:
+      - 172.16.0.251
+    ComputeIPs:
+      internal_api:
+      - 172.16.2.252
+      storage:
+      - 172.16.1.252
+      tenant:
+      - 172.16.0.252"""
+        template_files = {
+            plan_env_path: plan_env_content,
+            ip_pools_path: ip_pools_content
+        }
+        warnings = validation.validate_node_pool_size(
+            plan_env_path, ip_pools_path, template_files)
+        self.assertEqual(len(warnings), 3)
+        self.assertEqual(set(warnings), {
+            "Insufficient number of IPs in 'internal_api' pool for 'Compute' "
+            "role: 1 IP(s) found in pool, but 2 nodes assigned to role.",
+            "Insufficient number of IPs in 'storage' pool for 'Compute' "
+            "role: 1 IP(s) found in pool, but 2 nodes assigned to role.",
+            "Insufficient number of IPs in 'tenant' pool for 'Compute' "
+            "role: 1 IP(s) found in pool, but 2 nodes assigned to role."
+        })
+
+    def test_pool_size_pool_missing(self):
+        plan_env_path = 'plan-environment.yaml'
+        ip_pools_path = 'environments/ips-from-pool-all.yaml'
+        plan_env_content = """parameter_defaults:
+    BlockStorageCount: 0
+    CephStorageCount: 0
+    ComputeCount: 1
+    ControllerCount: 1
+    ObjectStorageCount: 0"""
+        ip_pools_content = """parameter_defaults:
+    ControllerIPs:
+      external:
+      - 10.0.0.251
+      internal_api:
+      - 172.16.2.251
+      storage:
+      - 172.16.1.251
+      storage_mgmt:
+      - 172.16.3.251
+      tenant:
+      - 172.16.0.251"""
+        template_files = {
+            plan_env_path: plan_env_content,
+            ip_pools_path: ip_pools_content
+        }
+        warnings = validation.validate_node_pool_size(
+            plan_env_path, ip_pools_path, template_files)
+        self.assertEqual(len(warnings), 1)
+        self.assertEqual(warnings, [
+            "Found 1 node(s) assigned to 'Compute' role, but no static IP "
+            "pools defined."
+        ])
