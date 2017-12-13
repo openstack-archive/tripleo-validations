@@ -63,3 +63,10 @@ class TestIPRange(base.TestCase):
                          'contains 5 addresses.', errors[0])
         self.assertEqual('This might not be enough for the deployment ' +
                          'or later scaling.', errors[1])
+
+    def test_check_lower_bound_greater_than_upper(self):
+        """Test ip_range when lower IP bound is greater than upper"""
+        errors = validation.check_arguments('192.168.0.10', '192.168.0.1', 5)
+        self.assertEqual(len(errors), 1)
+        self.assertEqual("Lower IP bound (192.168.0.10) must be smaller than "
+                         "upper bound (192.168.0.1)", errors[0])
