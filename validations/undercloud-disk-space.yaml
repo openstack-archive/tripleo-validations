@@ -16,4 +16,4 @@
         - pre-introspection
     min_undercloud_disk_gb: 60
   tasks:
-  - include: tasks/disk_space.yaml
+  - include_tasks: tasks/disk_space.yaml
