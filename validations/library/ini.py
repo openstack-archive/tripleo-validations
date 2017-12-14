@@ -33,7 +33,7 @@ except ImportError:
 from enum import Enum
 import os
 
-from ansible.module_utils.basic import *  # NOQA
+from ansible.module_utils.basic import AnsibleModule
 
 
 # Possible return values

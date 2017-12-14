@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from ansible.module_utils.basic import *  # NOQA
+from ansible.module_utils.basic import AnsibleModule
 
 import os.path
 import subprocess

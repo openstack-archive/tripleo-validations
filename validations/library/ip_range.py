@@ -16,7 +16,7 @@
 
 import netaddr
 
-from ansible.module_utils.basic import *  # NOQA
+from ansible.module_utils.basic import AnsibleModule
 
 DOCUMENTATION = '''
 ---

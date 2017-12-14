@@ -16,7 +16,7 @@
 
 from os import path
 
-from ansible.module_utils.basic import *  # noqa
+from ansible.module_utils.basic import AnsibleModule
 
 DOCUMENTATION = '''
 ---
