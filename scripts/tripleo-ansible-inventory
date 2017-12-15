@@ -29,7 +29,7 @@ from heatclient import client as heat_client
 from oslo_config import cfg
 from six.moves import configparser
 
-from tripleo_validations.inventory import TripleoInventory
+from tripleo_common.inventory import TripleoInventory
 from tripleo_validations.utils import get_auth_session
 
 

@@ -7,3 +7,4 @@ oslo.config>=5.1.0 # Apache-2.0
 keystoneauth1>=3.3.0 # Apache-2.0
 python-heatclient>=1.10.0 # Apache-2.0
 os-net-config>=7.1.0 # Apache-2.0
+tripleo-common>=7.1.0 # Apache-2.0
