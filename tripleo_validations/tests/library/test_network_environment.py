@@ -342,6 +342,10 @@ class TestCheckCidrOverlap(base.TestCase):
         errors = validation.check_cidr_overlap(['172.16.0.0/24'])
         self.assertEqual([], errors)
 
+    def test_single_network_ipv6(self):
+        errors = validation.check_cidr_overlap(['fd00:fd00:fd00:2000::/64'])
+        self.assertEqual([], errors)
+
     def test_non_overlapping_networks(self):
         networks = ['172.16.0.0/24', '172.17.0.0/24']
         errors = validation.check_cidr_overlap(networks)
@@ -352,6 +356,22 @@ class TestCheckCidrOverlap(base.TestCase):
         errors = validation.check_cidr_overlap(networks)
         self.assertEqual(len(errors), 1)
         self.assertEqual('Networks 172.16.0.0/24 and 172.16.0.0/24 overlap.',
+                         errors[0])
+
+    def test_identical_networks_ipv6(self):
+        networks = ['fd00:fd00:fd00:2000::/64', 'fd00:fd00:fd00:2000::/64']
+        errors = validation.check_cidr_overlap(networks)
+        self.assertEqual(len(errors), 1)
+        self.assertEqual('Networks fd00:fd00:fd00:2000::/64 and '
+                         'fd00:fd00:fd00:2000::/64 overlap.',
+                         errors[0])
+
+    def test_first_cidr_is_subset_of_second_ipv6(self):
+        networks = ['fd00:fd00:fd00:2000::/126', 'fd00:fd00:fd00:2000::/124']
+        errors = validation.check_cidr_overlap(networks)
+        self.assertEqual(len(errors), 1)
+        self.assertEqual('Networks fd00:fd00:fd00:2000::/126 and '
+                         'fd00:fd00:fd00:2000::/124 overlap.',
                          errors[0])
 
     def test_first_cidr_is_subset_of_second(self):
@@ -366,6 +386,14 @@ class TestCheckCidrOverlap(base.TestCase):
         errors = validation.check_cidr_overlap(networks)
         self.assertEqual(len(errors), 1)
         self.assertEqual('Networks 172.16.0.0/16 and 172.16.10.0/24 overlap.',
+                         errors[0])
+
+    def test_second_cidr_is_subset_of_first_ipv6(self):
+        networks = ['fd00:fd00:fd00:2000::/124', 'fd00:fd00:fd00:2000::/126']
+        errors = validation.check_cidr_overlap(networks)
+        self.assertEqual(len(errors), 1)
+        self.assertEqual('Networks fd00:fd00:fd00:2000::/124 and '
+                         'fd00:fd00:fd00:2000::/126 overlap.',
                          errors[0])
 
     def test_multiple_overlapping_networks(self):
@@ -472,6 +500,20 @@ class TestCheckAllocationPoolsPairing(base.TestCase):
         self.assertEqual(len(errors), 1)
         self.assertIn('outside of subnet StorageNetCidr', errors[0])
 
+    def test_pool_outside_cidr_ipv6(self):
+        filedata = {
+            'StorageNetCidr': 'fd00:fd00:fd00:3000::10/125',
+        }
+        pools = {
+            'StorageAllocationPools': [
+                {'start': 'fd00:fd00:fd00:3000::10',
+                 'end': 'fd00:fd00:fd00:3000::18'}
+            ]
+        }
+        errors = validation.check_allocation_pools_pairing(filedata, pools)
+        self.assertEqual(len(errors), 1)
+        self.assertIn('outside of subnet StorageNetCidr', errors[0])
+
     def test_multiple_ranges_and_pools(self):
         filedata = {
             'StorageNetCidr': '172.18.0.0/24',
@@ -486,6 +528,19 @@ class TestCheckAllocationPoolsPairing(base.TestCase):
                 {'start': '172.16.0.20', 'end': '172.16.0.30'},
                 {'start': '172.16.0.70', 'end': '172.16.0.80'},
             ],
+        }
+        errors = validation.check_allocation_pools_pairing(filedata, pools)
+        self.assertEqual([], errors)
+
+    def test_pool_very_large_range_ipv6(self):
+        filedata = {
+            'StorageNetCidr': 'fd00:fd00:fd00:3000::/64',
+        }
+        pools = {
+            'StorageAllocationPools': [
+                {'start': 'fd00:fd00:fd00:3000::10',
+                 'end': 'fd00:fd00:fd00:3000:ffff:ffff:ffff:fffe'}
+            ]
         }
         errors = validation.check_allocation_pools_pairing(filedata, pools)
         self.assertEqual([], errors)
