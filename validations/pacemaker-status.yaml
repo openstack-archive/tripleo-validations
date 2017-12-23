@@ -16,5 +16,6 @@
     become: true
     command: pcs status xml
     register: pcs_status
+    changed_when: False
   - name: Check pacemaker status
     pacemaker: status="{{ pcs_status.stdout }}"
