@@ -38,7 +38,12 @@ opts = [
     cfg.BoolOpt('list', help='List active hosts'),
     cfg.StrOpt('static-inventory', help=('output the active hosts '
                                          'to a static inventory '
-                                         'file.')),
+                                         '(ini format) file.'),
+               deprecated_for_removal=True,
+               deprecated_reason="Use --static-yaml-inventory."),
+    cfg.StrOpt('static-yaml-inventory', help=('output the active hosts '
+                                              'to a static inventory '
+                                              '(yaml format) file.')),
     cfg.StrOpt('username', default=os.environ.get('OS_USERNAME')),
     cfg.StrOpt('password', default=os.environ.get('OS_PASSWORD')),
     cfg.StrOpt('auth-url', default=os.environ.get('OS_AUTH_URL')),
@@ -73,6 +78,7 @@ def _parse_config():
 
 
 def write_static_inventory(inventory_file_path, inventory):
+    # DEPRECATED any new features should be added to tripleo-common
     with open(inventory_file_path, 'w') as inventory_file:
         config = configparser.ConfigParser(allow_no_value=True)
         # Keep case formating.
@@ -127,6 +133,13 @@ def main():
                                        inventory_list)
         except Exception as e:
             print("Error creating inventory: {}".format(e.message),
+                  file=sys.stderr)
+            sys.exit(1)
+    elif configs.static_yaml_inventory:
+        try:
+            inventory.write_static_inventory(configs.static_yaml_inventory)
+        except Exception as e:
+            print("Error creating static inventory: {}".format(e.message),
                   file=sys.stderr)
             sys.exit(1)
     elif configs.host:
