@@ -120,9 +120,16 @@ def main():
                                configs.auth_token,
                                configs.cacert)
     hclient = heat_client.Client('1', session=session)
-    inventory = TripleoInventory(configs,
-                                 session,
-                                 hclient)
+    inventory = TripleoInventory(
+        session=session,
+        hclient=hclient,
+        auth_url=configs.auth_url,
+        cacert=configs.cacert,
+        project_name=configs.project_name,
+        username=configs.username,
+        ansible_ssh_user=configs.ansible_ssh_user,
+        plan_name=configs.plan)
+
     if configs.list or configs.static_inventory:
         try:
             inventory_list = inventory.list()
