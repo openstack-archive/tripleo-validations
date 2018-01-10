@@ -40,7 +40,7 @@ def indent(text):
     return ''.join('    {}\n'.format(line) for line in text.splitlines())
 
 
-def print_failure_message(host_name, task_name, results):
+def print_failure_message(host_name, task_name, results, abridged_result):
     '''Print a human-readable error info from Ansible result dictionary.'''
     def is_script(results):
         return ('rc' in results and
@@ -79,7 +79,7 @@ def print_failure_message(host_name, task_name, results):
         print(indent(stderr))
     if display_full_results:
         print("Could not get an error message. Here is the Ansible output:")
-        pprint.pprint(results, indent=4)
+        pprint.pprint(abridged_result, indent=4)
     warnings = results.get('warnings', [])
     if warnings:
         print("Warnings:")
@@ -107,6 +107,7 @@ class CallbackModule(CallbackBase):
         host_name = result._host
         task_name = result._task.get_name()
         results = result._result  # A dict of the module name etc.
+        self._dump_results(results)
         warnings = results.get('warnings', [])
         # Print only tasks that produced some warnings:
         if warnings:
@@ -119,6 +120,8 @@ class CallbackModule(CallbackBase):
         task_name = result._task.get_name()
 
         result_dict = result._result  # A dict of the module name etc.
+        abridged_result = self._dump_results(result_dict)
+
         if 'results' in result_dict:
             # The task is a list of items under `results`
             for item in result_dict['results']:
@@ -126,7 +129,8 @@ class CallbackModule(CallbackBase):
                     print_failure_message(host_name, task_name, item)
         else:
             # The task is a "normal" module invocation
-            print_failure_message(host_name, task_name, result_dict)
+            print_failure_message(host_name, task_name, result_dict,
+                                  abridged_result)
 
     def v2_runner_on_skipped(self, result, **kwargs):
         pass  # No need to print skipped tasks
