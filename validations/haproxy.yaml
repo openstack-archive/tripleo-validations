@@ -6,7 +6,7 @@
       description: Verify the HAProxy configuration has recommended values.
       groups:
         - post-deployment
-    config_file: '/etc/haproxy/haproxy.cfg'
+    config_file: '/var/lib/config-data/puppet-generated/haproxy/etc/haproxy/haproxy.cfg'
     global_maxconn_min: 20480
     defaults_maxconn_min: 4096
     defaults_timeout_queue: '2m'
