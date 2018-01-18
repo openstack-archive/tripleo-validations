@@ -12,14 +12,15 @@
       - pre-upgrade
       - post-upgrade
   tasks:
+  # Check that the Horizon endpoint exists
+  - name: Fail if the HorizonPublic endpoint is not defined
+    fail: msg="The `HorizonPublic` endpoint is not defined in the `EndpointMap` of the deployed stack. This means Horizon may not have been deployed correctly."
+    when: overcloud_horizon_url|default('') == ''
+
   # Check connectivity to horizon
   - name: Check Horizon
     uri: url={{ overcloud_horizon_url }}
     when: overcloud_horizon_url|default('')
-
-  - name: Fail if the HorizonPublic endpoint is not defined
-    fail: msg="The `HorizonPublic` endpoint is not defined in the `EndpointMap` of the deployed stack. This means Horizon may not have been deployed correctly."
-    when: overcloud_horizon_url|default('') == ''
 
   # Check that we can obtain an auth token from horizon
   - name: Check Keystone
