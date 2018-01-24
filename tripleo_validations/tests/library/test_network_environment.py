@@ -545,6 +545,20 @@ class TestCheckAllocationPoolsPairing(base.TestCase):
         errors = validation.check_allocation_pools_pairing(filedata, pools)
         self.assertEqual([], errors)
 
+    def test_overlapping_pools(self):
+        filedata = {
+            'StorageNetCidr': '172.18.0.0/24',
+        }
+        pools = {
+            'StorageAllocationPools': [
+                {'start': '172.18.0.10', 'end': '172.18.0.30'},
+                {'start': '172.18.0.20', 'end': '172.18.0.200'},
+            ],
+        }
+        errors = validation.check_allocation_pools_pairing(filedata, pools)
+        self.assertIn('Some pools in StorageAllocationPools are overlapping.',
+                      errors[0])
+
 
 class TestStaticIpPoolCollision(base.TestCase):
 
