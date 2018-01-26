@@ -265,6 +265,8 @@ def check_allocation_pools_pairing(filedata, pools):
             errors.append('The IP ranges in {} must form a list.'
                           .format(poolitem))
             continue
+
+        # Check IP range format
         for dict_range in pooldata:
             try:
                 pool_objs.append(netaddr.IPRange(
@@ -275,6 +277,7 @@ def check_allocation_pools_pairing(filedata, pools):
                               .format(poolitem, dict_range))
                 continue
 
+        # Check if CIDR is specified and IP network is valid
         subnet_item = poolitem.split('AllocationPools')[0] + 'NetCidr'
         try:
             network = filedata[subnet_item]
@@ -288,6 +291,7 @@ def check_allocation_pools_pairing(filedata, pools):
             continue
 
         for range in pool_objs:
+            # Check if pool is included in subnet
             if range not in subnet_obj:
                 errors.append('Allocation pool {} {} outside of subnet'
                               ' {}: {}'.format(poolitem,
@@ -295,6 +299,14 @@ def check_allocation_pools_pairing(filedata, pools):
                                                subnet_item,
                                                subnet_obj))
                 break
+
+            # Check for overlapping pools
+            for other in [r for r in pool_objs if r != range]:
+                if range.first in other or range.last in other:
+                    errors.append('Some pools in {} are overlapping.'.format(
+                                  poolitem))
+                    break
+
     return errors
 
 
