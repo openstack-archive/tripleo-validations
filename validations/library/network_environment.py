@@ -287,15 +287,14 @@ def check_allocation_pools_pairing(filedata, pools):
             errors.append('Invalid IP network: {}'.format(network))
             continue
 
-        for ranges in pool_objs:
-            for range in ranges:
-                if range not in subnet_obj:
-                    errors.append('Allocation pool {} {} outside of subnet'
-                                  ' {}: {}'.format(poolitem,
-                                                   pooldata,
-                                                   subnet_item,
-                                                   subnet_obj))
-                    break
+        for range in pool_objs:
+            if range not in subnet_obj:
+                errors.append('Allocation pool {} {} outside of subnet'
+                              ' {}: {}'.format(poolitem,
+                                               pooldata,
+                                               subnet_item,
+                                               subnet_obj))
+                break
     return errors
 
 
