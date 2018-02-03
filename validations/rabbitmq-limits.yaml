@@ -12,7 +12,7 @@
   - name: Get file_descriptors total_limit
     become: true
     register: actual_fd_limit
-    command: "rabbitmqctl eval 'proplists:get_value(max_fds, erlang:system_info(check_io)).'"
+    shell: docker exec $(docker ps -q --filter "name=rabbitmq-bundle-docker" | head -1) rabbitmqctl eval 'proplists:get_value(max_fds, erlang:system_info(check_io)).'
     changed_when: false
   - name: Verify the actual limit exceeds the minimal value
     fail:
