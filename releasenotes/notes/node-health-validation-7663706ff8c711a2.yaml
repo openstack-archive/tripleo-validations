@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    Adds a node health validation. The validation tries to ping all overcloud
+    nodes. For those that can't be reached some information is collected from
+    nova and ironic to display in the validation output.
