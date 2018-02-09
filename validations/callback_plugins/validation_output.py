@@ -154,7 +154,7 @@ class CallbackModule(CallbackBase):
             # The task is a list of items under `results`
             for item in result_dict['results']:
                 if item.get('failed', False):
-                    print_failure_message(host_name, task_name, item)
+                    print_failure_message(host_name, task_name, item, item)
         else:
             # The task is a "normal" module invocation
             print_failure_message(host_name, task_name, result_dict,
@@ -167,7 +167,7 @@ class CallbackModule(CallbackBase):
         host_name = result._host
         task_name = result._task.get_name()
         results = {'msg': 'The host is unreachable.'}
-        print_failure_message(host_name, task_name, results)
+        print_failure_message(host_name, task_name, results, results)
 
     def v2_playbook_on_stats(self, stats):
         def failed(host):
