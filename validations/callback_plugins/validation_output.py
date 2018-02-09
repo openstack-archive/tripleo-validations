@@ -29,7 +29,7 @@ Message: {}
 
 
 WARNING_TEMPLATE = """\
-Task '{}' succeded, but had some warnings:
+Task '{}' succeeded, but had some warnings:
 Host: {}
 Warnings:
 """
