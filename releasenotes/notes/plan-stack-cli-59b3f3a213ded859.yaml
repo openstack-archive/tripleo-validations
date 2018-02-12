@@ -1,0 +1,6 @@
+---
+fixes:
+  - In order to use tripleo-ansible-inventory with a different stack name, that
+    name had to be specified with --plan. This commit adds help for the --plan
+    cli arg, and also adds a new --stack cli arg that has the same effect. If
+    both are specified, --stack will take precedence.

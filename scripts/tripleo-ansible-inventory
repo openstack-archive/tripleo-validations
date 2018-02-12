@@ -51,7 +51,12 @@ opts = [
     cfg.StrOpt('project-name', default=os.environ.get(
         'OS_PROJECT_NAME', os.environ.get('OS_TENANT_NAME'))),
     cfg.StrOpt('cacert', default=os.environ.get('OS_CACERT')),
-    cfg.StrOpt('plan', default=os.environ.get('TRIPLEO_PLAN_NAME')),
+    cfg.StrOpt('plan', default=os.environ.get('TRIPLEO_PLAN_NAME'),
+               help=('stack name to use for generating the '
+                     'inventory data.')),
+    cfg.StrOpt('stack', help=('This arg has the same effect '
+                              'as --plan. If both are specified, --stack '
+                              'will take precedence.')),
     cfg.StrOpt('ansible_ssh_user', default=os.environ.get('ANSIBLE_SSH_USER',
         'heat-admin')),
 ]
@@ -128,7 +133,7 @@ def main():
         project_name=configs.project_name,
         username=configs.username,
         ansible_ssh_user=configs.ansible_ssh_user,
-        plan_name=configs.plan)
+        plan_name=configs.stack or configs.plan)
 
     if configs.list or configs.static_inventory:
         try:
