@@ -142,7 +142,7 @@ def vlan_exists_on_switch(vlan_id, introspection_data):
     for node, content in introspection_data.items():
         node_valid_lldp = False
         try:
-            data = yaml.load(content)
+            data = yaml.safe_load(content)
         except Exception as e:
             return ["Can't open introspection data : {}" .format(e)], False
 
