@@ -1,0 +1,6 @@
+---
+deprecations:
+  - |
+    The ``--static-inventory`` argument to ``tripleo-ansible-inventory`` has
+    been deprecated and aliased to ``--static-yaml-inventory``.  See
+    `bug 1751855 <https://bugs.launchpad.net/tripleo/+bug/1751855>`__.

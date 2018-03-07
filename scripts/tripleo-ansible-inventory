@@ -36,9 +36,10 @@ from tripleo_validations.utils import get_auth_session
 opts = [
     cfg.StrOpt('host', help='List details about the specific host'),
     cfg.BoolOpt('list', help='List active hosts'),
-    cfg.StrOpt('static-inventory', help=('output the active hosts '
-                                         'to a static inventory '
-                                         '(ini format) file.'),
+    cfg.StrOpt('static-inventory', help=('ini inventory is deprecated, '
+                                         'the inventory will be output '
+                                         'in yaml format.  Please use '
+                                         '--static-yaml-format.'),
                deprecated_for_removal=True,
                deprecated_reason="Use --static-yaml-inventory."),
     cfg.StrOpt('static-yaml-inventory', help=('output the active hosts '
@@ -135,19 +136,21 @@ def main():
         ansible_ssh_user=configs.ansible_ssh_user,
         plan_name=configs.stack or configs.plan)
 
-    if configs.list or configs.static_inventory:
+    if configs.list:
         try:
             inventory_list = inventory.list()
-            if configs.list:
-                print(json.dumps(inventory_list))
-            elif configs.static_inventory:
-                write_static_inventory(configs.static_inventory,
-                                       inventory_list)
+            print(json.dumps(inventory_list))
         except Exception as e:
             print("Error creating inventory: {}".format(e.message),
                   file=sys.stderr)
             sys.exit(1)
-    elif configs.static_yaml_inventory:
+    elif configs.static_yaml_inventory or configs.static_inventory:
+        if configs.static_inventory:
+            configs.static_yaml_inventory = configs.static_inventory + '.yaml'
+            print('WARNING: ini format is deprecated, the inventory will '
+                  'be output in yaml format as {}.  Please use '
+                  '--static-yaml-format.'.format(
+                    configs.static_yaml_inventory))
         try:
             inventory.write_static_inventory(configs.static_yaml_inventory)
         except Exception as e:
