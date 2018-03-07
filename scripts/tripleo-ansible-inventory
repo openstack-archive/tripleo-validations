@@ -24,6 +24,7 @@ from __future__ import print_function
 import os
 import sys
 import json
+import traceback
 
 from heatclient import client as heat_client
 from oslo_config import cfg
@@ -60,6 +61,7 @@ opts = [
                               'will take precedence.')),
     cfg.StrOpt('ansible_ssh_user', default=os.environ.get('ANSIBLE_SSH_USER',
         'heat-admin')),
+    cfg.BoolOpt('debug', help='Print tracebacks for exceptions')
 ]
 
 
@@ -141,8 +143,10 @@ def main():
             inventory_list = inventory.list()
             print(json.dumps(inventory_list))
         except Exception as e:
-            print("Error creating inventory: {}".format(e.message),
+            print("Error creating inventory: {}".format(e),
                   file=sys.stderr)
+            if configs.debug:
+                traceback.print_exc()
             sys.exit(1)
     elif configs.static_yaml_inventory or configs.static_inventory:
         if configs.static_inventory:
@@ -154,8 +158,10 @@ def main():
         try:
             inventory.write_static_inventory(configs.static_yaml_inventory)
         except Exception as e:
-            print("Error creating static inventory: {}".format(e.message),
+            print("Error creating static inventory: {}".format(e),
                   file=sys.stderr)
+            if configs.debug:
+                traceback.print_exc()
             sys.exit(1)
     elif configs.host:
         print(json.dumps(inventory.host()))
