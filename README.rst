@@ -2,8 +2,8 @@
 Team and repository tags
 ========================
 
-.. image:: http://governance.openstack.org/badges/tripleo-validations.svg
-    :target: http://governance.openstack.org/reference/tags/index.html
+.. image:: https://governance.openstack.org/tc/badges/tripleo-validations.svg
+    :target: https://governance.openstack.org/tc/reference/tags/index.html
 
 .. Change things from this point on
 
@@ -22,7 +22,7 @@ consumable by the `Mistral validation framework
 available independently from the UI or the command line client.
 
 * Free software: Apache license
-* Source: http://git.openstack.org/cgit/openstack/tripleo-validations
+* Source: https://git.openstack.org/cgit/openstack/tripleo-validations
 * Bugs: https://bugs.launchpad.net/tripleo/+bugs?field.tag=validations
 
 Prerequisites
