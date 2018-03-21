@@ -13,7 +13,7 @@
   tasks:
   - name: Get the open_files_limit value
     become: true
-    mysql_variables: variable=open_files_limit
+    mysql_variables: variable=open_files_limit config_file=/var/lib/config-data/mysql/root/.my.cnf
     register: mysqld_open_files_limit
   - name: Test the open-files-limit value
     fail:
