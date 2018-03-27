@@ -25,16 +25,22 @@
   # Check that we can obtain an auth token from horizon
   - name: Check Keystone
     uri:
-      url: "{{ overcloud_keystone_url }}/tokens"
+      url: "{{ overcloud_keystone_url }}/v3/auth/tokens"
       method: POST
       body_format: json
       body:
         auth:
-          passwordCredentials:
-            username: admin
-            password: "{{ overcloud_admin_password }}"
-          tenantName: admin
+          identity:
+            methods:
+              - password
+            password:
+              user:
+                name: admin
+                domain:
+                  name: Default
+                password: "{{ overcloud_admin_password }}"
       return_content: yes
+      status_code: 201
     register: auth_token
     when: overcloud_keystone_url|default('')
 
