@@ -1,0 +1,23 @@
+---
+- hosts: ComputeOvsDpdk
+  vars:
+    metadata:
+      name: Validates OVS DPDK PMD cores from all NUMA nodes.
+      description: >
+        OVS DPDK PMD cpus must be provided from all NUMA nodes.
+
+        A failed status post-deployment indicates PMD CPU list is not
+        configured correctly.
+      groups:
+        - post-deployment
+  become: true
+
+  tasks:
+  - name: Get OVS DPDK PMD cores mask value
+    become_method: sudo
+    register: pmd_cpu_mask
+    command: ovs-vsctl --no-wait get Open_vSwitch . other_config:pmd-cpu-mask
+    changed_when: False
+
+  - name: Run OVS DPDK PMD cores check
+    ovs_dpdk_pmd_cpus_check: pmd_cpu_mask={{ pmd_cpu_mask.stdout }}
