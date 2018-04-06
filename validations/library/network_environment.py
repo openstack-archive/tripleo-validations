@@ -26,6 +26,9 @@ import six
 from ansible.module_utils.basic import AnsibleModule
 from os_net_config import validator
 
+from tripleo_validations.utils import get_nested
+
+
 DOCUMENTATION = '''
 ---
 module: network_environment
@@ -135,42 +138,6 @@ def validate_network_environment(network_data, nic_configs):
     return errors
 
 
-def get_network_config(resource, resource_name):
-    # Finds and returns `properties > config > network_config` inside
-    # a resources dictionary, with optional nesting levels in between.
-
-    def deep_find_key(key_data, resource, resource_name):
-        key, instance_type, instance_name = key_data
-        if key in resource.keys():
-            if not isinstance(resource[key], instance_type):
-                raise ValueError("The '{}' property of '{}' must be a {}."
-                                 "".format(key, resource_name, instance_name))
-            return resource[key]
-        for item in resource.values():
-            if isinstance(item, collections.Mapping):
-                return deep_find_key(key_data, item, resource_name)
-        return None
-
-    keys = [
-        ('properties', collections.Mapping, 'dictionary'),
-        ('config', collections.Mapping, 'dictionary'),
-        ('network_config', collections.Iterable, 'list'),
-    ]
-    current_value = resource
-
-    if not isinstance(resource, collections.Mapping):
-        raise ValueError(
-            "'{}' is not a valid resource.".format(resource_name))
-
-    while len(keys) > 0:
-        key_data = keys.pop(0)
-        current_value = deep_find_key(key_data, current_value, resource_name)
-        if current_value is None:
-            break
-
-    return current_value
-
-
 def check_nic_configs(path, nic_data):
     errors = []
 
@@ -185,7 +152,12 @@ def check_nic_configs(path, nic_data):
                 "a dictionary."]
     for name, resource in six.iteritems(resources):
         try:
-            bridges = get_network_config(resource, name)
+            nested_path = [
+                ('properties', collections.Mapping, 'dictionary'),
+                ('config', collections.Mapping, 'dictionary'),
+                ('network_config', collections.Iterable, 'list'),
+            ]
+            bridges = get_nested(resource, name, nested_path)
         except ValueError as e:
             errors.append('{}'.format(e))
             continue

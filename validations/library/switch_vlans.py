@@ -15,12 +15,13 @@
 # under the License.
 
 import collections
+import os.path
 import yaml
 
 import six
 
 from ansible.module_utils.basic import AnsibleModule  # noqa
-import validations.library.network_environment as net_utils
+from tripleo_validations import utils
 
 DOCUMENTATION = '''
 ---
@@ -62,6 +63,32 @@ EXAMPLES = '''
 '''
 
 
+def open_network_environment_files(netenv_path, template_files):
+    errors = []
+
+    try:
+        network_data = yaml.safe_load(template_files[netenv_path])
+    except Exception as e:
+        return ({}, {}, ["Can't open network environment file '{}': {}"
+                         .format(netenv_path, e)])
+    nic_configs = []
+    resource_registry = network_data.get('resource_registry', {})
+    for nic_name, relative_path in six.iteritems(resource_registry):
+        if nic_name.endswith("Net::SoftwareConfig"):
+            nic_config_path = os.path.normpath(
+                os.path.join(os.path.dirname(netenv_path), relative_path))
+            try:
+                nic_configs.append((
+                    nic_name, nic_config_path,
+                    yaml.safe_load(template_files[nic_config_path])))
+            except Exception as e:
+                errors.append(
+                    "Can't open the resource '{}' reference file '{}': {}"
+                    .format(nic_name, nic_config_path, e))
+
+    return (network_data, nic_configs, errors)
+
+
 def validate_switch_vlans(netenv_path, template_files, introspection_data):
     """Check if VLAN exists in introspection data for node
 
@@ -73,7 +100,7 @@ def validate_switch_vlans(netenv_path, template_files, introspection_data):
     """
 
     network_data, nic_configs, errors =\
-        net_utils.open_network_environment_files(netenv_path, template_files)
+        open_network_environment_files(netenv_path, template_files)
     warnings = []
     vlans_in_templates = False
 
@@ -95,7 +122,12 @@ def validate_switch_vlans(netenv_path, template_files, introspection_data):
                         "and it must be a dictionary."]
         for name, resource in six.iteritems(resources):
             try:
-                nw_config = net_utils.get_network_config(resource, name)
+                nested_path = [
+                    ('properties', collections.Mapping, 'dictionary'),
+                    ('config', collections.Mapping, 'dictionary'),
+                    ('network_config', collections.Iterable, 'list'),
+                ]
+                nw_config = utils.get_nested(resource, name, nested_path)
             except ValueError as e:
                 errors.append('{}'.format(e))
                 continue
