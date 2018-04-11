@@ -19,6 +19,7 @@ from __future__ import print_function
 
 from keystoneauth1.identity import generic as ks_id
 from keystoneauth1 import session
+from six import string_types
 from swiftclient.client import Connection
 
 
@@ -45,3 +46,9 @@ def get_swift_client(preauthurl, preauthtoken):
                       retries=10,
                       starting_backoff=3,
                       max_backoff=120)
+
+
+def filtered(obj):
+    """Only return properties of obj whose value can be properly serialized."""
+    return {k: v for k, v in obj.__dict__.items()
+            if isinstance(v, (string_types, int, list, dict, type(None)))}

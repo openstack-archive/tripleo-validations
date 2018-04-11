@@ -54,9 +54,8 @@ _raw:
 from ansible.plugins.lookup import LookupBase
 from novaclient import client as nova_client
 from novaclient.exceptions import NotFound
-from six import string_types
 
-from tripleo_validations.utils import get_auth_session
+from tripleo_validations import utils
 
 
 class LookupModule(LookupBase):
@@ -67,8 +66,8 @@ class LookupModule(LookupBase):
         username = variables.get('username')
         project_name = variables.get('project_name')
         token = variables.get('os_auth_token')
-        session = get_auth_session(auth_url, username, project_name,
-                                   auth_token=token)
+        session = utils.get_auth_session(auth_url, username, project_name,
+                                         auth_token=token)
         nova = nova_client.Client(2, session=session)
 
         servers = []
@@ -96,6 +95,4 @@ class LookupModule(LookupBase):
         # can be properly serialized. (Things like
         # novaclient.v2.servers.ServerManager will make
         # Ansible return the whole result as a string.)
-        return [{k: v for k, v in server.__dict__.items()
-                 if isinstance(v, (string_types, int, list, dict, type(None)))}
-                for server in servers]
+        return [utils.filtered(server) for server in servers]

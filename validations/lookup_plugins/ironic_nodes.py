@@ -55,16 +55,8 @@ _raw:
 
 from ansible.plugins.lookup import LookupBase
 from ironicclient import client as ironic_client
-from six import string_types
 
-from tripleo_validations.utils import get_auth_session
-
-
-def filtered(node):
-    # For each node only return properties whose value
-    # can be properly serialized.
-    return {k: v for k, v in node.__dict__.items()
-            if isinstance(v, (string_types, int, list, dict, type(None)))}
+from tripleo_validations import utils
 
 
 class LookupModule(LookupBase):
@@ -75,8 +67,8 @@ class LookupModule(LookupBase):
         username = variables.get('username')
         project_name = variables.get('project_name')
         token = variables.get('os_auth_token')
-        session = get_auth_session(auth_url, username, project_name,
-                                   auth_token=token)
+        session = utils.get_auth_session(auth_url, username, project_name,
+                                         auth_token=token)
         ironic_url = session.get_endpoint(service_type='baremetal',
                                           interface='public')
         ironic = ironic_client.get_client(1, ironic_url=ironic_url,
@@ -85,11 +77,11 @@ class LookupModule(LookupBase):
         if len(terms) > 0:
             if terms[0] == 'id':
                 nodes = [ironic.node.get(id) for id in terms[1]]
-                return [filtered(node) for node in nodes]
+                return [utils.filtered(node) for node in nodes]
             elif terms[0] == 'instance_uuid':
                 nodes = [ironic.node.get_by_instance_uuid(uuid)
                          for uuid in terms[1]]
-                return [filtered(node) for node in nodes]
+                return [utils.filtered(node) for node in nodes]
         else:
-            return [filtered(node)
+            return [utils.filtered(node)
                     for node in ironic.node.list(detail=True)]
