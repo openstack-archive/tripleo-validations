@@ -1,0 +1,13 @@
+---
+upgrade:
+  - |
+    Validate that there are no volumes formatted with XFS
+    and ftype=0.
+    Deployments from OpenStack Kilo or Liberty have XFS
+    partitions formatted with ftype=0, which is incompatible
+    with the docker overlayfs driver.
+    From OpenStack Newton, we have support for XFS ftype=1
+    by default.
+    This check will make fail the pre-upgrade validations
+    if there are deployments coming back from Kilo or Liberty
+    and have XFS partitions with ftype=0.
