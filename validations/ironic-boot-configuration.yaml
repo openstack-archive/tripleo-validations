@@ -1,0 +1,39 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Check Ironic boot configuration
+      description: >
+        Check if baremetal boot configuration is correct.
+      groups:
+        - pre-deployment
+        - pre-upgrade
+    deploy_kernel_name: "bm-deploy-kernel"
+    deploy_ramdisk_name: "bm-deploy-ramdisk"
+  tasks:
+  - name: Get id for deploy kernel by name
+    set_fact:
+      deploy_kernel_id: "{{ lookup('glance_images', 'name', ['{{ deploy_kernel_name }}'], wantlist=True) | map(attribute='id') | join(', ') }}"
+  - name: Get id for deploy ramdisk by name
+    set_fact:
+      deploy_ramdisk_id: "{{ lookup('glance_images', 'name', ['{{ deploy_ramdisk_name }}'], wantlist=True) | map(attribute='id') | join(', ') }}"
+
+  - name: Get ironic nodes
+    set_fact:
+      ironic_nodes: "{{ lookup('ironic_nodes', wantlist=True) }}"
+
+  - name: Check each node for kernel id
+    fail: msg='Node {{ item.uuid }} has an incorrectly configured driver_info/deploy_kernel. Expected "{{ deploy_kernel_id }}" but got "{{ item.driver_info.deploy_kernel }}".'
+    failed_when: item.driver_info.deploy_kernel != deploy_kernel_id
+    with_items: "{{ ironic_nodes }}"
+
+  - name: Check each node for ramdisk id
+    fail: msg='Node {{ item.uuid }} has an incorrectly configured driver_info/deploy_ramdisk. Expected "{{ deploy_ramdisk_id }}" but got "{{ item.driver_info.deploy_ramdisk }}".'
+    failed_when: item.driver_info.deploy_ramdisk != deploy_ramdisk_id
+    with_items: "{{ ironic_nodes }}"
+
+  - name: Check capabilities
+    fail: msg='Node {{ item.uuid }} is not configured to use boot_option:local in capabilities. It will not be used for deployment with flavors that require boot_option:local.'
+    failed_when: item.properties.capabilities | default('') | regex_search('boot_option:local') == ''
+    with_items: "{{ ironic_nodes }}"
+    ignore_errors: true
