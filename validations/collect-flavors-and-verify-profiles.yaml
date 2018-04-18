@@ -10,7 +10,13 @@
       - pre-deployment
       - pre-upgrade
   tasks:
-  - name: Check the flavors
+  - name: Collect and check the flavors
     check_flavors:
       roles_info: "{{ lookup('roles_info', wantlist=True) }}"
       flavors: "{{ lookup('nova_flavors', wantlist=True) }}"
+    register: flavor_result
+
+  - name: Verify the profiles
+    verify_profiles:
+      nodes: "{{ lookup('ironic_nodes', wantlist=True) }}"
+      flavors: "{{ flavor_result.flavors }}"
