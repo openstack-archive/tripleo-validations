@@ -42,10 +42,22 @@ EXAMPLES = """
     - name: Get all nodes for a set of instance UUIDs
       debug:
         msg: |
-             {{ lookup(''ironic_nodes', 'instance_uuid',
+             {{ lookup('ironic_nodes', 'instance_uuid',
              ['1691a1c7-9974-4bcc-a07a-5dec7fc04da0',
              '07f2435d-820c-46ce-9097-cf8a7282293e'],
              wantlist=True) }}"
+
+    - name: Get all nodes marked as 'associated'
+      debug:
+        msg: |
+             {{ lookup('ironic_nodes', 'associated',
+             wantlist=True) }}"
+
+    - name: Get nodes in provision state, and not associated or in maintenance
+      debug:
+        msg: |
+             {{ lookup('ironic_nodes', 'provision_state',
+             ['available', 'inspect'], wantlist=True)}}
 """
 
 RETURN = """
@@ -81,6 +93,18 @@ class LookupModule(LookupBase):
             elif terms[0] == 'instance_uuid':
                 nodes = [ironic.node.get_by_instance_uuid(uuid)
                          for uuid in terms[1]]
+                return [utils.filtered(node) for node in nodes]
+            elif terms[0] == 'associated':
+                nodes = ironic.node.list(associated=True, detail=True)
+                return [utils.filtered(node) for node in nodes]
+            elif terms[0] == 'provision_state':
+                nodes = []
+                for term in terms[1]:
+                    nodes.extend(ironic.node.list(
+                        provision_state=term,
+                        associated=False,
+                        maintenance=False,
+                        detail=True))
                 return [utils.filtered(node) for node in nodes]
         else:
             return [utils.filtered(node)

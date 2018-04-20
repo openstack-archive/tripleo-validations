@@ -16,12 +16,13 @@
 # under the License.
 
 from __future__ import print_function
+from six import string_types
 
 import collections
 
 from keystoneauth1.identity import generic as ks_id
 from keystoneauth1 import session
-from six import string_types
+from novaclient import client as nova_client
 from swiftclient.client import Connection
 
 
@@ -48,6 +49,17 @@ def get_swift_client(preauthurl, preauthtoken):
                       retries=10,
                       starting_backoff=3,
                       max_backoff=120)
+
+
+def get_nova_client(auth_variables):
+    auth_url = auth_variables.get('auth_url')
+    username = auth_variables.get('username')
+    project_name = auth_variables.get('project_name')
+    token = auth_variables.get('os_auth_token')
+    session = get_auth_session(auth_url, username, project_name,
+                               auth_token=token)
+
+    return nova_client.Client(2, session=session)
 
 
 def filtered(obj):
