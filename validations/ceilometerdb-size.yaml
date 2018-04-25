@@ -24,6 +24,7 @@
   - name: Check if telemetry services are enabled
     ini: path={{ tripleo_undercloud_conf_file }} section=DEFAULT key=enable_telemetry
     register: enable_telemetry
+    become: true
 
   - name: End play if telemetry is not enabled
     meta: end_play
