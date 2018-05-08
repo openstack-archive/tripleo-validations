@@ -25,7 +25,7 @@
   # Check that we can obtain an auth token from horizon
   - name: Check Keystone
     uri:
-      url: "{{ overcloud_keystone_url }}/v3/auth/tokens"
+      url: "{{ overcloud_keystone_url | urlsplit('scheme') }}://{{ overcloud_keystone_url | urlsplit('netloc')}}/v3/auth/tokens"
       method: POST
       body_format: json
       body:
