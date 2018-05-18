@@ -139,10 +139,11 @@ def main():
         plan_name=configs.stack or configs.plan)
 
     if inventory.get_overcloud_environment() == {}:
-        print("Error, the environment data can not "
-              "be empty '{}', please check that the --stack "
-              "or the --plan options are configured correctly "
-              "and if they correspond to the stack name.")
+        print("ERROR: The environment data can not "
+              "be empty '{{}}', please check that the --stack "
+              "or --plan options are configured correctly "
+              "and the stack {} exists".format(configs.stack or configs.plan)
+              ,file=sys.stderr)
         sys.exit(1)
 
     if configs.list:
@@ -150,7 +151,7 @@ def main():
             inventory_list = inventory.list()
             print(json.dumps(inventory_list))
         except Exception as e:
-            print("Error creating inventory: {}".format(e),
+            print("ERROR: Error creating inventory: {}".format(e),
                   file=sys.stderr)
             if configs.debug:
                 traceback.print_exc()
