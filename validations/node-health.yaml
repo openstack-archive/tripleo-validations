@@ -9,10 +9,14 @@
       groups:
         - pre-upgrade
   tasks:
+  - name: Collect IPs for overcloud nodes
+    set_fact: ansible_host="{{ hostvars[item]['ansible_host'] }}"
+    register: oc_ips
+    with_items: "{{ groups.overcloud }}"
   - name: Ping all overcloud nodes
     icmp_ping:
         host: "{{ item }}"
-    with_items: "{{ groups.overcloud }}"
+    with_items: "{{ oc_ips.results | map(attribute='ansible_facts.ansible_host') | list }}"
     ignore_errors: true
     register: ping_results
   - name: Extract failed pings
