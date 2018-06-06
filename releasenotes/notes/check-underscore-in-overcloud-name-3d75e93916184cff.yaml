@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    We don't allow having an Overcloud deployed using
+    underscores in the stack name. If it's the case, the user
+    will need to ensure this is changed before proceeding.

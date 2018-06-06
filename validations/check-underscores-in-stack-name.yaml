@@ -1,0 +1,30 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Check Overcloud stack name with underscores
+      description: >
+        This validation will check if there is deployed
+        an Overcloud using underscores in the stack name.
+      groups:
+        - pre-upgrade
+  tasks:
+  - name: Check if the Overcloud stack name has underscores
+    shell: |
+      source ~/stackrc
+      overcloud_name=$(openstack stack list -f json | jq -r '.[]["Stack Name"]' | grep -Po "_")
+      if [[ ! -z "$overcloud_name" ]]; then
+        naming_error='Underscore_Not_Allowed';
+      fi
+      echo $naming_error;
+    register: naming_error
+    changed_when: false
+  - name: Check Overcloud name
+    fail:
+      msg: >
+        Overcloud stack name can't contain underscores as they are not
+        supported in newer versions.
+        Update the Overcloud stack name with a string without underscores
+        before proceeding with the upgrade.
+    when:
+      - naming_error.stdout == 'Underscore_Not_Allowed'
