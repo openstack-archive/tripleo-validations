@@ -203,6 +203,11 @@ def check_nic_configs(path, nic_data):
                         '1 interface or 1 bond for bridge {}'
                         'of resource {} in {}'.format(
                             bridge['name'], name, path))
+                # check if the bridge has name br-int
+                if bridge['name'] == 'br-int':
+                    errors.append(
+                        'br-int bridge name is reserved for '
+                        'integration bridge')
     return errors
 
 
