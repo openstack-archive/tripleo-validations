@@ -15,6 +15,7 @@
 # under the License.
 
 from ansible.module_utils.basic import AnsibleModule  # noqa
+import re
 
 DOCUMENTATION = '''
 ---
@@ -62,6 +63,8 @@ def validate_roles_and_flavors(roles_info, flavors):
     result = {}
     errors = []
     warnings = []
+    custom_resource_class = None
+    custom_resource_class_val = None
 
     message = "Flavor '{1}' provided for the role '{0}', does not exist"
     missing_message = "Role '{0}' is in use, but has no flavor assigned"
@@ -71,6 +74,20 @@ def validate_roles_and_flavors(roles_info, flavors):
         'conductor instead of using a local bootloader. '
         'Make sure that enough nodes are marked with the '
         '"boot_option" capability set to "netboot".')
+    resource_class_missing = (
+        'Flavor {0} does not have a custom resource class '
+        'associated with it')
+    resource_class_name_incorrect = (
+        'Flavor {0} has an incorrectly named custom '
+        'resource class associated with it')
+    resource_class_value_incorrect = (
+        'Flavor {0} has a resource class that is not '
+        'offering exactly 1 resource')
+    disable_standard_scheduling = (
+        'Flavor {0} has to have scheduling based on '
+        'standard properties disabled by setting '
+        'resources:VCPU=0 resources:MEMORY_MB=0 '
+        'resources:DISK_GB=0 in the flavor property')
 
     for role in roles_info:
         target = role.get('name')
@@ -96,6 +113,40 @@ def validate_roles_and_flavors(roles_info, flavors):
                             == 'netboot':
                         warnings.append(
                             warning_message.format(flavor_name))
+                    # check if the baremetal flavor has custom resource class
+                    # required for scheduling since queens
+                    resource_specs = {key.split(
+                        "resources:", 1)[-1]: val
+                        for key, val in keys.items()
+                        if key.startswith("resources:")}
+                    if not resource_specs:
+                        errors.append(resource_class_missing.format(
+                            flavor_name))
+                    else:
+                        for key, val in resource_specs.items():
+                            if key.startswith("CUSTOM_"):
+                                custom_resource_class = True
+                                match = re.match('CUSTOM_[A-Z_]+', key)
+                                if match is None:
+                                    errors.append(
+                                        resource_class_name_incorrect,
+                                        flavor_name)
+                                else:
+                                    if val == 1:
+                                        custom_resource_class_val = True
+                        if not custom_resource_class:
+                            errors.append(resource_class_missing.format(
+                                flavor_name))
+                        if not custom_resource_class_val:
+                            errors.append(resource_class_value_incorrect.
+                                          format(flavor_name))
+                        disk = resource_specs.get("DISK_GB", None)
+                        memory = resource_specs.get("MEMORY_MB", None)
+                        vcpu = resource_specs.get("VCPU", None)
+                        if any(resource != 0 for resource in [disk, memory,
+                               vcpu]):
+                            errors.append(disable_standard_scheduling.
+                                          format(flavor_name))
 
                 result[flavor_name] = (flavor, scale)
             else:
