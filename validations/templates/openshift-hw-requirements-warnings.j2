@@ -1,0 +1,17 @@
+While checking the hardware requirements for an OpenShift deployment, the following problems were detected:
+
+{% if not matching_image %}
+  - No image with name "centos" or "rhel" could be found.
+{% endif %}
+{% if not matching_flavors_testing  %}
+  - There is no flavor available that meets the hardware requirements for a test setup.
+{% endif %}
+{% if not matching_flavors_prod  %}
+  - There is no flavor available that meets the hardware requirements for a production setup.
+{% endif %}
+{% if not resource_reqs_testing %}
+  - The resources necessary for a default test setup are not available on the hypervisors.
+{% endif %}
+{% if not resource_reqs_prod %}
+  - The resources necessary for a default production setup are not available on the hypervisors.
+{% endif %}

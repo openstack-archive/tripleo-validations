@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    Adds a hardware requirements validation that checks flavors and compute
+    resources for minimum values needed for either a test or production
+    environment and looks for the existence of the required images.
