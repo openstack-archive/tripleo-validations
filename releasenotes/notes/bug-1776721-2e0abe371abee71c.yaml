@@ -1,0 +1,4 @@
+---
+features:
+  - |
+    Adds an undercloud heat-manage purge_deleted cron job validation.
