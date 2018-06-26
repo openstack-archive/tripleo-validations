@@ -16,9 +16,8 @@
 # under the License.
 
 from ansible.plugins.lookup import LookupBase
-from novaclient import client as nova_client
 
-from tripleo_validations.utils import get_auth_session
+from tripleo_validations import utils
 
 
 DOCUMENTATION = """
@@ -46,15 +45,7 @@ class LookupModule(LookupBase):
 
     def run(self, terms, variables=None, **kwargs):
         """Returns server information from nova."""
-        auth_url = variables.get('auth_url')
-        username = variables.get('username')
-        project_name = variables.get('project_name')
-        token = variables.get('os_auth_token')
-        session = get_auth_session(auth_url, username, project_name,
-                                   auth_token=token)
-        nova = nova_client.Client(2, session=session)
-
+        nova = utils.get_nova_client(variables)
         flavors = nova.flavors.list()
-
         return {f.name: {'name': f.name, 'keys': f.get_keys()}
                 for f in flavors}

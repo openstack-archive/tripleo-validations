@@ -17,9 +17,9 @@
 
 
 from ansible.plugins.lookup import LookupBase
-from heatclient import client as heat_client
 
-from tripleo_validations.utils import get_auth_session
+
+from tripleo_validations import utils
 
 
 class LookupModule(LookupBase):
@@ -30,14 +30,8 @@ class LookupModule(LookupBase):
         :return: A list of dicts
         """
         ret = []
-        session = get_auth_session(variables['auth_url'],
-                                   variables['username'],
-                                   variables['project_name'],
-                                   auth_token=variables['os_auth_token'],
-                                   cacert=variables['cacert'])
-
-        hclient = heat_client.Client('1', session=session)
-        resource_list = hclient.resources.list(variables['plan'])
+        heat = utils.get_heat_client(variables)
+        resource_list = heat.resources.list(variables['plan'])
         for resource in resource_list:
             ret.append(dict(
                 resource_name=resource.resource_name,

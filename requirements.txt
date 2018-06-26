@@ -7,6 +7,7 @@ oslo.config>=5.2.0 # Apache-2.0
 keystoneauth1>=3.4.0 # Apache-2.0
 python-novaclient>=9.1.0 # Apache-2.0
 python-heatclient>=1.10.0 # Apache-2.0
+python-glanceclient>=2.9.1 # Apache-2.0
 python-ironicclient>=2.3.0 # Apache-2.0
 os-net-config>=7.1.0 # Apache-2.0
 six>=1.10.0 # MIT

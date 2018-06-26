@@ -20,14 +20,23 @@ from six import string_types
 
 import collections
 
+from glanceclient import client as glance_client
+from heatclient import client as heat_client
+from ironicclient import client as ironic_client
 from keystoneauth1.identity import generic as ks_id
-from keystoneauth1 import session
+from keystoneauth1 import session as ks_session
 from novaclient import client as nova_client
 from swiftclient.client import Connection
 
 
-def get_auth_session(auth_url, username, project_name, password=None,
-                     auth_token=None, cacert=None):
+def get_auth_session(auth_variables):
+    auth_url = auth_variables.get('auth_url')
+    username = auth_variables.get('username')
+    project_name = auth_variables.get('project_name')
+    auth_token = auth_variables.get('os_auth_token')
+    password = auth_variables.get('password')
+    cacert = auth_variables.get('cacert')
+
     if auth_token:
         auth = ks_id.Token(auth_url=auth_url,
                            token=auth_token,
@@ -40,26 +49,38 @@ def get_auth_session(auth_url, username, project_name, password=None,
                               project_name=project_name,
                               user_domain_id='default',
                               project_domain_id='default')
-    return session.Session(auth=auth, verify=cacert)
+    return ks_session.Session(auth=auth, verify=cacert)
 
 
-def get_swift_client(preauthurl, preauthtoken):
-    return Connection(preauthurl=preauthurl,
-                      preauthtoken=preauthtoken,
+def get_swift_client(auth_variables):
+    return Connection(preauthurl=auth_variables.get('undercloud_swift_url'),
+                      preauthtoken=auth_variables.get('os_auth_token'),
                       retries=10,
                       starting_backoff=3,
                       max_backoff=120)
 
 
 def get_nova_client(auth_variables):
-    auth_url = auth_variables.get('auth_url')
-    username = auth_variables.get('username')
-    project_name = auth_variables.get('project_name')
-    token = auth_variables.get('os_auth_token')
-    session = get_auth_session(auth_url, username, project_name,
-                               auth_token=token)
+    return nova_client.Client(2, session=get_auth_session(auth_variables))
 
-    return nova_client.Client(2, session=session)
+
+def get_glance_client(auth_variables):
+    return glance_client.Client(2, session=get_auth_session(auth_variables))
+
+
+def get_heat_client(auth_variables):
+    return heat_client.Client('1', session=get_auth_session(auth_variables))
+
+
+def get_ironic_client(auth_variables):
+    session = get_auth_session(auth_variables)
+    ironic_url = session.get_endpoint(service_type='baremetal',
+                                      interface='public')
+    return ironic_client.get_client(
+        1,
+        ironic_url=ironic_url,
+        os_auth_token=auth_variables.get('os_auth_token')
+    )
 
 
 def filtered(obj):

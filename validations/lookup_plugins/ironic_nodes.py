@@ -66,7 +66,6 @@ _raw:
 """
 
 from ansible.plugins.lookup import LookupBase
-from ironicclient import client as ironic_client
 
 from tripleo_validations import utils
 
@@ -75,16 +74,7 @@ class LookupModule(LookupBase):
 
     def run(self, terms, variables=None, **kwargs):
         """Returns node information from ironic."""
-        auth_url = variables.get('auth_url')
-        username = variables.get('username')
-        project_name = variables.get('project_name')
-        token = variables.get('os_auth_token')
-        session = utils.get_auth_session(auth_url, username, project_name,
-                                         auth_token=token)
-        ironic_url = session.get_endpoint(service_type='baremetal',
-                                          interface='public')
-        ironic = ironic_client.get_client(1, ironic_url=ironic_url,
-                                          os_auth_token=token)
+        ironic = utils.get_ironic_client(variables)
 
         if len(terms) > 0:
             if terms[0] == 'id':
