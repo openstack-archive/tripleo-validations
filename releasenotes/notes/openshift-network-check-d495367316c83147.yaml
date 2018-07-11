@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Adds a network requirements validation for OpenShift which checks if there
+    is an external network set on the overcloud.
