@@ -1,0 +1,5 @@
+---
+features:
+  - Allows to list specific directories to check
+  - Matches listed directories to actual mounts
+  - Ensure sufficient free space is available on volumes of interest
