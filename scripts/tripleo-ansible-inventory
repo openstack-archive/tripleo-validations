@@ -138,14 +138,6 @@ def main():
         ansible_ssh_user=configs.ansible_ssh_user,
         plan_name=configs.stack or configs.plan)
 
-    if inventory.get_overcloud_environment() == {}:
-        print("ERROR: The environment data can not "
-              "be empty '{{}}', please check that the --stack "
-              "or --plan options are configured correctly "
-              "and the stack {} exists".format(configs.stack or configs.plan)
-              ,file=sys.stderr)
-        sys.exit(1)
-
     if configs.list:
         try:
             inventory_list = inventory.list()
