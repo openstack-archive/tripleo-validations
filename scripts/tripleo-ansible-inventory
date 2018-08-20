@@ -126,7 +126,8 @@ def main():
         'project_name': configs.project_name,
         'os_auth_token': configs.auth_token,
         'password': configs.password,
-        'cacert': configs.cacert
+        'cacert': configs.cacert,
+        'timeout': 30
     }
 
     inventory = TripleoInventory(

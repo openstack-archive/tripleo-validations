@@ -36,6 +36,7 @@ def get_auth_session(auth_variables):
     auth_token = auth_variables.get('os_auth_token')
     password = auth_variables.get('password')
     cacert = auth_variables.get('cacert')
+    timeout = auth_variables.get('timeout')
 
     if auth_token:
         auth = ks_id.Token(auth_url=auth_url,
@@ -49,7 +50,7 @@ def get_auth_session(auth_variables):
                               project_name=project_name,
                               user_domain_id='default',
                               project_domain_id='default')
-    return ks_session.Session(auth=auth, verify=cacert)
+    return ks_session.Session(auth=auth, verify=cacert, timeout=timeout)
 
 
 def get_swift_client(auth_variables):
