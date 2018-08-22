@@ -8,7 +8,14 @@
         scale-up or an upgrade.
       groups:
         - pre-upgrade
+    hosts_are_ips: True
   tasks:
+  - name: Fail if there are no overcloud hosts in the inventory
+    fail: msg="There are no overcloud hosts."
+    when: "'overcloud' not in groups"
+  - name: Check if hosts are IPs
+    set_fact: hosts_are_ips="{{ item | ipaddr == item }}"
+    with_items: "{{ groups.overcloud }}"
   - name: Ping all overcloud nodes
     icmp_ping:
         host: "{{ item }}"
@@ -17,10 +24,15 @@
     register: ping_results
   - name: Extract failed pings
     set_fact:
-      failed_ips: "{{ ping_results.results | selectattr('failed', 'equalto', True) | map(attribute='item') | list }}"
-  - name: Lookup nova servers for each failed IP
+      failed_pings: "{{ ping_results.results | selectattr('failed', 'equalto', True) | map(attribute='item') | list }}"
+  - name: Lookup nova servers for each failed Ping by IP
     set_fact:
-      servers: "{{ lookup('nova_servers', 'ip', 'ctlplane', failed_ips, wantlist=True) }}"
+      servers: "{{ lookup('nova_servers', 'ip', 'ctlplane', failed_pings, wantlist=True) }}"
+    when: hosts_are_ips == true
+  - name: Lookup nova servers for each failed Ping by name
+    set_fact:
+      servers: "{{ lookup('nova_servers', 'name', failed_pings, wantlist=True) }}"
+    when: hosts_are_ips == false
   - name: Extract nova ids
     set_fact:
       server_ids: "{{ servers | map(attribute='id') | list }}"
