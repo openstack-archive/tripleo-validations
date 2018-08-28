@@ -25,4 +25,4 @@ available independently from the UI or the command line client.
 * Documentation: https://docs.openstack.org/tripleo-validations/latest/
 * Release notes: https://docs.openstack.org/releasenotes/tripleo-validations/
 * Source: https://git.openstack.org/cgit/openstack/tripleo-validations
-* Bugs: https://bugs.launchpad.net/tripleo/+bugs?field.tag=validations
+* Bugs: https://storyboard.openstack.org/#!/project/openstack/tripleo-validations
