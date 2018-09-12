@@ -16,10 +16,10 @@
 # under the License.
 
 from ansible.plugins.lookup import LookupBase
-from glanceclient import client as glance_client
+
 from glanceclient.exc import HTTPNotFound
 
-from tripleo_validations.utils import get_auth_session
+from tripleo_validations import utils
 
 
 DOCUMENTATION = """
@@ -57,13 +57,7 @@ class LookupModule(LookupBase):
 
     def run(self, terms, variables=None, **kwargs):
         """Returns server information from nova."""
-        auth_url = variables.get('auth_url')
-        username = variables.get('username')
-        project_name = variables.get('project_name')
-        token = variables.get('os_auth_token')
-        session = get_auth_session(auth_url, username, project_name,
-                                   auth_token=token)
-        glance = glance_client.Client(2, session=session)
+        glance = utils.get_glance_client(variables)
 
         images = []
         if len(terms) > 0:

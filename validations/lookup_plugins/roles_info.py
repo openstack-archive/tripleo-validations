@@ -19,7 +19,7 @@ import yaml
 
 from ansible.plugins.lookup import LookupBase
 
-from tripleo_validations.utils import get_swift_client
+from tripleo_validations import utils
 
 
 DOCUMENTATION = """
@@ -54,16 +54,10 @@ class LookupModule(LookupBase):
 
     def run(self, terms, variables=None, **kwargs):
         """Returns server information from nova."""
-        swiftclient = get_swift_client(variables['undercloud_swift_url'],
-                                       variables['os_auth_token'])
-
+        swift = utils.get_swift_client(variables)
         plan = variables.get('plan')
-
-        plan_env = self._get_object_yaml(
-            swiftclient, plan, 'plan-environment.yaml')
-
-        roles_data = self._get_object_yaml(
-            swiftclient, plan, 'roles_data.yaml')
+        plan_env = self._get_object_yaml(swift, plan, 'plan-environment.yaml')
+        roles_data = self._get_object_yaml(swift, plan, 'roles_data.yaml')
 
         def default_role_data(role):
             return {

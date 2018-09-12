@@ -52,7 +52,6 @@ _raw:
 """
 
 from ansible.plugins.lookup import LookupBase
-from novaclient import client as nova_client
 from novaclient.exceptions import NotFound
 
 from tripleo_validations import utils
@@ -62,13 +61,7 @@ class LookupModule(LookupBase):
 
     def run(self, terms, variables=None, **kwargs):
         """Returns server information from nova."""
-        auth_url = variables.get('auth_url')
-        username = variables.get('username')
-        project_name = variables.get('project_name')
-        token = variables.get('os_auth_token')
-        session = utils.get_auth_session(auth_url, username, project_name,
-                                         auth_token=token)
-        nova = nova_client.Client(2, session=session)
+        nova = utils.get_nova_client(variables)
 
         servers = []
         if len(terms) > 0:

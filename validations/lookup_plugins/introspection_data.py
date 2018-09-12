@@ -17,8 +17,7 @@
 
 from ansible.plugins.lookup import LookupBase
 
-from swiftclient.client import Connection
-from tripleo_validations.utils import get_auth_session
+from tripleo_validations import utils
 
 
 class LookupModule(LookupBase):
@@ -32,18 +31,13 @@ class LookupModule(LookupBase):
         """
         ret = []
 
-        session = get_auth_session(kwargs.get('auth_url'),
-                                   "ironic",
-                                   "service",
-                                   kwargs.get('password'))
-
-        swift_client = Connection(session=session)
-        container = swift_client.get_container("ironic-inspector")
+        swift = utils.get_swift_client(variables)
+        container = swift.get_container("ironic-inspector")
 
         for item in container[1]:
             if item['name'].startswith('inspector_data') and \
                     not item['name'].endswith("UNPROCESSED"):
-                obj = swift_client.get_object("ironic-inspector", item['name'])
+                obj = swift.get_object("ironic-inspector", item['name'])
                 ret.append((item['name'], obj))
 
         return ret

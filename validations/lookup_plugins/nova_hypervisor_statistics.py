@@ -46,7 +46,5 @@ class LookupModule(LookupBase):
     def run(self, terms, variables=None, **kwargs):
         """Returns server information from nova."""
         nova = utils.get_nova_client(variables)
-
         statistics = nova.hypervisor_stats.statistics()
-
         return utils.filtered(statistics)

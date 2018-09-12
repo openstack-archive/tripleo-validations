@@ -19,7 +19,7 @@ import os
 
 from ansible.plugins.lookup import LookupBase
 
-from tripleo_validations.utils import get_swift_client
+from tripleo_validations import utils
 
 
 EXCLUDED_EXT = (
@@ -37,11 +37,10 @@ class LookupModule(LookupBase):
         containing the template path and the template content.
         """
         ret = []
-        swift_client = get_swift_client(variables['undercloud_swift_url'],
-                                        variables['os_auth_token'])
-        container = swift_client.get_container(variables['plan'])
+        swift = utils.get_swift_client(variables)
+        container = swift.get_container(variables['plan'])
         for item in container[1]:
-            obj = swift_client.get_object(variables['plan'], item['name'])
+            obj = swift.get_object(variables['plan'], item['name'])
             if os.path.splitext(item['name'])[-1] not in EXCLUDED_EXT:
                 ret.append((item['name'], obj))
 
