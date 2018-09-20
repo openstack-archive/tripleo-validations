@@ -1,8 +1,3 @@
-- name: debug
-  debug:
-    msg: "{{a_mounts}}"
-
-
 - name: Set a constant defining number of Bytes in 1 GB
   set_fact:
     const_bytes_in_gb: 1073741824
