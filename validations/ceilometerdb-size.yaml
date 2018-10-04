@@ -76,7 +76,7 @@
 
   - name: Set meter_check_result errors if needed
     set_fact:
-      validation_errors: "{{ validation_errors }} + [ '/etc/ceilometer/ceilomter.conf[database]/{{ metering_ttl_check }} is set to -1 or not set' ]"
+      validation_errors: "{{ validation_errors }} + [ '/etc/ceilometer/ceilometer.conf[database]/{{ metering_ttl_check }} is set to -1 or not set' ]"
     when: gnocchi_exists.stat.exists == False and meter_check_result.value|default(-1) < 0
 
     # failure occurs when the length of the validation_errors
