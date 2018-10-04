@@ -17,9 +17,9 @@
     ini: path={{ item }} section=DEFAULT key=debug ignore_missing_file=True
     register: config_result
     with_items:
-      - /etc/nova/nova.conf
-      - /etc/neutron/neutron.conf
-      - /etc/ceilometer/ceilometer.conf
-      - /etc/heat/heat.conf
-      - /etc/ironic/ironic.conf
+      - /var/lib/config-data/puppet-generated/nova/etc/nova/nova.conf
+      - /var/lib/config-data/puppet-generated/neutron/etc/neutron/neutron.conf
+      - /var/lib/config-data/puppet-generated/etc/ceilometer/ceilometer.conf
+      - /var/lib/config-data/puppet-generated/heat/etc/heat/heat.conf
+      - /var/lib/config-data/puppet-generated/ironic/etc/ironic/ironic.conf
     failed_when: "debug_check|bool  == config_result.value|bool"
