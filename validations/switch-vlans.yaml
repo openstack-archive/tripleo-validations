@@ -16,11 +16,11 @@
   tasks:
   - name: Get Ironic Inspector swift auth_url
     become: true
-    ini: path=/etc/ironic-inspector/inspector.conf section=swift key=auth_url
+    ini: path=/var/lib/config-data/ironic_inspector/etc/ironic-inspector/inspector.conf section=swift key=auth_url
     register: auth_url
   - name: Get Ironic Inspector swift password
     become: true
-    ini: path=/etc/ironic-inspector/inspector.conf section=swift key=password
+    ini: path=/var/lib/config-data/ironic_inspector/etc/ironic-inspector/inspector.conf section=swift key=password
     register: password
   - name: Check that switch vlans are present if used in nic-config files
     switch_vlans:
