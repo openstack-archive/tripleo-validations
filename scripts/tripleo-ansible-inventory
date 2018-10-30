@@ -38,8 +38,8 @@ opts = [
     cfg.BoolOpt('list', help='List active hosts'),
     cfg.StrOpt('static-inventory', help=('ini inventory is deprecated, '
                                          'the inventory will be output '
-                                         'in yaml format.  Please use '
-                                         '--static-yaml-format.'),
+                                         'in yaml format. Please use '
+                                         '--static-yaml-inventory.'),
                deprecated_for_removal=True,
                deprecated_reason="Use --static-yaml-inventory."),
     cfg.StrOpt('static-yaml-inventory', help=('output the active hosts '
@@ -155,7 +155,7 @@ def main():
             configs.static_yaml_inventory = configs.static_inventory + '.yaml'
             print('WARNING: ini format is deprecated, the inventory will '
                   'be output in yaml format as {}.  Please use '
-                  '--static-yaml-format.'.format(
+                  '--static-yaml-inventory.'.format(
                     configs.static_yaml_inventory))
         try:
             inventory.write_static_inventory(configs.static_yaml_inventory)
