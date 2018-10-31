@@ -16,5 +16,5 @@
     changed_when: False
   - name: Detect whether the drive uses Advanced Format
     advanced_format: drive={{ item }}
-    when: item|match("^sd.$")
+    when: item is match("^sd.$")
     with_items: "{{ drive_list.stdout_lines }}"
