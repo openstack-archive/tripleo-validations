@@ -14,7 +14,7 @@
   tasks:
   - name: Get heat crontab
     become: true
-    shell: 'crontab -l -u heat | grep -v "^#"'
+    shell: 'docker exec $(docker ps -q --filter "name=heat" | head -1) crontab -l -u heat |grep -v "^#"'
     register: cron_result
     changed_when: False
   - name: Check heat crontab
