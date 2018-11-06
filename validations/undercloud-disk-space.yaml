@@ -4,9 +4,10 @@
     metadata:
       name: Verify undercloud fits the disk space requirements
       description: >
-        Make sure that the root partition on the undercloud node is large enough.
+        Make sure that the root partition on the undercloud node has enough
+        free space.
 
-        http://tripleo.org/environments/environments.html#id5
+        http://tripleo.org/install/environments/baremetal.html#minimum-system-requirements
       groups:
         - prep
         - pre-introspection
@@ -17,7 +18,6 @@
       - {mount: /usr,                 min_size: 5}
       - {mount: /var,                 min_size: 20}
       - {mount: /,                    min_size: 25}
-    a_mounts: "{{hostvars[inventory_hostname].ansible_facts.mounts}}"
 
   tasks:
   - include_tasks: tasks/disk_space.yaml
