@@ -13,24 +13,27 @@
     max_process_count: 8
   tasks:
   - name: Collect the number of running processes per OpenStack service
-    command: pgrep -f -c {{ item }}
+    command: 'docker exec {{ item|replace("-","_") }} pgrep -f -c {{ item }}'
+    become: true
     ignore_errors: yes
     register: "process_count"
     changed_when: False
-    with_items:
-    - heat-engine
-    - mistral
-    - ironic-inspector
-    - ironic-conductor
-    - nova-api
-    - nova-scheduler
-    - nova-conductor
-    - nova-compute
-    - glance-api
-    - swift-proxy-server
-    - swift-object-server
-    - swift-container-server
-    - zaqar-server
+    loop:
+      - heat-engine
+      - mistral-api
+      - mistral-engine
+      - mistral-executor
+      - ironic-inspector
+      - ironic-conductor
+      - nova-api
+      - nova-scheduler
+      - nova-conductor
+      - nova-compute
+      - glance-api
+      - swift-proxy
+      - swift-object-server
+      - swift-container-server
+      - zaqar
 
   - name: Create warning messages
     command: echo "There are {{ item.stdout }} {{ item.item }} processes running. Having more than {{ max_process_count }} risks running out of memory."
