@@ -13,11 +13,12 @@
   tasks:
   - name: Get the open_files_limit value
     become: true
-    mysql_variables: variable=open_files_limit config_file=/var/lib/config-data/mysql/root/.my.cnf
+    command: docker exec -u root -it mysql ulimit -n
+    changed_when: False
     register: mysqld_open_files_limit
   - name: Test the open-files-limit value
     fail:
       msg: >
         The open_files_limit option for mysql must be higher than
-        {{ min_open_files_limit }}. Right now it's {{ mysqld_open_files_limit.msg }}.
-    failed_when: "mysqld_open_files_limit.msg|int < min_open_files_limit"
+        {{ min_open_files_limit }}. Right now it's {{ mysqld_open_files_limit.stdout }}.
+    failed_when: "mysqld_open_files_limit.stdout|int < min_open_files_limit"
