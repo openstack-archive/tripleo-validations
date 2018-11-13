@@ -60,6 +60,7 @@ opts = [
                               'will take precedence.')),
     cfg.StrOpt('ansible_ssh_user', default=os.environ.get('ANSIBLE_SSH_USER',
         'heat-admin')),
+    cfg.StrOpt('ansible_python_interpreter', default=None),
     cfg.BoolOpt('debug', help='Print tracebacks for exceptions')
 ]
 
@@ -138,7 +139,8 @@ def main():
         project_name=configs.project_name,
         username=configs.username,
         ansible_ssh_user=configs.ansible_ssh_user,
-        plan_name=configs.stack or configs.plan)
+        plan_name=configs.stack or configs.plan,
+        ansible_python_interpreter=configs.ansible_python_interpreter)
 
     if configs.list:
         try:
