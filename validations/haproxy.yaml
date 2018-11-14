@@ -19,10 +19,10 @@
     haproxy_conf: path="{{ config_file }}"
   - name: Verify global maxconn
     fail: msg="The 'global maxconn' value '{{ haproxy_conf.global.maxconn}}' must be greater than {{ global_maxconn_min }}"
-    failed_when: "haproxy_conf.global.maxconn < global_maxconn_min"
+    failed_when: haproxy_conf.global.maxconn|int < global_maxconn_min
   - name: Verify defaults maxconn
     fail: msg="The 'defaults maxconn' value '{{ haproxy_conf.defaults.maxconn }}' must be greater than {{ defaults_maxconn_min }}"
-    failed_when: "haproxy_conf.defaults.maxconn < defaults_maxconn_min"
+    failed_when: haproxy_conf.defaults.maxconn|int < defaults_maxconn_min
   - name: Verify defaults timeout queue
     fail: msg="The 'timeout queue' option in 'defaults' is '{{ haproxy_conf.defaults['timeout queue'] }}', but must be set to {{ defaults_timeout_queue }}"
     failed_when: "haproxy_conf.defaults['timeout queue'] != defaults_timeout_queue"
