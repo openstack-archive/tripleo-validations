@@ -4,10 +4,10 @@
     metadata:
       name: Verify undercloud fits the disk space requirements to perform an upgrade
       description: >
-        Make sure that the root partition on the undercloud node is large
-        enough before starting an upgrade
+        Make sure that the root partition on the undercloud node has enough
+        free space before starting an upgrade
 
-        http://tripleo.org/environments/environments.html#id5
+        http://tripleo.org/install/environments/baremetal.html#minimum-system-requirements
       groups:
         - pre-upgrade
     volumes:
@@ -15,7 +15,6 @@
       - {mount: /var/lib/config-data, min_size: 3}
       - {mount: /var,                 min_size: 16}
       - {mount: /,                    min_size: 20}
-    a_mounts: "{{hostvars[inventory_hostname].ansible_facts.mounts}}"
 
   tasks:
   - include_tasks: tasks/disk_space.yaml
