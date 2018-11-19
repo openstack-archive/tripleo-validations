@@ -125,7 +125,7 @@ def verify_profiles(nodes, flavors):
                        '{flavor}).\n'
                        'Recommendation: tag more nodes using openstack '
                        'baremetal node set --property "capabilities='
-                       'profile:{profile},boot_option:local" <NODE ID>')
+                       'profile:{profile}" <NODE ID>')
             errors.append(message.format(total=scale - required_count,
                                          scale=scale,
                                          profile=profile,
