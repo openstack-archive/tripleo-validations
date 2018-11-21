@@ -24,7 +24,7 @@ import yaml
 import six
 
 from ansible.module_utils.basic import AnsibleModule
-from os_net_config import validator
+# from os_net_config import validator
 
 from tripleo_validations.utils import get_nested
 
@@ -165,11 +165,16 @@ def check_nic_configs(path, nic_data):
         if not bridges:
             continue
 
-        # Validate the os_net_config object against the schema
-        v_errors = validator.validate_config(bridges, path)
-        errors.extend(v_errors)
-        if len(v_errors) > 0:
-            continue
+        # TODO(flfuchs) 2018-11-22: Rocky introduced a couple of
+        # template changes using a schema that cant't be found in
+        # os-net-config's schema.yaml file yet, so the validator fails
+        # even though the templates are working. Until this is done, we
+        # skip the schema validation.
+        # Validate the os_net_config object against the schema.
+        # v_errors = validator.validate_config(bridges, path)
+        # errors.extend(v_errors)
+        # if len(v_errors) > 0:
+        #     continue
 
         # If we get here, the nic config file conforms to the schema and
         # there is no more need to check for existence and type of
