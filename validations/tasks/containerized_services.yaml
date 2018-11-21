@@ -1,6 +1,7 @@
 - name: gather docker facts
   docker_facts:
     container_filter: status=running
+  become: yes
 
 - name: compare running containers to list
   set_fact:
