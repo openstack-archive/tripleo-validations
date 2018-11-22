@@ -13,7 +13,7 @@
   tasks:
   - name: Get keystone crontab
     become: true
-    shell: 'docker exec $(docker ps -q --filter "name=keystone" | head -1) crontab -l -u keystone |grep -v "^#"'
+    shell: 'docker exec keystone_cron crontab -l -u keystone |grep -v "^#"'
     register: cron_result
     changed_when: False
   -
