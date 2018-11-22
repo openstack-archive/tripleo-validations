@@ -14,10 +14,12 @@
         - pre-introspection
   tasks:
   - name: Look up the introspection interface
-    ini: path=/var/lib/config-data/ironic_inspector/etc/ironic-inspector/inspector.conf section=iptables key=dnsmasq_interface
+    become: True
+    ini: path=/var/lib/config-data/ironic_inspector/puppet-generated/etc/ironic-inspector/inspector.conf section=iptables key=dnsmasq_interface
     register: interface
   - name: Look up the introspection interface from the deprecated option
-    ini: path=/var/lib/config-data/ironic_inspector/etc/ironic-inspector/inspector.conf section=firewall key=dnsmasq_interface
+    become: True
+    ini: path=/var/lib/config-data/ironic_inspector/puppet-generated/etc/ironic-inspector/inspector.conf section=firewall key=dnsmasq_interface
     register: interface_deprecated
   - name: Look for rogue DHCP servers
     script: files/rogue_dhcp.py {{ interface.value or interface_deprecated.value or 'br-ctlplane' }}
