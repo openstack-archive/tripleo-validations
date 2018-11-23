@@ -23,8 +23,8 @@ module: check_flavors
 short_description: Check that assigned flavors exist and are configured
 description:
     - Validate that the flavors assigned to roles exist and have the correct
-    settings. Right now, that means that boot_option is set to 'local', or
-    if set to 'netboot', issue a warning.
+    settings. Right now, that means that boot_option is unset or set to 'local'
+    , or if set to 'netboot', issue a warning.
 options:
     roles_info:
         required: true

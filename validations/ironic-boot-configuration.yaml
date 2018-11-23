@@ -31,9 +31,3 @@
     fail: msg='Node {{ item.uuid }} has an incorrectly configured driver_info/deploy_ramdisk. Expected "{{ deploy_ramdisk_id }}" but got "{{ item.driver_info.deploy_ramdisk }}".'
     failed_when: item.driver_info.deploy_ramdisk != deploy_ramdisk_id
     with_items: "{{ ironic_nodes }}"
-
-  - name: Check capabilities
-    fail: msg='Node {{ item.uuid }} is not configured to use boot_option:local in capabilities. It will not be used for deployment with flavors that require boot_option:local.'
-    failed_when: item.properties.capabilities | default('') | regex_search('boot_option:local') == ''
-    with_items: "{{ ironic_nodes }}"
-    ignore_errors: true
