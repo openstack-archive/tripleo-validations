@@ -13,27 +13,28 @@
     max_process_count: 8
   tasks:
   - name: Collect the number of running processes per OpenStack service
-    command: 'docker exec {{ item|replace("-","_") }} pgrep -f -c {{ item }}'
+    command: 'docker exec {{ item.container }} pgrep -f -c {{ item.proc }}'
     become: true
     ignore_errors: yes
     register: "process_count"
     changed_when: False
     loop:
-      - heat-engine
-      - mistral-api
-      - mistral-engine
-      - mistral-executor
-      - ironic-inspector
-      - ironic-conductor
-      - nova-api
-      - nova-scheduler
-      - nova-conductor
-      - nova-compute
-      - glance-api
-      - swift-proxy
-      - swift-object-server
-      - swift-container-server
-      - zaqar
+      - {container: "heat_engine",            proc: "heat-engine"}
+      - {container: "ironic_inspector",       proc: "ironic-inspector"}
+      - {container: "ironic_conductor",       proc: "ironic-conductor"}
+      - {container: "nova_api",               proc: "nova_api"}
+      - {container: "nova_scheduler",         proc: "nova-scheduler"}
+      - {container: "nova_conductor",         proc: "nova-conductor"}
+      - {container: "nova_compute",           proc: "nova-compute"}
+      - {container: "glance_api",             proc: "glance-api"}
+      - {container: "swift_proxy",            proc: "swift-proxy-server"}
+      - {container: "swift_object_server",    proc: "swift-object-server"}
+      - {container: "swift_container_server", proc: "swift-container-server"}
+      - {container: "zaqar",                  proc: "zaqar"}
+      - {container: "zaqar_websocket",        proc: "zaqar-server"}
+      - {container: "mistral_api",            proc: "mistral-server"}
+      - {container: "mistral_engine",         proc: "mistral-server"}
+      - {container: "mistral_executor",       proc: "mistral-server"}
 
   - name: Create warning messages
     command: echo "There are {{ item.stdout }} {{ item.item }} processes running. Having more than {{ max_process_count }} risks running out of memory."
