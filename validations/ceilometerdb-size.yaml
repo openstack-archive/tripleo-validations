@@ -15,7 +15,9 @@
         - pre-deployment
     metering_ttl_check: "metering_time_to_live"
     event_ttl_check: "event_time_to_live"
-    event_config_file: "/etc/ceilometer/ceilometer.conf"
+    ceilometer_config_file: "/var/lib/config-data/puppet-generated/ceilometer/etc/ceilometer/ceilometer.conf"
+    panko_config_file: "/var/lib/config-data/puppet-generated/panko/etc/panko/panko.conf"
+    gnocchi_config_file: "/var/lib/config-data/puppet-generated/gnocchi/etc/gnocchi/gnocchi.conf"
   tasks:
   - name: Get the path of tripleo undercloud config file
     become: true
@@ -38,7 +40,7 @@
   # uses panko for events
   - name: check to see if panko is installed
     stat:
-      path: /etc/panko/panko.conf
+      path: "{{ panko_config_file }}"
     register: panko_exists
 
   # if gnocchi exists, then the gnocchi archive policy
@@ -46,18 +48,18 @@
   # ttls
   - name: Check to see if gnocchi is installed
     stat:
-      path: /etc/gnocchi/gnocchi.conf
+      path: "{{ gnocchi_config_file }}"
     register: gnocchi_exists
 
-  - name: Set fact for {{ event_config_file }}
+  - name: Set fact for {{ ceilometer_config_file }}
     set_fact:
-      event_config_file: /etc/panko/panko.conf
+      ceilometer_config_file: "{{ panko_config_file }}"
     when: panko_exists.stat.exists
 
-  - name: Get event ttl from {{ event_config_file }}
+  - name: Get event ttl from {{ ceilometer_config_file }}
     become: true
     ini:
-      path: "{{ event_config_file }}"
+      path: "{{ ceilometer_config_file }}"
       section: database
       key: "{{ event_ttl_check }}"
       ignore_missing_file: true
@@ -65,7 +67,7 @@
 
   - name: Set event_check_result errors if needed
     set_fact:
-      validation_errors: "{{ validation_errors }} + [ '{{ event_config_file }}[database]/{{ event_ttl_check }} is set to -1 or not set' ]"
+      validation_errors: "{{ validation_errors }} + [ '{{ ceilometer_config_file }}[database]/{{ event_ttl_check }} is set to -1 or not set' ]"
     when: event_check_result.value|default(-1) < 0
 
   - name: Get TTL setting values from ceilometer.conf
@@ -76,7 +78,7 @@
 
   - name: Set meter_check_result errors if needed
     set_fact:
-      validation_errors: "{{ validation_errors }} + [ '/etc/ceilometer/ceilometer.conf[database]/{{ metering_ttl_check }} is set to -1 or not set' ]"
+      validation_errors: "{{ validation_errors }} + [ '{{ ceilometer_config_file }}[database]/{{ metering_ttl_check }} is set to -1 or not set' ]"
     when: gnocchi_exists.stat.exists == False and meter_check_result.value|default(-1) < 0
 
     # failure occurs when the length of the validation_errors
