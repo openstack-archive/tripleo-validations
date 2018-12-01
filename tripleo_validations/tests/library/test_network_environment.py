@@ -74,6 +74,8 @@ class TestNicConfigs(base.TestCase):
         self.assertEqual(len(errors), 1)
         self.assertIn("'foo' must be a list", errors[0])
 
+    # See comment from 2018-11-22 in library/network_environment.py
+    """
     def test_bridge_has_type(self):
         nic_data = self.nic_data([{
             'name': 'storage',
@@ -143,6 +145,7 @@ class TestNicConfigs(base.TestCase):
         self.assertEqual(len(errors), 1)
         self.assertIn("members/items/oneOf: {} is not valid under any"
                       " of the given schemas", errors[0])
+    """
 
     def test_more_than_one_bond(self):
         nic_data = self.nic_data([{
@@ -196,6 +199,8 @@ class TestNicConfigs(base.TestCase):
         errors = validation.check_nic_configs("controller.yaml", nic_data)
         self.assertEqual([], errors)
 
+    # See comment from 2018-11-22 in library/network_environment.py
+    """
     def test_one_bond_no_interfaces(self):
         nic_data = self.nic_data([{
             'type': 'ovs_bridge',
@@ -207,6 +212,7 @@ class TestNicConfigs(base.TestCase):
         errors = validation.check_nic_configs("controller.yaml", nic_data)
         self.assertEqual(len(errors), 1)
         self.assertIn('members/minItems: [] is too short', errors[0])
+    """
 
     def test_one_bond_multiple_interfaces(self):
         nic_data = self.nic_data([{
