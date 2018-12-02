@@ -9,14 +9,15 @@
         - pre-deployment
   tasks:
   - name: Check if ceph-ansible is installed
-    command: yum list installed ceph-ansible
+    shell: rpm -q ceph-ansible || true
     args:
       warn: no
-    ignore_errors: true
-    register: ceph_ansible_installed
     changed_when: False
+    ignore_errors: True
+    register: ceph_ansible_installed
+
   - name: Warn about missing ceph-ansible
     warn:
       msg: If planning to use Ceph, it is necessary to install the ceph-ansible on the undercloud
     when:
-      - ceph_ansible_installed is failed
+      - ceph_ansible_installed.stdout.find('is not installed') != -1
