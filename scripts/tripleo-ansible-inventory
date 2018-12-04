@@ -36,12 +36,6 @@ from tripleo_validations import utils
 opts = [
     cfg.StrOpt('host', help='List details about the specific host'),
     cfg.BoolOpt('list', help='List active hosts'),
-    cfg.StrOpt('static-inventory', help=('ini inventory is deprecated, '
-                                         'the inventory will be output '
-                                         'in yaml format. Please use '
-                                         '--static-yaml-inventory.'),
-               deprecated_for_removal=True,
-               deprecated_reason="Use --static-yaml-inventory."),
     cfg.StrOpt('static-yaml-inventory', help=('output the active hosts '
                                               'to a static inventory '
                                               '(yaml format) file.')),
@@ -152,13 +146,7 @@ def main():
             if configs.debug:
                 traceback.print_exc()
             sys.exit(1)
-    elif configs.static_yaml_inventory or configs.static_inventory:
-        if configs.static_inventory:
-            configs.static_yaml_inventory = configs.static_inventory + '.yaml'
-            print('WARNING: ini format is deprecated, the inventory will '
-                  'be output in yaml format as {}.  Please use '
-                  '--static-yaml-inventory.'.format(
-                    configs.static_yaml_inventory))
+    elif configs.static_yaml_inventory:
         try:
             inventory.write_static_inventory(configs.static_yaml_inventory)
         except Exception as e:
