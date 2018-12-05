@@ -8,10 +8,11 @@
         undercloud and overcloud controller after deployment.
       groups:
       - post-deployment
+    keystone_conf_file: "/var/lib/config-data/puppet-generated/keystone/etc/keystone/keystone.conf"
   tasks:
   - name: Fetch token value
     become: true
-    ini: path=/etc/keystone/keystone.conf section=DEFAULT key=admin_token ignore_missing_file=True
+    ini: path={{ keystone_conf_file }} section=DEFAULT key=admin_token ignore_missing_file=True
     register: token_result
   - name: Check if token value is disabled.
     fail: msg="Keystone admin token is not disabled."
