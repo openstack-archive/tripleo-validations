@@ -20,29 +20,47 @@
     - /etc/neutron/neutron.conf
     - /usr/share/neutron/neutron-dist.conf
     - /etc/neutron/metadata_agent.ini
-    - /etc/neutron/metering_agent.ini
     - /etc/neutron/dhcp_agent.ini
     - /etc/neutron/plugins/ml2/openvswitch_agent.ini
-    - /etc/neutron/conf.d/ml2_conf_cisco.ini
-    - /etc/neutron/conf.d/cisco_cfg_agent.ini
-    - /etc/neutron/conf.d/cisco_router_plugin.ini
-    - /usr/share/neutron/l3_agent
-    - /etc/neutron/conf.d/common
-    - /etc/neutron/conf.d/neutron-l3-agent
+    - /etc/neutron/fwaas_driver.ini
+    - /etc/neutron/l3_agent.ini
     - /usr/share/neutron/neutron-lbaas-dist.conf
     - /etc/neutron/lbaas_agent.ini
-    - /etc/neutron/conf.d/neutron-lbaas-agent
-    - /etc/neutron/conf.d/neutron-lbaasv2-agent
-    - /etc/neutron/conf.d/neutron-metadata-agent
-    - /etc/neutron/conf.d/neutron-metering-agent
-    - /etc/neutron/conf.d/neutron-netns-cleanup
-    - /etc/neutron/conf.d/neutron-openvswitch-agent
-    - /etc/neutron/conf.d/neutron-ovs-cleanup
-    - /etc/neutron/conf.d/neutron-bsn-agent
-    - /etc/neutron/conf.d/neutron-cisco-cfg-agent
-    - /etc/neutron/conf.d/neutron-dhcp-agent
 
   tasks:
   - name: Run neutron-sanity-check
+    command: "docker exec -u root neutron_ovs_agent /bin/bash -c 'neutron-sanity-check --config-file {{item}}'"
+    with_items: "{{ configs }}"
     become: true
-    neutron_sanity_check: configs={{ configs }}
+    register: nsc_return
+    ignore_errors: true
+    changed_when: False
+
+  - name: Detect errors
+    set_fact:
+      has_errors: "{{ nsc_return.results
+                      | sum(attribute='stderr_lines', start=[])
+                      | select('search', '(ERROR)')
+                      | list | length | int > 0}}"
+
+  - name: Detect warnings
+    set_fact:
+      has_warnings: "{{ nsc_return.results
+                      | sum(attribute='stderr_lines', start=[])
+                      | select('search', '(WARNING)')
+                      | list | length | int > 0}}"
+
+  - name: Create output
+    set_fact:
+      output_msg: "{{ nsc_return.results
+                      | sum(attribute='stderr_lines', start=[])
+                      | select('search', '(ERROR|WARNING)')
+                      | list }}"
+
+  - name: Output warning
+    warn: msg="{{ output_msg | join('\n') }}"
+    when: has_warnings and not has_errors
+
+  - name: Fail
+    fail: msg="{{ output_msg | join('\n') }}"
+    when: has_errors
