@@ -13,7 +13,7 @@
   tasks:
   - name: Get the open_files_limit value
     become: true
-    command: "docker exec -u root mysql /bin/bash -c 'ulimit -n'"
+    shell: docker exec -u root $(docker ps -q --filter "name=mysql|galera-bundle" | head -1) /bin/bash -c 'ulimit -n'
     changed_when: False
     register: mysqld_open_files_limit
   - name: Test the open-files-limit value
