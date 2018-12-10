@@ -48,7 +48,7 @@ def main():
 
     name = module.params.get('name')
 
-    cmd = ['/usr/bin/hiera', name]
+    cmd = ['/usr/bin/hiera', '-c', '/etc/puppet/hiera.yaml', name]
     result = subprocess.check_output(cmd).rstrip()
 
     if result == 'nil':
