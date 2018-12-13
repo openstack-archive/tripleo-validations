@@ -12,10 +12,19 @@
       groups:
         - post-deployment
   tasks:
-  - name: Get pacemaker status
-    become: true
-    command: pcs status xml
-    register: pcs_status
+  - name: Check pacemaker service is running
+    become: True
+    command: "/usr/bin/systemctl show pacemaker --property ActiveState"
+    register: check_service
     changed_when: False
-  - name: Check pacemaker status
-    pacemaker: status="{{ pcs_status.stdout }}"
+    ignore_errors: True
+
+  - when: "check_service.stdout == 'ActiveState=active'"
+    block:
+      - name: Get pacemaker status
+        become: true
+        command: pcs status xml
+        register: pcs_status
+        changed_when: False
+      - name: Check pacemaker status
+        pacemaker: status="{{ pcs_status.stdout }}"
