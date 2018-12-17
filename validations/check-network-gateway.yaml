@@ -4,7 +4,7 @@
     metadata:
       name: Check network_gateway on the provisioning network
       description: >
-        If `network_gateway` in `undercloud.conf` is different from `local_ip`,
+        If `gateway` in `undercloud.conf` is different from `local_ip`,
         verify that the gateway exists and is reachable.
       groups:
         - pre-introspection
@@ -12,14 +12,28 @@
   - name: Get the path of tripleo undercloud config file
     become: true
     hiera: name="tripleo_undercloud_conf_file"
-  - name: Gather undercloud.conf values
+
+  - name: Get gateway value from the undercloud.conf file
     become: true
-    undercloud_conf:
-      undercloud_conf_path={{ tripleo_undercloud_conf_file }}
-      ignore_missing=true
-  - name: "Test network_gateway if different from local_ip"
-    icmp_ping: host="{{ undercloud_conf.DEFAULT.network_gateway | default('0.0.0.0') }}"
+    ini:
+      path: "{{ tripleo_undercloud_conf_file }}"
+      section: ctlplane-subnet
+      key: gateway
+      ignore_missing_file: True
+    register: gateway
+
+  - name: Get local_ip value from the undercloud.conf file
+    become: true
+    ini:
+      path: "{{ tripleo_undercloud_conf_file }}"
+      section: DEFAULT
+      key: local_ip
+      ignore_missing_file: True
+    register: local_ip
+
+  - name: Test network_gateway if different from local_ip
+    icmp_ping: host="{{ gateway.value | default('0.0.0.0') }}"
     when: >
-      "undercloud_conf.DEFAULT.local_ip | default('0.0.0.0') | ipaddr('address')"
+      "local_ip.value | default('0.0.0.0') | ipaddr('address')"
       !=
-      "undercloud_conf.DEFAULT.network_gateway | default('0.0.0.0') | ipaddr('address')"
+      "gateway.value | default('0.0.0.0') | ipaddr('address')"
