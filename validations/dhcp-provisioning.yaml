@@ -16,9 +16,14 @@
   tasks:
   - name: Get the path of tripleo undercloud config file
     hiera: name="tripleo_undercloud_conf_file"
+
   - name: Gather undercloud.conf values
-    undercloud_conf:
-      undercloud_conf_path={{ tripleo_undercloud_conf_file }}
-      ignore_missing=true
+    ini:
+      path: "{{ tripleo_undercloud_conf_file }}"
+      section: DEFAULT
+      key: local_interface
+      ignore_missing_file: True
+    register: local_interface
+
   - name: Look for DHCP responses
-    script: files/rogue_dhcp.py {{ undercloud_conf.DEFAULT.local_interface|default('eth1') }}
+    script: files/rogue_dhcp.py {{ local_interface.value|default('eth1') }}
