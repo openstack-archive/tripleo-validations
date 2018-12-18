@@ -2,29 +2,28 @@
 - hosts: undercloud
   vars:
     metadata:
-      name: Events and Metrics Database Size Check
+      name: Events Database Size Check
       description: >
-        The undercloud's metric and events databases can grow to a substantial
-        size if metering_time_to_live and event_time_to_live is set to
-        a negative value (infinite limit).
+        The undercloud's events database can grow to a substantial
+        size if event_time_to_live is set to a negative value (infinite limit).
 
-        This validation checks each setting and fails if variables are
-        set to a negative value or if they have no custom setting
+        This validation checks event_time_to_live and fails if the variable is
+        set to a negative value or if it has no custom setting
         (their value is -1 by default).
       groups:
         - pre-deployment
-    metering_ttl_check: "metering_time_to_live"
     event_ttl_check: "event_time_to_live"
-    ceilometer_config_file: "/var/lib/config-data/puppet-generated/ceilometer/etc/ceilometer/ceilometer.conf"
     panko_config_file: "/var/lib/config-data/puppet-generated/panko/etc/panko/panko.conf"
-    gnocchi_config_file: "/var/lib/config-data/puppet-generated/gnocchi/etc/gnocchi/gnocchi.conf"
   tasks:
   - name: Get the path of tripleo undercloud config file
     become: true
     hiera: name="tripleo_undercloud_conf_file"
 
   - name: Check if telemetry services are enabled
-    ini: path={{ tripleo_undercloud_conf_file }} section=DEFAULT key=enable_telemetry
+    ini:
+      path: "{{ tripleo_undercloud_conf_file }}"
+      section: DEFAULT
+      key: enable_telemetry
     register: enable_telemetry
     become: true
 
@@ -32,60 +31,16 @@
     meta: end_play
     when: enable_telemetry.value|bool != True
 
-  - name: Initialize empty list of errors
-    set_fact:
-      validation_errors: []
-
-  # in Ocata and later, the undercloud
-  # uses panko for events
-  - name: check to see if panko is installed
-    stat:
-      path: "{{ panko_config_file }}"
-    register: panko_exists
-
-  # if gnocchi exists, then the gnocchi archive policy
-  # applies to metering storage, no need to check
-  # ttls
-  - name: Check to see if gnocchi is installed
-    stat:
-      path: "{{ gnocchi_config_file }}"
-    register: gnocchi_exists
-
-  - name: Set fact for {{ ceilometer_config_file }}
-    set_fact:
-      ceilometer_config_file: "{{ panko_config_file }}"
-    when: panko_exists.stat.exists
-
-  - name: Get event ttl from {{ ceilometer_config_file }}
+  - name: Get event ttl from panko configuration file
     become: true
     ini:
-      path: "{{ ceilometer_config_file }}"
+      path: "{{ panko_config_file }}"
       section: database
       key: "{{ event_ttl_check }}"
       ignore_missing_file: true
     register: event_check_result
 
-  - name: Set event_check_result errors if needed
-    set_fact:
-      validation_errors: "{{ validation_errors }} + [ '{{ ceilometer_config_file }}[database]/{{ event_ttl_check }} is set to -1 or not set' ]"
-    when: event_check_result.value|default(-1) < 0
-
-  - name: Get TTL setting values from ceilometer.conf
-    become: true
-    ini: path=/etc/ceilometer/ceilometer.conf section=database key={{ metering_ttl_check }} ignore_missing_file=True
-    register: meter_check_result
-    when: gnocchi_exists.stat.exists == False
-
-  - name: Set meter_check_result errors if needed
-    set_fact:
-      validation_errors: "{{ validation_errors }} + [ '{{ ceilometer_config_file }}[database]/{{ metering_ttl_check }} is set to -1 or not set' ]"
-    when: gnocchi_exists.stat.exists == False and meter_check_result.value|default(-1) < 0
-
-    # failure occurs when the length of the validation_errors
-    # array is > 0
-
-  # Only fail if telemetry is enabled in undercloud.conf
-  - name: Check failure
+  - name: Fail if event_ttl_check is set to -1
     fail:
-      msg: "\n{{ validation_errors|join('\n') }}"
-    when: validation_errors|length > 0 and enable_telemetry.value|bool == True
+      msg: "'{{ panko_config_file }}[database]/{{ event_ttl_check }} is set to -1 or not set'"
+    when: event_check_result.value|int|default(-1) < 0
