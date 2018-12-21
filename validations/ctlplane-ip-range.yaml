@@ -2,7 +2,7 @@
 - hosts: undercloud
   vars:
     metadata:
-      name: Check the number of IP addresses available to overcloud nodes
+      name: Check the number of IP addresses available for the overcloud nodes
       description: >
         Verify that the number of IP addresses defined in `dhcp_start` and
         `dhcp_end` fields in `undercloud.conf` is not too low.
@@ -13,13 +13,27 @@
   - name: Get the path of tripleo undercloud config file
     become: true
     hiera: name="tripleo_undercloud_conf_file"
-  - name: Gather undercloud.conf values
+
+  - name: Get dhcp_start value from the undercloud.conf file
     become: true
-    undercloud_conf:
-      undercloud_conf_path={{ tripleo_undercloud_conf_file }}
-      ignore_missing=true
+    ini:
+      path: "{{ tripleo_undercloud_conf_file }}"
+      section: ctlplane-subnet
+      key: dhcp_start
+      ignore_missing_file: True
+    register: dhcp_start
+
+  - name: Get dhcp_end value from the undercloud.conf file
+    become: true
+    ini:
+      path: "{{ tripleo_undercloud_conf_file }}"
+      section: ctlplane-subnet
+      key: dhcp_end
+      ignore_missing_file: True
+    register: dhcp_end
+
   - name: Check the size of the DHCP range for overcloud nodes
     ip_range:
-      start: "{{ undercloud_conf.DEFAULT.dhcp_start|default('192.0.2.5') }}"
-      end: "{{ undercloud_conf.DEFAULT.dhcp_end|default('192.0.2.24') }}"
+      start: "{{ dhcp_start.value|default('192.0.2.5') }}"
+      end: "{{ dhcp_end.value|default('192.0.2.24') }}"
       min_size: "{{ ctlplane_iprange_min_size }}"
