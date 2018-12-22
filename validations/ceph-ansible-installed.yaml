@@ -19,4 +19,4 @@
     warn:
       msg: If planning to use Ceph, it is necessary to install the ceph-ansible on the undercloud
     when:
-      - ceph_ansible_installed|failed
+      - ceph_ansible_installed is failed
