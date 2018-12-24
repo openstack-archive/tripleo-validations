@@ -96,7 +96,7 @@ def get_nested(data, name, path):
 
     def deep_find_key(key_data, data, name):
         key, instance_type, instance_name = key_data
-        if key in data.keys():
+        if key in data:
             if not isinstance(data[key], instance_type):
                 raise ValueError("The '{}' property of '{}' must be a {}."
                                  "".format(key, name, instance_name))
