@@ -87,7 +87,7 @@ class TestNicConfigs(base.TestCase):
 
     def test_bridge_is_of_known_type(self):
         nic_data = self.nic_data([{
-            'type': 'intreface'
+            'type': 'interface'
         }])
         errors = validation.check_nic_configs("controller.yaml", nic_data)
         self.assertEqual(len(errors), 1)
