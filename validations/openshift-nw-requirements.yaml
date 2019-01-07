@@ -28,7 +28,7 @@
       uri:
         url: "{{ overcloud_keystone_url
                 | urlsplit('scheme') }}://{{ overcloud_keystone_url
-                | urlsplit('netloc')}}/v3/auth/tokens"
+                | urlsplit('netloc') }}/v3/auth/tokens"
         method: POST
         body_format: json
         body:

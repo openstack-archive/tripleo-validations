@@ -5,7 +5,7 @@
 
 - name: compare running containers to list
   set_fact:
-    container_difference: "{{ running_containers | difference(docker.containers_filtered | map(attribute='name') | list)}}"
+    container_difference: "{{ running_containers | difference(docker.containers_filtered | map(attribute='name') | list) }}"
 
 - block:
     - name: check appropriate running containers against list - if FAILED, check next task

@@ -29,7 +29,7 @@
 
   - name: End play if telemetry is not enabled
     meta: end_play
-    when: enable_telemetry.value|bool != True
+    when: not enable_telemetry.value|bool
 
   - name: Get event ttl from panko configuration file
     become: true
