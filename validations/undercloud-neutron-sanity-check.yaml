@@ -29,7 +29,7 @@
 
   tasks:
   - name: Run neutron-sanity-check
-    command: "docker exec -u root neutron_ovs_agent /bin/bash -c 'neutron-sanity-check --config-file {{item}}'"
+    command: "docker exec -u root neutron_ovs_agent /bin/bash -c 'neutron-sanity-check --config-file {{ item }}'"
     with_items: "{{ configs }}"
     become: true
     register: nsc_return
@@ -41,14 +41,14 @@
       has_errors: "{{ nsc_return.results
                       | sum(attribute='stderr_lines', start=[])
                       | select('search', '(ERROR)')
-                      | list | length | int > 0}}"
+                      | list | length | int > 0 }}"
 
   - name: Detect warnings
     set_fact:
       has_warnings: "{{ nsc_return.results
                       | sum(attribute='stderr_lines', start=[])
                       | select('search', '(WARNING)')
-                      | list | length | int > 0}}"
+                      | list | length | int > 0 }}"
 
   - name: Create output
     set_fact:

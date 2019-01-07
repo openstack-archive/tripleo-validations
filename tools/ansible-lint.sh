@@ -1,10 +1,11 @@
 #!/bin/bash
 
-# ANSIBLE0006: Using command rather than module
+# 204: Lines should be no longer than 120 chars
+# 303: Using command rather than module
 #   we have a few use cases where we need to use curl and rsync
-# ANSIBLE0016: Tasks that run when changed should likely be handlers
+# 503: Tasks that run when changed should likely be handlers
 #   this requires refactoring roles, skipping for now
-SKIPLIST="ANSIBLE0006,ANSIBLE0016"
+SKIPLIST="204,303,503"
 
 pushd validations
 for playbook in `find . -type f -regex '.*\.y[a]?ml'`; do

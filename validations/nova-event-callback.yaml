@@ -37,7 +37,7 @@
     - name: Check Nova configuration values
       fail: msg="Value of {{ item.item }} is set to {{ item.value or 'None' }}."
       when:
-        - "(item.item == vif_plugging_fatal_check and (item.value|bool == False or None)) or
+        - "(item.item == vif_plugging_fatal_check and (not item.value|bool or None)) or
           (item.item == vif_plugging_timeout_check and (item.value|int <= vif_plugging_timeout_value_min|int
           or None))"
       with_items: "{{ nova_config_result.results }}"
@@ -72,7 +72,7 @@
 
     - name: Check Notify Nova settings values
       fail: msg="Value of {{ item.item }} is set to {{ item.value|bool }}."
-      when: item.value|bool != True or item.value == None
+      when: not item.value|bool or item.value == None
       with_items: "{{ neutron_notify_nova_result.results }}"
 
     - name: Get Tenant Name setting value from neutron.conf
