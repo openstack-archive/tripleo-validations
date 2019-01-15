@@ -16,7 +16,10 @@
     shell: 'docker exec keystone_cron crontab -l -u keystone |grep -v "^#"'
     register: cron_result
     changed_when: False
-  -
-    name: Check keystone crontab
-    fail: msg="keystone token_flush does not appear to be enabled via cron.  You should add '<desired interval > {{ cron_check }}' to the keystone users crontab."
+  - name: Check keystone crontab
+    fail:
+      msg: >-
+        keystone token_flush does not appear to be enabled via cron. You should
+        add '<desired interval > {{ cron_check }}' to the keystone users
+        crontab.
     failed_when: "cron_check not in cron_result.stdout"
