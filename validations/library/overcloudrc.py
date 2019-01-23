@@ -57,7 +57,9 @@ def main():
     # Use bash to source overcloudrc and print the environment:
     command = ['bash', '-c', 'source ' + overcloudrc_path + ' && env']
     proc = subprocess.Popen(
-        command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        universal_newlines=True
+    )
     if proc.wait() != 0:
         msg = "Could not source '{}'. Return code: {}.\nSTDERR:\n{}".format(
             overcloudrc_path, proc.returncode, proc.stderr.read())

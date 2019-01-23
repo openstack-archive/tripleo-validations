@@ -49,7 +49,7 @@ def main():
     name = module.params.get('name')
 
     cmd = ['/usr/bin/hiera', '-c', '/etc/puppet/hiera.yaml', name]
-    result = subprocess.check_output(cmd).rstrip()
+    result = subprocess.check_output(cmd, universal_newlines=True).rstrip()
 
     if result == 'nil':
         module.fail_json(msg="Failed to retrieve hiera data for {}"

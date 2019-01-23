@@ -74,7 +74,8 @@ def _command(command):
     # as [stdout, stderr]
     process = subprocess.Popen(command,
                                stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE,)
+                               stderr=subprocess.PIPE,
+                               universal_newlines=True)
     return process.communicate()
 
 
