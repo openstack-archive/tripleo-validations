@@ -16,8 +16,11 @@
 # under the License.
 
 from ansible.plugins.lookup import LookupBase
+from ironic_inspector_client import ClientError
+from ironic_inspector_client import ClientV1
+from ironicclient import client
 
-from tripleo_validations import utils
+from tripleo_validations.utils import get_auth_session
 
 
 class LookupModule(LookupBase):
@@ -29,15 +32,21 @@ class LookupModule(LookupBase):
 
         :returns a list of tuples, one for each node.
         """
+
+        session = get_auth_session({
+            'auth_url': kwargs.get('auth_url'),
+            'password': kwargs.get('password'),
+            'username': 'ironic',
+            'project_name': 'service',
+            })
+        ironic = client.get_client(1, session=session)
+        ironic_inspector = ClientV1(session=session)
+
         ret = []
-
-        swift = utils.get_swift_client(variables)
-        container = swift.get_container("ironic-inspector")
-
-        for item in container[1]:
-            if item['name'].startswith('inspector_data') and \
-                    not item['name'].endswith("UNPROCESSED"):
-                obj = swift.get_object("ironic-inspector", item['name'])
-                ret.append((item['name'], obj))
+        for node in ironic.node.list():
+            try:
+                ret.append((node.name, ironic_inspector.get_data(node.uuid)))
+            except ClientError:
+                pass
 
         return ret

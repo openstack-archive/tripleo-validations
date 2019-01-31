@@ -171,12 +171,8 @@ def vlan_exists_on_switch(vlan_id, introspection_data):
               result: boolean indicating if VLAN was found
      """
 
-    for node, content in introspection_data.items():
+    for node, data in introspection_data.items():
         node_valid_lldp = False
-        try:
-            data = yaml.safe_load(content)
-        except Exception as e:
-            return ["Can't open introspection data : {}" .format(e)], False
 
         all_interfaces = data.get('all_interfaces', [])
 
@@ -211,7 +207,7 @@ def main():
     netenv_path = module.params.get('path')
     template_files = {name: content[1] for (name, content) in
                       module.params.get('template_files')}
-    introspection_data = {name: content[1] for (name, content) in
+    introspection_data = {name: content for (name, content) in
                           module.params.get('introspection_data')}
 
     warnings, errors = validate_switch_vlans(netenv_path, template_files,

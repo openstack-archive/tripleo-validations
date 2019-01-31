@@ -24,28 +24,47 @@ class TestSwitchVlans(base.TestCase):
         super(TestSwitchVlans, self).__init__(display)
 
         self.introspect_data = {
-            u'inspector_data-8c3faec8-bc05-401c-8956-99c40cdea97d':
-                '{"all_interfaces":'
-                '{"em1": {"mac": "00:11:22:33:44:55",'
-                '"lldp_processed": { "switch_port_id": "555",'
-                '"switch_port_vlans":'
-                '[{"id": 101, "name": "vlan101"},'
-                '{"id": 104, "name": "vlan104"},'
-                '{"id": 203, "name": "vlan203"}]}},'
-                '"em2": {"mac": "00:11:22:33:44:66",'
-                '"lldp_processed": { "switch_port_id": "557",'
-                '"switch_port_vlans":'
-                '[{"id": 101, "name": "vlan101"},'
-                '{"id": 105, "name": "vlan105"},'
-                '{"id": 204, "name": "vlan204"}]}}}}',
-            u'inspector_data-c0d2568e-1825-4d34-96ec-f08bbf0ba7ae':
-                '{"all_interfaces":'
-                '{"em1":{"mac": "00:66:77:88:99:aa",'
-                '"lldp_processed": { "switch_port_id": "559",'
-                '"switch_port_vlans":'
-                '[{"id": 101, "name": "vlan101"},'
-                '{"id": 201, "name": "vlan201"},'
-                '{"id": 222, "name": "vlan222"}]}}}}'
+            "inspector_data-8c3faec8-bc05-401c-8956-99c40cdea97d": {
+                "all_interfaces": {
+                    "em1": {
+                        "mac": "00:11:22:33:44:55",
+                        "lldp_processed": {
+                            "switch_port_id": "555",
+                            "switch_port_vlans": [
+                                {"id": 101, "name": "vlan101"},
+                                {"id": 104, "name": "vlan104"},
+                                {"id": 203, "name": "vlan203"}
+                            ]
+                        }
+                    },
+                    "em2": {
+                        "mac": "00:11:22:33:44:66",
+                        "lldp_processed": {
+                            "switch_port_id": "557",
+                            "switch_port_vlans": [
+                                {"id": 101, "name": "vlan101"},
+                                {"id": 105, "name": "vlan105"},
+                                {"id": 204, "name": "vlan204"}
+                            ]
+                        }
+                    }
+                }
+            },
+            "inspector_data-c0d2568e-1825-4d34-96ec-f08bbf0ba7ae": {
+                "all_interfaces": {
+                    "em1": {
+                        "mac": "00:66:77:88:99:aa",
+                        "lldp_processed": {
+                            "switch_port_id": "559",
+                            "switch_port_vlans": [
+                                {"id": 101, "name": "vlan101"},
+                                {"id": 201, "name": "vlan201"},
+                                {"id": 222, "name": "vlan222"}
+                            ]
+                        }
+                    }
+                }
+            }
         }
 
     def test_valid_vlan_first_node(self):
@@ -73,10 +92,15 @@ class TestSwitchVlans(base.TestCase):
         self.assertEqual(msg, [])
 
     def test_no_lldp_data(self):
-        local_data = {u'inspector_data-8c3faec8-bc05-401c-8956-99c40cdea97d':
-                      '{"all_interfaces":'
-                      '{"em1": {"mac": "00:11:22:33:44:55"}}}'
-                      }
+        local_data = {
+            "inspector_data-8c3faec8-bc05-401c-8956-99c40cdea97d": {
+                "all_interfaces": {
+                    "em1": {
+                        "mac": "00:11:22:33:44:55"
+                    }
+                }
+            }
+        }
 
         msg, result = validation.vlan_exists_on_switch(
             104, local_data)
