@@ -46,6 +46,14 @@ class LookupModule(LookupBase):
     def run(self, terms, variables=None, **kwargs):
         """Returns server information from nova."""
         nova = utils.get_nova_client(variables)
-        flavors = nova.flavors.list()
-        return {f.name: {'name': f.name, 'keys': f.get_keys()}
-                for f in flavors}
+        return {f.name: {'name': f.name,
+                         'id': f.id,
+                         'disk': f.disk,
+                         'ram': f.ram,
+                         'vcpus': f.vcpus,
+                         'ephemeral': f.ephemeral,
+                         'swap': f.swap,
+                         'is_public': f.is_public,
+                         'rxtx_factor': f.rxtx_factor,
+                         'keys': f.get_keys()}
+                for f in nova.flavors.list()}
