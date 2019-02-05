@@ -25,8 +25,10 @@ Existing validations:
    validations-pre-introspection-details
    validations-pre-deployment-details
    validations-post-deployment-details
+   validations-openshift-on-openstack-details
    validations-pre-update-details
    validations-pre-upgrade-details
+   validations-post-upgrade-details
 
 Indices and tables
 ==================
