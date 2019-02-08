@@ -58,7 +58,8 @@ opts = [
                help=('Ansible connection to the undercloud, either "local" '
                      'or "ssh". Defaults to "local".')),
     cfg.StrOpt('ansible_python_interpreter', default=None),
-    cfg.BoolOpt('debug', help='Print tracebacks for exceptions')
+    cfg.BoolOpt('debug', help='Print tracebacks for exceptions'),
+    cfg.StrOpt('serial', default=1),
 ]
 
 
@@ -137,7 +138,8 @@ def main():
         username=configs.username,
         ansible_ssh_user=configs.ansible_ssh_user,
         plan_name=configs.stack or configs.plan,
-        ansible_python_interpreter=configs.ansible_python_interpreter)
+        ansible_python_interpreter=configs.ansible_python_interpreter,
+        serial=configs.serial)
 
     if configs.list:
         try:
