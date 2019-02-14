@@ -1,0 +1,3 @@
+---
+
+cron_check: "keystone-manage token_flush"

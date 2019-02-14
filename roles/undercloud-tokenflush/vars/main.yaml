@@ -1,0 +1,9 @@
+---
+metadata:
+  name: Verify token_flush is enabled in keystone users crontab
+  description: >
+    Without a token_flush crontab enabled for the keystone user, the
+    keystone database can grow very large.  This validation checks that
+    the keystone token_flush crontab has been set up.
+  groups:
+  - pre-introspection

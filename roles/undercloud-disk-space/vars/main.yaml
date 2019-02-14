@@ -1,0 +1,11 @@
+---
+metadata:
+  name: Verify undercloud fits the disk space requirements
+  description: >
+    Make sure that the root partition on the undercloud node has enough
+    free space.
+
+    http://tripleo.org/install/environments/baremetal.html#minimum-system-requirements
+  groups:
+    - prep
+    - pre-introspection

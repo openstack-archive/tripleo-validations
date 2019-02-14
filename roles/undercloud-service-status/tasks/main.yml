@@ -1,0 +1,18 @@
+---
+- name: Check Services are running
+  command: "/usr/bin/systemctl show {{ item }} --property ActiveState"
+  become: true
+  with_items: "{{ undercloud_service_list }}"
+  register: "check_services"
+  changed_when: False
+  ignore_errors: true
+
+- name: Fail if services were not running
+  fail:
+    msg: >-
+      One of the undercloud services was not active.
+      Please check {{ item.item }} first and then confirm the status of
+      undercloud services in general before attempting to update or
+      upgrade the environment.
+  failed_when: "item.stdout  != 'ActiveState=active'"
+  with_items: "{{ check_services.results }}"

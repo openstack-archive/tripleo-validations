@@ -1,0 +1,16 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Verify the undercloud fits the RAM requirements
+      description: >
+        Verify that the undercloud has enough RAM.
+
+        https://access.redhat.com/documentation/en-us/red_hat_openstack_platform/14/html/director_installation_and_usage/planning-your-undercloud#determining-environment-scale
+      groups:
+        - prep
+        - pre-introspection
+        - pre-upgrade
+    min_undercloud_ram_gb: 24
+  roles:
+    - undercloud-ram

@@ -1,0 +1,8 @@
+---
+- name: Verify the RAM requirements
+  fail:
+    msg: >-
+      The RAM on the undercloud node is {{ ansible_memtotal_mb }} MB,
+      the minimal recommended value is {{ min_undercloud_ram_gb|int * 1024 }} MB.
+  # NOTE(shadower): converting GB to MB
+  failed_when: "(ansible_memtotal_mb) < min_undercloud_ram_gb|int * 1024"

@@ -1,0 +1,3 @@
+---
+
+cron_check: "heat-manage purge_deleted"

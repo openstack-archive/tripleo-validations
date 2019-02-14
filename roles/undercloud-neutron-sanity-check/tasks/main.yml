@@ -1,0 +1,53 @@
+---
+- name: Get the path of tripleo undercloud config file
+  become: true
+  hiera: name="tripleo_undercloud_conf_file"
+
+- name: Get the Container CLI from the undercloud.conf file
+  become: true
+  ini:
+    path: "{{ tripleo_undercloud_conf_file }}"
+    section: DEFAULT
+    key: container_cli
+    ignore_missing_file: true
+  register: container_cli
+
+- name: Run neutron-sanity-check
+  command: >
+    {{ container_cli.value|default('podman') }}
+    exec -u root neutron_ovs_agent
+    /bin/bash -c 'neutron-sanity-check --config-file {{ item }}'
+  with_items: "{{ configs }}"
+  become: true
+  register: nsc_return
+  ignore_errors: true
+  changed_when: False
+
+- name: Detect errors
+  set_fact:
+    has_errors: "{{ nsc_return.results
+                    | sum(attribute='stderr_lines', start=[])
+                    | select('search', '(ERROR)')
+                    | list | length | int > 0 }}"
+
+- name: Detect warnings
+  set_fact:
+    has_warnings: "{{ nsc_return.results
+                    | sum(attribute='stderr_lines', start=[])
+                    | select('search', '(WARNING)')
+                    | list | length | int > 0 }}"
+
+- name: Create output
+  set_fact:
+    output_msg: "{{ nsc_return.results
+                    | sum(attribute='stderr_lines', start=[])
+                    | select('search', '(ERROR|WARNING)')
+                    | list }}"
+
+- name: Output warning
+  warn: msg="{{ output_msg | join('\n') }}"
+  when: has_warnings and not has_errors
+
+- name: Fail
+  fail: msg="{{ output_msg | join('\n') }}"
+  when: has_errors

@@ -1,0 +1,12 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Verify undercloud services state before running update or upgrade
+      description: >
+        Check undercloud status before running a stack update - especially minor update and major upgrade.
+      groups:
+        - post-upgrade
+        - pre-upgrade
+  roles:
+    - undercloud-service-status

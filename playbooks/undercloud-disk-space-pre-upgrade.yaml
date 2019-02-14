@@ -1,0 +1,20 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Verify undercloud fits the disk space requirements to perform an upgrade
+      description: >
+        Make sure that the root partition on the undercloud node has enough
+        free space before starting an upgrade
+
+        http://tripleo.org/install/environments/baremetal.html#minimum-system-requirements
+      groups:
+        - pre-upgrade
+    volumes:
+      - {mount: /var/lib/docker,      min_size: 10}
+      - {mount: /var/lib/config-data, min_size: 3}
+      - {mount: /var,                 min_size: 16}
+      - {mount: /,                    min_size: 20}
+
+  roles:
+    - undercloud-disk-space

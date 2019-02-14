@@ -1,0 +1,10 @@
+---
+metadata:
+  name: Check the number of OpenStack processes on undercloud
+  description: >
+    The default settings for OpenStack is to run one process (heat-engine,
+    keystone, etc.) per CPU core. On a machine with a lot of cores this is
+    both unnecessary and can consume a significant amount of RAM, leading
+    to crashes due to OOMKiller.
+  groups:
+    - pre-deployment

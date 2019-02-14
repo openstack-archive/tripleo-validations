@@ -1,0 +1,39 @@
+---
+- name: Set a constant defining number of Bytes in 1 GB
+  set_fact:
+    const_bytes_in_gb: 1073741824
+
+- name: Stat volume directories
+  stat:
+    path: "{{ item.mount }}"
+  with_items: "{{ volumes }}"
+  register: volumes_stat
+
+- name: Initialize existing_volumes to an empty array
+  set_fact:
+    existing_volumes="{{ [] }}"
+
+- name: Filter out non-existing volumes
+  set_fact:
+    existing_volumes: "{{ existing_volumes +[item.item] }}"
+  with_items: "{{ volumes_stat.results }}"
+  when: item.stat.exists
+  loop_control:
+    label: "{{ item.item.mount }}"
+
+- name: Loop on volumes and gather available space
+  shell: df -B1 {{ item.mount }} --output=avail | sed 1d
+  register: volume_size
+  with_items: "{{ existing_volumes }}"
+  changed_when: False
+
+- name: Fail if any of the volumes are too small
+  fail:
+     msg: >
+       Minimum free space required for {{ item.item.mount }}: {{ item.item.min_size }}G
+       - current free space: {{ (item.stdout|int / const_bytes_in_gb|int) |round(1) }}G
+  when: >
+    item.stdout|int / const_bytes_in_gb|int < item.item.min_size|int
+  with_items: "{{ volume_size.results }}"
+  loop_control:
+    label: "{{ item.item.mount }}"

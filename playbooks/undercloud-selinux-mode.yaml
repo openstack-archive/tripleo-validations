@@ -1,0 +1,12 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Undercloud SELinux Enforcing Mode Check
+      description: >
+        Check if the Undercloud is running SELinux in Enforcing mode.
+      groups:
+        - prep
+        - pre-introspection
+  roles:
+    - undercloud-selinux-mode

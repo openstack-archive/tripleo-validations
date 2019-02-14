@@ -1,0 +1,12 @@
+---
+
+configs:
+  - /etc/neutron/neutron.conf
+  - /usr/share/neutron/neutron-dist.conf
+  - /etc/neutron/metadata_agent.ini
+  - /etc/neutron/dhcp_agent.ini
+  - /etc/neutron/plugins/ml2/openvswitch_agent.ini
+  - /etc/neutron/fwaas_driver.ini
+  - /etc/neutron/l3_agent.ini
+  - /usr/share/neutron/neutron-lbaas-dist.conf
+  - /etc/neutron/lbaas_agent.ini

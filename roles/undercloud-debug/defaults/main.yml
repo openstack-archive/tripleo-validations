@@ -1,0 +1,9 @@
+---
+
+debug_check: True
+services_conf_files:
+  - /var/lib/config-data/puppet-generated/nova/etc/nova/nova.conf
+  - /var/lib/config-data/puppet-generated/neutron/etc/neutron/neutron.conf
+  - /var/lib/config-data/puppet-generated/ceilometer/etc/ceilometer/ceilometer.conf
+  - /var/lib/config-data/puppet-generated/heat/etc/heat/heat.conf
+  - /var/lib/config-data/puppet-generated/ironic/etc/ironic/ironic.conf
