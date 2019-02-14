@@ -3,9 +3,11 @@
 # 204: Lines should be no longer than 120 chars
 # 303: Using command rather than module
 #   we have a few use cases where we need to use curl and rsync
+# 306: shell task uses pipeline without pipefail, this requires
+# refactoring, skip for now
 # 503: Tasks that run when changed should likely be handlers
 #   this requires refactoring roles, skipping for now
-SKIPLIST="204,303,503"
+SKIPLIST="204,303,306,503"
 
 pushd validations
 for playbook in `find . -type f -regex '.*\.y[a]?ml'`; do
