@@ -6,12 +6,12 @@
       description: >
         Verify that the undercloud has enough RAM.
 
-        https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux_OpenStack_Platform/7/html/Director_Installation_and_Usage/sect-Undercloud_Requirements.html
+        https://access.redhat.com/documentation/en-us/red_hat_openstack_platform/14/html/director_installation_and_usage/planning-your-undercloud#determining-environment-scale
       groups:
         - prep
         - pre-introspection
         - pre-upgrade
-    min_undercloud_ram_gb: 16
+    min_undercloud_ram_gb: 24
   tasks:
   - name: Verify the RAM requirements
     fail: msg="The RAM on the undercloud node is {{ ansible_memtotal_mb }} MB, the minimal recommended value is {{ min_undercloud_ram_gb|int * 1024 }} MB."
