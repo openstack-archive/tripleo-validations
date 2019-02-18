@@ -1,0 +1,8 @@
+---
+metadata:
+  name: Check if latest minor version is installed
+  description: >
+    Makes sure python-tripleoclient is at its latest minor version
+    before starting an upgrade.
+  groups:
+    - pre-upgrade
