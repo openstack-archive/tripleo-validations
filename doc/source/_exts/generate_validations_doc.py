@@ -98,7 +98,8 @@ def setup(app):
     # Seed it with the known groups:
     groups = set(('prep', 'pre-introspection',
                   'pre-deployment', 'post-deployment',
-                  'pre-update', 'pre-upgrade'))
+                  'pre-update', 'pre-upgrade',
+                  'post-upgrade', 'openshift-on-openstack'))
     validations = []
     for validation_path in sorted(glob('validations/*.yaml')):
         with open(validation_path) as f:
