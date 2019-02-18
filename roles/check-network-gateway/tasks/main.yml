@@ -1,0 +1,40 @@
+---
+- name: Get the path of tripleo undercloud config file
+  become: true
+  hiera:
+    name: "tripleo_undercloud_conf_file"
+
+- name: Get the local_subnet name from the undercloud_conf file
+  become: True
+  ini:
+    path: "{{ tripleo_undercloud_conf_file }}"
+    section: DEFAULT
+    key: local_subnet
+    ignore_missing_file: True
+  register: local_subnet
+
+- name: Get gateway value from the undercloud.conf file
+  become: true
+  ini:
+    path: "{{ tripleo_undercloud_conf_file }}"
+    section: "{% if local_subnet.value %}{{ local_subnet.value }}{% else %}ctlplane-subnet{% endif %}"
+    key: gateway
+    ignore_missing_file: True
+  register: gateway
+
+- name: Get local_ip value from the undercloud.conf file
+  become: true
+  ini:
+    path: "{{ tripleo_undercloud_conf_file }}"
+    section: DEFAULT
+    key: local_ip
+    ignore_missing_file: True
+  register: local_ip
+
+- name: Test network_gateway if different from local_ip
+  icmp_ping:
+    host: "{{ gateway.value | default('0.0.0.0') }}"
+  when: >
+    "local_ip.value | default('0.0.0.0') | ipaddr('address')"
+    !=
+    "gateway.value | default('0.0.0.0') | ipaddr('address')"
