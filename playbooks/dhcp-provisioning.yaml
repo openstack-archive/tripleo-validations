@@ -1,0 +1,19 @@
+---
+- hosts: undercloud
+  become: true
+  vars:
+    metadata:
+      name: DHCP on the Provisioning Network
+      description: >
+        An unexpected DHCP server on the provisioning network can
+        cause problems with deploying the Ironic nodes.
+
+        This validation checks for DHCP responses on the undercloud's
+        provisioning interface (eth1 by default) and fails if there
+        are any.
+      groups:
+        - pre-deployment
+  tasks:
+    - include_role:
+        name: dhcp-validations
+        tasks_from: dhcp-provisioning

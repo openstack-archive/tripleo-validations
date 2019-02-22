@@ -1,0 +1,20 @@
+---
+- name: Look up the introspection interface
+  become: True
+  ini:
+    path: "{{ ironic_inspector_conf }}"
+    section: iptables
+    key: dnsmasq_interface
+  register: interface
+
+- name: Look up the introspection interface from the deprecated option
+  become: True
+  ini:
+    path: "{{ ironic_inspector_conf }}"
+    section: firewall
+    key: dnsmasq_interface
+  register: interface_deprecated
+
+- name: Look for rogue DHCP servers
+  script: files/rogue_dhcp.py {{ interface.value or interface_deprecated.value or 'br-ctlplane' }}
+  changed_when: False

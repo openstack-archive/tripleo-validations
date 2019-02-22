@@ -1,0 +1,18 @@
+---
+- hosts: undercloud
+  become: true
+  vars:
+    metadata:
+      name: DHCP on the Introspection Network
+      description: >
+        An unexpected DHCP server on the network used for node
+        introspection can cause some nodes to not be inspected.
+
+        This validations checks for the DHCP responses on the
+        interface specified in ironic-inspector.conf.
+      groups:
+        - pre-introspection
+  tasks:
+    - include_role:
+        name: dhcp-validations
+        tasks_from: dhcp-introspection

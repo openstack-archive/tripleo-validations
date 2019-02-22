@@ -1,0 +1,2 @@
+---
+ironic_inspector_conf: "/var/lib/config-data/puppet-generated/ironic_inspector/etc/ironic-inspector/inspector.conf"
