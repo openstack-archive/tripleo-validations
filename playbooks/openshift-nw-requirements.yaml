@@ -1,0 +1,14 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Check network requirements for an OpenShift on OpenStack deployment
+      description: |
+        Checks if an external network has been configured on the overcloud as
+        required for an OpenShift deployment on top of OpenStack.
+      groups:
+      - openshift-on-openstack
+  tasks:
+    - include_role:
+        name: openshift-on-openstack
+        tasks_from: openshift-nw-requirements

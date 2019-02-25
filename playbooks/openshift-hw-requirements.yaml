@@ -1,0 +1,36 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Check resources for an OpenShift on OpenStack deployment
+      description: |
+        Check if there are enough resources for an OpenShift deployment on top
+        of Openstack
+        deployment:
+        - Is there a flavor that meets the minimum requirements for a test
+          environment?
+          (4GB RAM, 40GB disk)
+        - Is there a flavor that meets the minimum requirements for a
+          production environment?
+          (16GB RAM, 40GB disk, 4 VCPUs)
+        - Are images named centos or rhel available?
+        - Are there sufficient compute resources available for a default setup?
+          (1 Master node, 1 Infra node, 2 App nodes)
+      groups:
+      - openshift-on-openstack
+    min_total_ram_testing: 16384    # 4 per node
+    min_total_vcpus_testing: 4      # 1 per node
+    min_total_disk_testing: 93      # Master: 40, others: 17 per node
+    min_total_ram_prod: 40960       # Master: 16, others: 8 per node
+    min_total_vcpus_prod: 7         # Master: 4, others 1 per node
+    min_total_disk_prod: 93         # Master: 42, others: 17 per node
+    min_node_ram_testing: 4096      # Minimum ram per node for testing
+    min_node_disk_testing: 40       # Minimum disk per node for testing
+    min_node_ram_prod: 16384        # Minimum ram per node for production
+    min_node_disk_prod: 42          # Minimum disk per node for production
+    resource_reqs_testing: False
+    resource_reqs_prod: False
+  tasks:
+    - include_role:
+        name: openshift-on-openstack
+        tasks_from: openshift-hw-requirements

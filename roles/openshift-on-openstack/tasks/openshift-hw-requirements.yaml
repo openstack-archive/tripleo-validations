@@ -1,0 +1,145 @@
+---
+# Get auth token and service catalog from Keystone and extract service urls.
+- name: Get token and catalog from Keystone
+  uri:
+    url: "{{ overcloud_keystone_url
+              | urlsplit('scheme') }}://{{ overcloud_keystone_url
+              | urlsplit('netloc') }}/v3/auth/tokens"
+    method: POST
+    body_format: json
+    body:
+      auth:
+        scope:
+          project:
+            name: admin
+            domain:
+              id: default
+        identity:
+          methods:
+            - password
+          password:
+            user:
+              name: admin
+              domain:
+                id: default
+              password: "{{ overcloud_admin_password }}"
+    return_content: yes
+    status_code: 201
+  register: keystone_result
+  when: overcloud_keystone_url|default('')
+
+- name: Set auth token
+  set_fact: auth_token="{{ keystone_result.x_subject_token }}"
+
+- name: Get Nova URL from catalog
+  set_fact: nova_url="{{ keystone_result.json.token
+                          | json_query("catalog[?name=='nova'].endpoints")
+                          | first
+                          | selectattr('interface', 'equalto', 'public')
+                          | map(attribute='url') | first }}"
+
+- name: Get Glance URL from catalog
+  set_fact: glance_url="{{ keystone_result.json.token
+                          | json_query("catalog[?name=='glance'].endpoints")
+                          | first
+                          | selectattr('interface', 'equalto', 'public')
+                          | map(attribute='url') | first }}"
+
+- name: Get flavors with required values for testing
+  uri:
+    url: "{{ nova_url }}/flavors/detail?minRam={{ min_node_ram_testing }}&minDisk={{ min_node_disk_testing }}"
+    method: GET
+    headers:
+      X-Auth-Token: "{{ auth_token }}"
+      Accept: application/vnd.openstack.compute.v2.1+json
+    return_content: yes
+    follow_redirects: all
+  register: flavors_result_testing
+
+- name: Get flavors with required values for production
+  uri:
+    url: "{{ nova_url }}/flavors/detail?minRam={{ min_node_ram_prod }}&minDisk={{ min_node_disk_prod }}"
+    method: GET
+    headers:
+      X-Auth-Token: "{{ auth_token }}"
+      Accept: application/vnd.openstack.compute.v2.1+json
+    return_content: yes
+    follow_redirects: all
+  register: flavors_result_prod
+
+- name: Set matching_flavors_testing variable
+  set_fact:
+    matching_flavors_testing: "{{ flavors_result_testing.json.flavors
+                                  | list | length > 0 }}"
+
+- name: Set matching_flavors_prod variable
+  set_fact:
+    matching_flavors_prod: "{{ flavors_result_prod.json.flavors
+                                | selectattr('vcpus', 'ge', 4)
+                                | list
+                                | length > 0 }}"
+
+# Get hypervisor stats from nova and check if there are sufficient
+# available resources.
+- name: Get hypervisor details from nova
+  uri:
+    url: "{{ nova_url }}/os-hypervisors/statistics"
+    method: GET
+    headers:
+      X-Auth-Token: "{{ auth_token }}"
+      Accept: application/vnd.openstack.compute.v2.1+json
+    return_content: yes
+    follow_redirects: all
+  register: hypervisors_result
+
+- name: Set hypervisor stats
+  set_fact: hv_stats="{{ hypervisors_result.json.hypervisor_statistics }}"
+
+- name: Set flag whether min resources for testing are available
+  set_fact: resource_reqs_testing=True
+  when: hv_stats.disk_available_least >= min_total_disk_testing
+        and hv_stats.free_ram_mb >= min_total_ram_testing
+        and hv_stats.vcpus - hv_stats.vcpus_used >= min_total_vcpus_testing
+
+- name: Set flag whether min resources for production are available
+  set_fact: resource_reqs_prod=True
+  when: hv_stats.disk_available_least >= min_total_disk_prod
+        and hv_stats.free_ram_mb >= min_total_ram_prod
+        and hv_stats.vcpus - hv_stats.vcpus_used >= min_total_vcpus_prod
+
+# Get overcloud images from Glance and check if there is one named either
+# rhel or centos.
+- name: Get images from glance
+  uri:
+    url: "{{ glance_url }}/v2/images"
+    method: GET
+    headers:
+      X-Auth-Token: "{{ auth_token }}"
+    return_content: yes
+    follow_redirects: all
+  register: images
+
+- name: Find matching images
+  set_fact:
+    matching_image: "{{ images.json.images
+                        | map(attribute='name')
+                        | map('lower')
+                        | select('search', '(centos|rhel)')
+                        | list | length | int > 0 }}"
+
+- name: Create warning message
+  set_fact:
+    warning_msg: |
+      {{ lookup('template', './templates/openshift-hw-requirements-warnings.j2') }}
+
+- name: Fail if minimum requirements aren't met
+  fail: msg="{{ warning_msg }}"
+  when: not matching_flavors_testing
+        or not matching_image
+        or not resource_reqs_testing
+
+- name: Warn if production requirements aren't met
+  warn: msg="{{ warning_msg }}"
+  when: not matching_flavors_prod
+        or not matching_image
+        or not resource_reqs_prod
