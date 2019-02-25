@@ -1,0 +1,15 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Check connectivity to various OpenStack services
+      # TODO: this could also check for undercloud endpoints
+      description: >
+        This validation gets the PublicVip address from the deployment and
+        tries to access Horizon and get a Keystone token.
+      groups:
+      - post-deployment
+      - pre-upgrade
+      - post-upgrade
+  roles:
+    - openstack-endpoints
