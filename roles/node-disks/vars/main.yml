@@ -1,0 +1,7 @@
+---
+metadata:
+  name: Check node disk configuration
+  description: >
+    Check node disk numbers and sizes and whether root device hints are set.
+  groups:
+    - pre-deployment
