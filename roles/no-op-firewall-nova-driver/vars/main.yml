@@ -1,0 +1,8 @@
+---
+metadata:
+  name: Verify NoOpFirewallDriver is set in Nova
+  description: >
+    When using Neutron, the `firewall_driver` option in Nova must be set to
+    `NoopFirewallDriver`.
+  groups:
+  - post-deployment
