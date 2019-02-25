@@ -1,0 +1,12 @@
+---
+- hosts: undercloud, overcloud
+  vars:
+    metadata:
+      name: Verify DNS
+      description: >
+        Verify that the DNS resolution works
+      groups:
+        - pre-deployment
+    server_to_lookup: example.com
+  roles:
+    - dns
