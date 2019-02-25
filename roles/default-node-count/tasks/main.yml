@@ -1,0 +1,39 @@
+---
+- name: Retrieve the hypervisor statistics
+  set_fact:
+    statistics: "{{ lookup('nova_hypervisor_statistics', wantlist=True) }}"
+
+- name: Get default role counts
+  set_fact:
+    roles_info: "{{ lookup('roles_info', wantlist=True) }}"
+
+- name: Set requested count
+  set_fact:
+    requested_count: "{{ roles_info|sum(attribute='count') }}"
+
+- name: Get associated nodes
+  set_fact:
+    associated_nodes: "{{ lookup('ironic_nodes', 'associated', wantlist=True) }}"
+
+- name: Get available nodes
+  set_fact:
+    available_nodes: "{{ lookup('ironic_nodes', 'provision_state', ['available'], wantlist=True) }}"
+
+- name: Set count of available nodes
+  set_fact:
+    available_count: "{{ ((associated_nodes|length) + (available_nodes|length))|int }}"
+
+- name: Fail when requested is more than available
+  fail:
+    msg: >
+      Not enough baremetal nodes - available: {{ available_count }},
+      requested: {{ requested_count }}
+  failed_when: requested_count|int > available_count|int
+
+- name: Fail when hypervisor count is less than available count
+  fail:
+    msg: >
+      Only {{ statistics.count }} nodes are exposed to Nova of
+      {{ available_count }} requests. Check that enough nodes are
+      in 'available' state with maintenance mode off.
+  failed_when: statistics.count < available_count|int
