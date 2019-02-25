@@ -1,0 +1,13 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Check the number of IP addresses available for the overcloud nodes
+      description: >
+        Verify that the number of IP addresses defined in `dhcp_start` and
+        `dhcp_end` fields in `undercloud.conf` is not too low.
+      groups:
+        - pre-introspection
+    ctlplane_iprange_min_size: 25
+  roles:
+    - ctlplane-ip-range
