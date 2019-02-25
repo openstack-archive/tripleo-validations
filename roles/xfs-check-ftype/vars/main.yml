@@ -1,0 +1,8 @@
+---
+metadata:
+  name: XFS ftype check
+  description: >
+    Check if there is at least 1 XFS volume
+    with ftype=0 in any deployed node.
+  groups:
+    - pre-upgrade

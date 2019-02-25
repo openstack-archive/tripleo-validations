@@ -1,0 +1,25 @@
+---
+- name: Check if there are XFS volumes with ftype=0
+  become: true
+  shell: |
+    for dev in $(df -h | grep '/dev/' | grep -v 'tmp' | cut -d' ' -f1)
+    do
+      parseftype=$(xfs_info $dev | grep ftype=0);
+      if [[ ! -z "$parseftype" ]]; then
+        ftype="ftype=0";
+        break;
+      fi
+    done
+    echo $ftype;
+  register: ftype
+  changed_when: false
+
+- name: Check ftype
+  fail:
+    msg: >
+      XFS volumes formatted using ftype=0 are incompatible
+      with the docker overlayfs driver.
+      Run xfs_info on {{ ansible_fqdn }} and fix those volumes
+      before proceeding with the upgrade.
+  when:
+    - ftype.stdout == 'ftype=0'
