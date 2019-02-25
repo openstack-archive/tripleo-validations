@@ -1,0 +1,18 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Compare switch port VLANs to VLANs in nic config
+      description: >
+        LLDP data received during introspection contains the configured VLANs
+        for each switch port attached to the nodes interfaces.  Compare the
+        VLAN IDs set on the switch port to those configured in nic config
+        files. Since the mapping of roles to nodes isn't known prior to
+        deployment, this check can only check VLANs across all switch ports,
+        not on a particular switch port.
+      groups:
+        - pre-deployment
+    network_environment_path: environments/network-environment.yaml
+    ironic_inspector_conf_file: "/var/lib/config-data/puppet-generated/ironic_inspector/etc/ironic-inspector/inspector.conf"
+  roles:
+    - switch-vlans
