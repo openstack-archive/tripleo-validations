@@ -1,0 +1,10 @@
+---
+metadata:
+  name: Validate stonith devices
+  description: >
+    Verify that stonith devices are configured for your OpenStack Platform HA cluster.
+    We don't configure stonith device with TripleO Installer. Because the hardware
+    configuration may be differ in each environment and requires different fence agents.
+    How to configure fencing please read https://access.redhat.com/documentation/en/red-hat-openstack-platform/8/paged/director-installation-and-usage/86-fencing-the-controller-nodes
+  groups:
+    - post-deployment

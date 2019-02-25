@@ -1,0 +1,22 @@
+---
+- name: Check if we are in HA cluster environment
+  become: True
+  register: pcs_cluster_status
+  command: pcs cluster status
+  failed_when: false
+  changed_when: false
+
+- name: Get all currently configured stonith devices
+  become: True
+  command: "pcs stonith"
+  register: stonith_devices
+  changed_when: false
+  when: "pcs_cluster_status.rc == 0"
+
+- name: Verify the stonith device are configured
+  fail:
+    msg: "Stonith devices are not configured."
+  when: >
+    pcs_cluster_status.rc == 0
+    and
+    'NO stonith devices configured' in stonith_devices.stdout
