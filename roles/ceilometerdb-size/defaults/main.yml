@@ -1,0 +1,3 @@
+---
+event_ttl_check: "event_time_to_live"
+panko_config_file: "/var/lib/config-data/puppet-generated/panko/etc/panko/panko.conf"
