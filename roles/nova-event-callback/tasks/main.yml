@@ -1,0 +1,80 @@
+---
+- name: Get VIF Plugging setting values from nova.conf
+  become: True
+  ini:
+    path: "{{ nova_config_file }}"
+    section: DEFAULT
+    key: "{{ item }}"
+    ignore_missing_file: true
+  register: nova_config_result
+  with_items:
+    - "{{ vif_plugging_fatal_check }}"
+    - "{{ vif_plugging_timeout_check }}"
+
+- name: Check Nova configuration values
+  fail:
+    msg: "Value of {{ item.item }} is set to {{ item.value or 'None' }}."
+  when:
+    - "(item.item == vif_plugging_fatal_check and (not item.value|bool or None)) or
+      (item.item == vif_plugging_timeout_check and (item.value|int <= vif_plugging_timeout_value_min|int
+      or None))"
+  with_items: "{{ nova_config_result.results }}"
+
+- name: Get auth_url value from hiera
+  become: True
+  command: hiera -c /etc/puppet/hiera.yaml neutron::server::notifications::auth_url
+  ignore_errors: True
+  changed_when: False
+  register: auth_url
+
+- name: Get auth_url value from neutron.conf
+  become: True
+  ini:
+    path: "{{ neutron_config_file }}"
+    section: nova
+    key: auth_url
+    ignore_missing_file: true
+  register: neutron_auth_url_result
+
+- name: Check [nova]/auth_url setting value from neutron.conf
+  fail:
+    msg: >-
+      [nova]/auth_url from {{ neutron_config_file }} is set to
+      {{ neutron_auth_url_result.value or 'None' }}
+      but it should be set to {{ auth_url.stdout }}.
+  failed_when: "neutron_auth_url_result.value != auth_url.stdout"
+
+- name: Get Notify Nova settings values from neutron.conf
+  become: True
+  ini:
+    path: "{{ neutron_config_file }}"
+    section: DEFAULT
+    key: "{{ item }}"
+    ignore_missing_file: true
+  register: neutron_notify_nova_result
+  with_items:
+    - "{{ notify_nova_on_port_data_check }}"
+    - "{{ notify_nova_on_port_status_check }}"
+
+- name: Check Notify Nova settings values
+  fail:
+    msg: "Value of {{ item.item }} is set to {{ item.value|bool }}."
+  when: not item.value|bool or item.value == None
+  with_items: "{{ neutron_notify_nova_result.results }}"
+
+- name: Get Tenant Name setting value from neutron.conf
+  become: True
+  ini:
+    path: "{{ neutron_config_file }}"
+    section: nova
+    key: "{{ tenant_name_check }}"
+    ignore_missing_file: true
+  register: neutron_tenant_name_result
+
+- name: Check Tenant Name settings value
+  fail:
+    msg: >-
+      [nova]/tenant_name from {{ neutron_config_file }} is set to
+      {{ neutron_tenant_name_result.value or 'None' }}
+      but it should be set to 'service'.
+  when: neutron_tenant_name_result.value != 'service'

@@ -1,0 +1,9 @@
+---
+nova_config_file: /var/lib/config-data/puppet-generated/nova/etc/nova/nova.conf
+neutron_config_file: /var/lib/config-data/puppet-generated/neutron/etc/neutron/neutron.conf
+vif_plugging_fatal_check: "vif_plugging_is_fatal"
+vif_plugging_timeout_check: "vif_plugging_timeout"
+vif_plugging_timeout_value_min: 300
+notify_nova_on_port_data_check: "notify_nova_on_port_data_changes"
+notify_nova_on_port_status_check: "notify_nova_on_port_status_changes"
+tenant_name_check: "tenant_name"
