@@ -1,0 +1,12 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Node health check
+      description: >
+        Check if all overcloud nodes can be connected to before starting a
+        scale-up or an upgrade.
+      groups:
+        - pre-upgrade
+  roles:
+    - node-health

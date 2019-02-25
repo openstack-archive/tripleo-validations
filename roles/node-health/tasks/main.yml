@@ -1,0 +1,35 @@
+---
+- name: Collect IPs for overcloud nodes
+  set_fact: ansible_host="{{ hostvars[item]['ansible_host'] }}"
+  register: oc_ips
+  with_items: "{{ groups.overcloud }}"
+
+- name: Ping all overcloud nodes
+  icmp_ping:
+      host: "{{ item }}"
+  with_items: "{{ oc_ips.results | map(attribute='ansible_facts.ansible_host') | list }}"
+  ignore_errors: true
+  register: ping_results
+
+- name: Extract failed pings
+  set_fact:
+    failed_ips: "{{ ping_results.results | selectattr('failed', 'equalto', True) | map(attribute='item') | list }}"
+
+- name: Lookup nova servers for each failed IP
+  set_fact:
+    servers: "{{ lookup('nova_servers', 'ip', 'ctlplane', failed_ips, wantlist=True) }}"
+
+- name: Extract nova ids
+  set_fact:
+    server_ids: "{{ servers | map(attribute='id') | list }}"
+
+- name: Lookup ironic nodes for unreachable nova servers
+  set_fact:
+    nodes: "{{ lookup('ironic_nodes', 'instance_uuid', server_ids, wantlist=True) }}"
+
+- name: Fail if there are unreachable nodes
+  fail:
+    msg: |
+          {{ lookup('template', './templates/unreachable_nodes.j2',
+          template_vars=dict(nodes=nodes)) }}
+  when: nodes|length > 0
