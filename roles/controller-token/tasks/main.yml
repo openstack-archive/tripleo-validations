@@ -1,0 +1,13 @@
+---
+- name: Fetch token value
+  become: true
+  ini:
+    path: "{{ keystone_conf_file }}"
+    section: DEFAULT
+    key: admin_token
+    ignore_missing_file: True
+  register: token_result
+
+- name: Check if token value is disabled.
+  fail: msg="Keystone admin token is not disabled."
+  when: token_result.value != None
