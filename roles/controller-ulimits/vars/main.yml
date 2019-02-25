@@ -1,0 +1,7 @@
+---
+metadata:
+  name: Check controller ulimits
+  description: >
+    This will check the ulimits of each controller.
+  groups:
+    - post-deployment

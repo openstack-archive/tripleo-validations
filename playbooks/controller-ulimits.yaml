@@ -1,0 +1,13 @@
+---
+- hosts: Controller
+  vars:
+    metadata:
+      name: Check controller ulimits
+      description: >
+        This will check the ulimits of each controller.
+      groups:
+      - post-deployment
+    nofiles_min: 1024
+    nproc_min: 2048
+  roles:
+    - controller-ulimits
