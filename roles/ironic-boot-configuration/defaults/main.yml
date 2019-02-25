@@ -1,0 +1,3 @@
+---
+deploy_kernel_name: "bm-deploy-kernel"
+deploy_ramdisk_name: "bm-deploy-ramdisk"
