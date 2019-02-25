@@ -1,0 +1,15 @@
+---
+- hosts: Controller
+  vars:
+    metadata:
+      name: Check the status of the ceph cluster
+      description: >
+        Uses `ceph health` to check if cluster is in HEALTH_WARN state
+        and prints a debug message.
+
+      groups:
+        - post-deployment
+  tasks:
+    - include_role:
+        name: ceph
+        tasks_from: ceph-health
