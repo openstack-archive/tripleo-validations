@@ -1,0 +1,9 @@
+---
+metadata:
+  name: Stack Health Check
+  description: >
+    Check if all stack resources are in a *_COMPLETE state before starting
+    an upgrade.
+  groups:
+    - pre-upgrade
+    - post-upgrade
