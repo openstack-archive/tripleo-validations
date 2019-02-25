@@ -1,0 +1,21 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Validate the Heat environment file for network configuration
+      description: >
+        This validates the network environment and nic-config files
+        that specify the overcloud network configuration and are stored
+        in the current plan's Swift container.
+
+        The deployers are expected to write these files themselves as
+        described in the Network Isolation guide:
+
+        http://tripleo.org/advanced_deployment/network_isolation.html
+      groups:
+        - pre-deployment
+    network_environment_path: environments/network-environment.yaml
+    plan_env_path: plan-environment.yaml
+    ip_pools_path: environments/ips-from-pool-all.yaml
+  roles:
+    - network-environment

@@ -1,0 +1,4 @@
+---
+network_environment_path: environments/network-environment.yaml
+plan_env_path: plan-environment.yaml
+ip_pools_path: environments/ips-from-pool-all.yaml

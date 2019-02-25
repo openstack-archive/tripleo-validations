@@ -1,0 +1,7 @@
+---
+- name: Validate the network environment files
+  network_environment:
+    netenv_path: "{{ network_environment_path }}"
+    plan_env_path: "{{ plan_env_path }}"
+    ip_pools_path: "{{ ip_pools_path }}"
+    template_files: "{{ lookup('tht') }}"
