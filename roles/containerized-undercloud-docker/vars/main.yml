@@ -1,0 +1,12 @@
+---
+metadata:
+  name: Verify docker containers are up and ports are open
+  description: >
+    Ensure relevant docker containers are up and running, with ports
+    open to listen.
+
+    We iterate through a list of container names and ports provided in
+    defaults, and ensure the system has those available.
+  groups:
+    - post-deployment
+    - pre-upgrade

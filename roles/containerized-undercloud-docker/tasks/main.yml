@@ -1,0 +1,30 @@
+---
+- name: gather docker facts
+  docker_facts:
+    container_filter: status=running
+  become: yes
+
+- name: compare running containers to list
+  set_fact:
+    container_difference: "{{ running_containers | difference(docker.containers_filtered | map(attribute='name') | list) }}"
+
+- block:
+    - name: check appropriate running containers against list - if FAILED, check next task
+      assert:
+        that: "{{ container_difference | length == 0 }}"
+  rescue:
+    - name: following containers found to be NOT running
+      debug:
+        var: container_difference
+
+- name: check appropriate ports are listening
+  wait_for:
+    host: "{{ listening_ip }}"
+    port: "{{ item.port | default(item) }}"
+    search_regex: "{{ item.search_regex | default(omit) }}"
+    state: started         # Port should be open
+    delay: 0               # No wait before first check (sec)
+    timeout: 3             # Stop checking after timeout (sec)
+  ignore_errors: yes
+  loop: "{{ open_ports }}"
+  when: ctlplane_ip is defined
