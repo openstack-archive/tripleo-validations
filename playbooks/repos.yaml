@@ -1,0 +1,15 @@
+---
+- hosts: undercloud, overcloud
+  vars:
+    metadata:
+      name: Check correctness of current repositories
+      description: >
+        Detect whether the repositories listed in `yum repolist`
+        can be connected to and that there is at least one repo
+        configured.
+
+        Detect if there are any unwanted repositories (such as EPEL) enabled.
+      groups:
+        - pre-upgrade
+  roles:
+    - repos

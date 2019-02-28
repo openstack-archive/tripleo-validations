@@ -1,0 +1,35 @@
+---
+- name: List repositories
+  command: 'yum repolist -v'
+  args:
+    warn: no
+  changed_when: False
+  register: repositories
+
+- name: Find repository URLs
+  shell: 'echo "{{ repositories.stdout }}" | grep Repo-baseurl | sed  "s/Repo-baseurl.*\(http[^ ]*\).*/\1/g"'
+  register: repository_urls
+  changed_when: False
+
+- name: Check if there is at least one repository baseurl
+  fail:
+    msg: No repository found in yum repolist
+  when: repository_urls.stdout_lines|length < 1
+
+- name: Call repository URLs
+  uri:
+    url: "{{ item }}"
+  with_items: "{{ repository_urls.stdout_lines }}"
+
+- name: Find repository IDs
+  changed_when: False
+  shell: 'echo "{{ repositories.stdout }}" | grep Repo-id | sed "s/Repo-id.*://" | tr -d " "'
+  register: repository_ids
+
+- name: Check if there are any unwanted repositories enabled
+  fail:
+    msg: Found unwanted repository {{ item.0 }} enabled
+  when: item.0 == item.1
+  with_nested:
+    - [ 'epel/x86_64' ]
+    - "{{ repository_ids.stdout_lines }}"
