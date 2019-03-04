@@ -1,5 +1,4 @@
 ---
-
 configs:
   - /etc/neutron/neutron.conf
   - /usr/share/neutron/neutron-dist.conf
