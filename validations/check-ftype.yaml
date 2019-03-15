@@ -28,7 +28,7 @@
       msg: >
         XFS volumes formatted using ftype=0 are incompatible
         with the docker overlayfs driver.
-        Run xfs_info in {{ ansible_fqdn }} and fix those volumes
+        Run xfs_info on {{ ansible_fqdn }} and fix those volumes
         before proceeding with the upgrade.
     when:
       - ftype.stdout == 'ftype=0'
