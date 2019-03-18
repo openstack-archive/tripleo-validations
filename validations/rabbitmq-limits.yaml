@@ -9,12 +9,20 @@
         - post-deployment
     min_fd_limit: 16384
   tasks:
+  - name: Set container_cli fact from the inventory
+    set_fact:
+      container_cli: "{{ hostvars[inventory_hostname].container_cli }}"
+
   - name: Get file_descriptors total_limit
     become: true
     register: actual_fd_limit
-    shell: docker exec $(docker ps -q --filter "name=rabbitmq" | head -1) rabbitmqctl eval 'proplists:get_value(max_fds, erlang:system_info(check_io)).'
+    shell: >
+      "{{ container_cli }}" exec $("{{ container_cli }}" ps -q --filter "name=rabbitmq" | head -1)
+      rabbitmqctl eval 'proplists:get_value(max_fds, erlang:system_info(check_io)).'
     changed_when: false
+
   - name: Verify the actual limit exceeds the minimal value
     fail:
-      msg: "{{ actual_fd_limit.stdout }} must be greater than or equal to {{ min_fd_limit }}"
+      msg: >-
+        {{ actual_fd_limit.stdout }} must be greater than or equal to {{ min_fd_limit }}
     failed_when: "actual_fd_limit.stdout|int < min_fd_limit"
