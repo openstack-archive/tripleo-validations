@@ -13,11 +13,20 @@
     become: true
     hiera: name="tripleo_undercloud_conf_file"
 
+  - name: Get the local_subnet name from the undercloud_conf file
+    become: True
+    ini:
+      path: "{{ tripleo_undercloud_conf_file }}"
+      section: DEFAULT
+      key: local_subnet
+      ignore_missing_file: True
+    register: local_subnet
+
   - name: Get gateway value from the undercloud.conf file
     become: true
     ini:
       path: "{{ tripleo_undercloud_conf_file }}"
-      section: ctlplane-subnet
+      section: "{% if local_subnet.value %}{{ local_subnet.value }}{% else %}ctlplane-subnet{% endif %}"
       key: gateway
       ignore_missing_file: True
     register: gateway
