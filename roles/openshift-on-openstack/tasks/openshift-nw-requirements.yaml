@@ -1,0 +1,72 @@
+---
+- name: Set fact to identify if the overcloud was deployed
+  set_fact:
+      overcloud_deployed: "{{ groups['overcloud'] is defined }}"
+
+- name: Warn if no overcloud deployed yet
+  warn:
+    msg: >-
+      This validation should be executed on the Undercloud with a working
+      Overcloud.
+  when: not overcloud_deployed|bool
+
+- when: overcloud_deployed|bool
+  block:
+  # Get auth token and service catalog from Keystone and extract service urls.
+  - name: Get token and catalog from Keystone
+    uri:
+      url: "{{ overcloud_keystone_url
+              | urlsplit('scheme') }}://{{ overcloud_keystone_url
+              | urlsplit('netloc') }}/v3/auth/tokens"
+      method: POST
+      body_format: json
+      body:
+        auth:
+          scope:
+            project:
+              name: admin
+              domain:
+                id: default
+          identity:
+            methods:
+              - password
+            password:
+              user:
+                name: admin
+                domain:
+                  id: default
+                password: "{{ overcloud_admin_password }}"
+      return_content: yes
+      status_code: 201
+    register: keystone_result
+    when: overcloud_keystone_url|default('')
+
+  - name: Set auth token
+    set_fact: token="{{ keystone_result.x_subject_token }}"
+
+  - name: Get Neutron URL from catalog
+    set_fact: neutron_url="{{ keystone_result.json.token
+                              | json_query("catalog[?name=='neutron'].endpoints")
+                              | first
+                              | selectattr('interface', 'equalto', 'public')
+                              | map(attribute='url') | first }}"
+
+  # Get overcloud networks from Neutron and check if there is
+  # a network with a common name for external networks.
+  - name: Get networks from Neutron
+    uri:
+      url: "{{ neutron_url }}/v2.0/networks?router:external=true"
+      method: GET
+      headers:
+        X-Auth-Token: "{{ token }}"
+      return_content: yes
+      follow_redirects: all
+    register: networks_result
+
+  - name: Warn if there are no matching networks
+    warn:
+      msg: |
+          No external network found. It is strongly recommended that you
+          configure an external Neutron network with a floating IP address
+          pool.
+    when: networks_result.json.networks | length == 0
