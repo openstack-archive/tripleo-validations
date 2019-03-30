@@ -1,0 +1,17 @@
+---
+- hosts: Controller
+  vars:
+    metadata:
+      name: HAProxy configuration
+      description: Verify the HAProxy configuration has recommended values.
+      groups:
+        - post-deployment
+    config_file: '/var/lib/config-data/puppet-generated/haproxy/etc/haproxy/haproxy.cfg'
+    global_maxconn_min: 20480
+    defaults_maxconn_min: 4096
+    defaults_timeout_queue: '2m'
+    defaults_timeout_client: '2m'
+    defaults_timeout_server: '2m'
+    defaults_timeout_check: '10s'
+  roles:
+    - haproxy

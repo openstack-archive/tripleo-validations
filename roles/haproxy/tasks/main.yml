@@ -1,0 +1,51 @@
+---
+- name: Gather the HAProxy config
+  become: true
+  haproxy_conf:
+    path: "{{ haproxy_config_file }}"
+
+- name: Verify global maxconn
+  fail:
+    msg: >-
+      The 'global maxconn' value '{{ haproxy_conf.global.maxconn }}'
+      must be greater than {{ global_maxconn_min }}
+  failed_when: haproxy_conf.global.maxconn|int < global_maxconn_min
+
+- name: Verify defaults maxconn
+  fail:
+    msg: >-
+      The 'defaults maxconn' value '{{ haproxy_conf.defaults.maxconn }}'
+      must be greater than {{ defaults_maxconn_min }}
+  failed_when: haproxy_conf.defaults.maxconn|int < defaults_maxconn_min
+
+- name: Verify defaults timeout queue
+  fail:
+    msg: >-
+      The 'timeout queue' option in 'defaults' is
+      '{{ haproxy_conf.defaults['timeout queue'] }}',
+      but must be set to {{ defaults_timeout_queue }}
+  failed_when: "haproxy_conf.defaults['timeout queue'] != defaults_timeout_queue"
+
+- name: Verify defaults timeout client
+  fail:
+    msg: >-
+      The 'timeout client' option in 'defaults' is
+      '{{ haproxy_conf.defaults['timeout client'] }}',
+      but must be set to {{ defaults_timeout_client }}
+  failed_when: "haproxy_conf.defaults['timeout client'] != defaults_timeout_client"
+
+- name: Verify defaults timeout server
+  fail:
+    msg: >-
+      The 'timeout server' option in 'defaults' is
+      '{{ haproxy_conf.defaults['timeout server'] }}',
+      but must be set to {{ defaults_timeout_server }}
+  failed_when: "haproxy_conf.defaults['timeout server'] != defaults_timeout_server"
+
+- name: Verify defaults timeout check
+  fail:
+    msg: >-
+      The 'timeout check' option in 'defaults' is
+      '{{ haproxy_conf.defaults['timeout check'] }}',
+      but must be set to {{ defaults_timeout_check }}
+  failed_when: "haproxy_conf.defaults['timeout check'] != defaults_timeout_check"
