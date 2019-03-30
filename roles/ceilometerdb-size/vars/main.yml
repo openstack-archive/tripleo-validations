@@ -1,0 +1,12 @@
+---
+metadata:
+  name: Events Database Size Check
+  description: >
+    The undercloud's events database can grow to a substantial
+    size if event_time_to_live is set to a negative value (infinite limit).
+
+    This validation checks event_time_to_live and fails if the variable is
+    set to a negative value or if it has no custom setting
+    (their value is -1 by default).
+  groups:
+    - pre-deployment
