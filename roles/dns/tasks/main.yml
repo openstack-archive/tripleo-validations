@@ -1,0 +1,4 @@
+---
+- name: Ensure DNS resolution works
+  command: "getent hosts {{ server_to_lookup }}"
+  changed_when: False

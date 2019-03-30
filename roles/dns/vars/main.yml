@@ -1,0 +1,7 @@
+---
+metadata:
+  name: Verify DNS
+  description: >
+    Verify that the DNS resolution works
+  groups:
+    - pre-deployment
