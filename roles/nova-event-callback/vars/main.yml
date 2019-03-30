@@ -1,0 +1,17 @@
+---
+metadata:
+  name: Nova Event Callback Configuration Check
+  description: >
+    This validations verifies that the Nova Event Callback feature is
+    configured which is generally enabled by default.
+    It checks the following files on the Overcloud Controller(s):
+      - /etc/nova/nova.conf:
+        [DEFAULT]/vif_plugging_is_fatal = True
+        [DEFAULT]/vif_plugging_timeout >= 300
+      - /etc/neutron/neutron.conf:
+        [nova]/auth_url = 'http://nova_admin_auth_ip:5000'
+        [nova]/tenant_name = 'service'
+        [DEFAULT]/notify_nova_on_port_data_changes = True
+        [DEFAULT]/notify_nova_on_port_status_changes = True
+  groups:
+    - post-deployment
