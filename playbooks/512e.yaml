@@ -1,0 +1,13 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Advanced Format 512e Support
+      description: >
+        Detect whether the undercloud disks use Advanced Format. If they do,
+        the overcloud images may fail to upload to Glance.
+      groups:
+        - prep
+        - pre-deployment
+  roles:
+    - advanced-format-512e-support
