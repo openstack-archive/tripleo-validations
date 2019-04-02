@@ -21,15 +21,15 @@
 
 from __future__ import print_function
 
+import json
 import os
 import sys
-import json
 import traceback
 
 from oslo_config import cfg
 from six.moves import configparser
 
-from tripleo_common.inventory import TripleoInventory
+from tripleo_common import inventory as inv
 from tripleo_validations import utils
 
 
@@ -53,7 +53,10 @@ opts = [
                               'as --plan. If both are specified, --stack '
                               'will take precedence.')),
     cfg.StrOpt('ansible_ssh_user', default=os.environ.get('ANSIBLE_SSH_USER',
-        'heat-admin')),
+               'heat-admin')),
+    cfg.StrOpt('undercloud-connection', default=inv.UNDERCLOUD_CONNECTION_SSH,
+               help=('Ansible connection to the undercloud, either "local" '
+                     'or "ssh". Defaults to "local".')),
     cfg.StrOpt('ansible_python_interpreter', default=None),
     cfg.BoolOpt('debug', help='Print tracebacks for exceptions')
 ]
@@ -108,7 +111,7 @@ def write_static_inventory(inventory_file_path, inventory):
                 vars_section_name = "%s:%s" % (section_name, 'vars')
                 config.add_section(vars_section_name)
                 for var, value in section['vars'].items():
-                    if value != None:
+                    if value is not None:
                         config.set(vars_section_name, var, value)
         config.write(inventory_file)
 
@@ -125,7 +128,7 @@ def main():
         'timeout': 30
     }
 
-    inventory = TripleoInventory(
+    inventory = inv.TripleoInventory(
         session=utils.get_auth_session(auth_variables),
         hclient=utils.get_heat_client(auth_variables),
         auth_url=configs.auth_url,
