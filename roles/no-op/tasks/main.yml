@@ -1,0 +1,4 @@
+---
+- name: Run a no-op validation everywhere
+  debug:
+    msg: "This is a no-op action for testing that the validations framework runs"
