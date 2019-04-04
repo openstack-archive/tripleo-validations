@@ -42,6 +42,11 @@ the deployment stage they're should be run on.
 
 Validations can belong to multiple groups.
 
+No op
+~~~~
+
+A validation doing nothing for testing the framework
+
 Prep
 ~~~~
 

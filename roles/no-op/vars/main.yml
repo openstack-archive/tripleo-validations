@@ -1,0 +1,8 @@
+---
+metadata:
+  name: NO-OP validation
+  description: >
+    A simple validation doing nothing in order to test that
+    the validations framework works.
+  groups:
+    - no-op

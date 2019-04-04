@@ -96,7 +96,7 @@ def build_detail(group, validations):
 
 def setup(app):
     # Seed it with the known groups:
-    groups = set(('prep', 'pre-introspection',
+    groups = set(('no-op', 'prep', 'pre-introspection',
                   'pre-deployment', 'post-deployment',
                   'pre-update', 'pre-upgrade',
                   'post-upgrade', 'openshift-on-openstack'))
