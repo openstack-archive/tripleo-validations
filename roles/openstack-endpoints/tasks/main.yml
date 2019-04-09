@@ -1,0 +1,54 @@
+---
+- name: Set fact to identify if the overcloud was deployed
+  set_fact:
+      overcloud_deployed: "{{ groups['overcloud'] is defined }}"
+
+# Check that the Horizon endpoint exists
+- name: Fail if the HorizonPublic endpoint is not defined
+  fail:
+    msg: >-
+      "The `HorizonPublic` endpoint is not defined in the `EndpointMap` of the
+      deployed stack. This means Horizon may not have been deployed correctly."
+  when:
+    - overcloud_horizon_url|default('') | length == 0
+    - overcloud_deployed|bool
+
+# Check connectivity to horizon
+- name: Check Horizon
+  uri:
+    url: "{{ overcloud_horizon_url }}"
+  when: overcloud_horizon_url|default('')
+
+# Check that the Keystone endpoint exists
+- name: Fail if KeystoneURL output is not available
+  fail:
+    msg: >-
+      "The `KeystoneURL` output is not available in the deployed stack."
+  when:
+    - overcloud_keystone_url|default('') | length == 0
+    - overcloud_deployed|bool
+
+# Check that we can obtain an auth token from horizon
+- name: Check Keystone
+  no_log: True
+  uri:
+    url: "{{ overcloud_keystone_url | urlsplit('scheme') }}://{{ overcloud_keystone_url | urlsplit('netloc') }}/v3/auth/tokens"
+    method: POST
+    body_format: json
+    body:
+      auth:
+        identity:
+          methods:
+            - password
+          password:
+            user:
+              name: admin
+              domain:
+                name: Default
+              password: "{{ overcloud_admin_password }}"
+    return_content: yes
+    status_code: 201
+  register: auth_token
+  when: overcloud_keystone_url|default('')
+
+# TODO(shadower): other endpoints
