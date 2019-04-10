@@ -1,0 +1,26 @@
+---
+- name: Set container_cli fact from the inventory
+  set_fact:
+    container_cli: "{{ hostvars[inventory_hostname].container_cli }}"
+
+- name: Check nova upgrade status
+  become: true
+  command: "{{ container_cli }} exec -u root nova_api nova-status upgrade check"
+  changed_when: False
+  register: nova_upgrade_check
+
+- name: Warn if at least one check encountered an issue
+  warn:
+    msg: |
+      At least one check encountered an issue and requires further investigation.
+      This is considered a warning but the upgrade may be OK.
+      See the detail at https://docs.openstack.org/nova/latest/cli/nova-status.html#nova-status-checks
+  when: "nova_upgrade_check.rc == 1"
+
+- name: Fail if there was an upgrade status check failure
+  fail:
+    msg: |
+      There was an upgrade status check failure that needs to be investigated.
+      This should be considered something that stops an upgrade.
+      See the detail at https://docs.openstack.org/nova/latest/cli/nova-status.html#nova-status-checks
+  when: "nova_upgrade_check.rc not in [0, 1]"

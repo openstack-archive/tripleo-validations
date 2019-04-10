@@ -1,0 +1,24 @@
+---
+- hosts: nova_api
+  vars:
+    metadata:
+      name: Nova Status Upgrade Check
+      description: >
+        Performs a release-specific readiness check before restarting services with
+        new code. This command expects to have complete configuration and access to
+        databases and services within a cell. For example, this check may query the
+        Nova API database and one or more cell databases. It may also make requests
+        to other services such as the Placement REST API via the Keystone service
+        catalog
+
+        The nova-status upgrade check command has three standard return codes:
+
+        0 -> All upgrade readiness checks passed successfully and there is nothing to do.
+        1 -> At least one check encountered an issue and requires further investigation.
+             This is considered a warning but the upgrade may be OK.
+        2 -> There was an upgrade status check failure that needs to be investigated.
+             This should be considered something that stops an upgrade.
+      groups:
+        - pre-upgrade
+  roles:
+    - nova-status
