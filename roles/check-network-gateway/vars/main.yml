@@ -1,0 +1,8 @@
+---
+metadata:
+  name: Check network_gateway on the provisioning network
+  description: >
+    If `gateway` in `undercloud.conf` is different from `local_ip`,
+    verify that the gateway exists and is reachable.
+  groups:
+    - pre-introspection
