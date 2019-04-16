@@ -1,0 +1,3 @@
+---
+ironic_inspector_conf_file: /var/lib/config-data/puppet-generated/ironic_inspector/etc/ironic-inspector/inspector.conf
+network_environment_path: environments/network-environment.yaml
