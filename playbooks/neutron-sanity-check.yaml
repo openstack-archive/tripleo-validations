@@ -1,17 +1,17 @@
 ---
-- hosts: undercloud
+- hosts: Controller
   vars:
     metadata:
-      name: Undercloud Neutron Sanity Check
+      name: Neutron Sanity Check
       description: >
-        Run `neutron-sanity-check` on the undercloud node to find out
+        Run `neutron-sanity-check` on the controller nodes to find out
         potential issues with Neutron's configuration.
 
         The tool expects all the configuration files that are passed
         to the Neutron services.
 
       groups:
-        - pre-introspection
+        - post-deployment
 
     # The list of Neutron configuration files and directories that
     # will be passed to the Neutron services. The order is important
@@ -21,7 +21,6 @@
     - /usr/share/neutron/neutron-dist.conf
     - /etc/neutron/metadata_agent.ini
     - /etc/neutron/dhcp_agent.ini
-    - /etc/neutron/plugins/ml2/openvswitch_agent.ini
     - /etc/neutron/fwaas_driver.ini
     - /etc/neutron/l3_agent.ini
     - /usr/share/neutron/neutron-lbaas-dist.conf
