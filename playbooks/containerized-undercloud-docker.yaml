@@ -1,0 +1,103 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Verify docker containers are up and ports are open
+      description: >
+        Ensure relevant docker containers are up and running, with ports
+        open to listen.
+
+        We iterate through a list of container names and ports provided in
+        defaults, and ensure the system has those available.
+      groups:
+        - post-deployment
+        - pre-upgrade
+    open_ports:
+      - 111
+      - 873
+      - 3000
+      - 3306
+      - 4369
+      - 5000
+      - 5050
+      - 5672
+      - 6000
+      - 6001
+      - 6002
+      - 6379
+      - 6385
+      - 8000
+      - 8004
+      - 8080
+      - 8088
+      - 8774
+      - 8775
+      - 8778
+      - 8787
+      - 8888
+      - 8989
+      - 9000
+      - 9292
+      - 9696
+      - 11211
+      - 15672
+      - 25672
+      - 35357
+      - 39422
+      - port: 22
+        search_regex: OpenSSH
+    running_containers:
+      - glance_api
+      - heat_api
+      - heat_api_cfn
+      - heat_api_cron
+      - heat_engine
+      - ironic_api
+      - ironic_conductor
+      - ironic_inspector
+      - ironic_inspector_dnsmasq
+      - ironic_neutron_agent
+      - ironic_pxe_http
+      - ironic_pxe_tftp
+      - iscsid
+      - keystone
+      - keystone_cron
+      - logrotate_crond
+      - memcached
+      - mistral_api
+      - mistral_engine
+      - mistral_event_engine
+      - mistral_executor
+      - mysql
+      - neutron_api
+      - neutron_dhcp
+      - neutron_l3_agent
+      - neutron_ovs_agent
+      - nova_api
+      - nova_api_cron
+      - nova_compute
+      - nova_conductor
+      - nova_metadata
+      - nova_placement
+      - nova_scheduler
+      - rabbitmq
+      - swift_account_auditor
+      - swift_account_reaper
+      - swift_account_replicator
+      - swift_account_server
+      - swift_container_auditor
+      - swift_container_replicator
+      - swift_container_server
+      - swift_container_updater
+      - swift_object_auditor
+      - swift_object_expirer
+      - swift_object_replicator
+      - swift_object_server
+      - swift_object_updater
+      - swift_proxy
+      - swift_rsync
+      - tripleo_ui
+      - zaqar
+      - zaqar_websocket
+  roles:
+    - containerized-undercloud-docker
