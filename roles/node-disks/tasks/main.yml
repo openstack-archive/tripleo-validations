@@ -1,0 +1,24 @@
+---
+- name: Get Ironic Inspector swift auth_url
+  become: true
+  ini:
+    path: "{{ ironic_conf_file }}"
+    section: inspector
+    key: auth_url
+  register: ironic_auth_url
+
+- name: Get Ironic Inspector swift password
+  become: true
+  ini:
+    path: "{{ ironic_conf_file }}"
+    section: inspector
+    key: password
+  register: ironic_password
+
+- name: Check node disks
+  node_disks:
+    nodes: "{{ lookup('ironic_nodes', wantlist=True) }}"
+    flavors: "{{ lookup('nova_flavors', wantlist=True) }}"
+    introspection_data: "{{ lookup('introspection_data',
+                            auth_url=ironic_auth_url.value,
+                            password=ironic_password.value) }}"
