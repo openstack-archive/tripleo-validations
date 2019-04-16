@@ -1,0 +1,14 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Check Ironic boot configuration
+      description: >
+        Check if baremetal boot configuration is correct.
+      groups:
+        - pre-deployment
+        - pre-upgrade
+    deploy_kernel_name: "bm-deploy-kernel"
+    deploy_ramdisk_name: "bm-deploy-ramdisk"
+  roles:
+    - ironic-boot-configuration
