@@ -1,0 +1,12 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Verify hypervisor statistics
+      description: >
+        This validation checks that the nodes and hypervisor statistics
+        add up.
+      groups:
+      - pre-deployment
+  roles:
+    - default-node-count
