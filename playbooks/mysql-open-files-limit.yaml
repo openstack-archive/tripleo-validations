@@ -1,0 +1,14 @@
+---
+- hosts: Controller, Database
+  vars:
+    metadata:
+      name: MySQL Open Files Limit
+      description: >
+        Verify the `open-files-limit` configuration is high enough
+
+        https://access.redhat.com/solutions/1598733
+      groups:
+        - post-deployment
+    min_open_files_limit: 16384
+  roles:
+    - mysql-open-files-limit
