@@ -1,0 +1,10 @@
+---
+metadata:
+  name: Verify existence of deployment images
+  description: >
+    This validation checks that images bm-deploy-kernel and
+    bm-deploy-ramdisk exist before deploying the overcloud,
+    and that only one exists by that name.
+  groups:
+    - pre-deployment
+    - pre-upgrade

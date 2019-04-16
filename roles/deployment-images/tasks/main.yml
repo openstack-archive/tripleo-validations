@@ -1,0 +1,22 @@
+---
+- name: Fetch deploy kernel by name
+  set_fact:
+    deploy_kernel_id: "{{ lookup('glance_images', 'name', ['{{ deploy_kernel_name }}'], wantlist=True) | map(attribute='id') | list }}"
+
+- name: Fetch deploy ramdisk by name
+  set_fact:
+    deploy_ramdisk_id: "{{ lookup('glance_images', 'name', ['{{ deploy_ramdisk_name }}'], wantlist=True) | map(attribute='id') | list }}"
+
+- name: Fail if image is not found
+  fail: msg="No image with the name '{{ item.name }}' found - make sure you have uploaded boot images."
+  failed_when: item.id | length < 1
+  with_items:
+    - { name: '{{ deploy_kernel_name }}', id: '{{ deploy_kernel_id }}' }
+    - { name: '{{ deploy_ramdisk_name }}', id: '{{ deploy_ramdisk_id }}' }
+
+- name: Fail if there is more than one image
+  fail: msg="Please make sure there is only one image named '{{ item.name }}' in glance."
+  failed_when: item.id | length > 1
+  with_items:
+    - { name: '{{ deploy_kernel_name }}', id: '{{ deploy_kernel_id }}' }
+    - { name: '{{ deploy_ramdisk_name }}', id: '{{ deploy_ramdisk_id }}' }
