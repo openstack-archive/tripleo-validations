@@ -14,9 +14,9 @@
 
 from tripleo_validations.tests import base
 
-from validations.library.node_disks import _get_smallest_disk
-from validations.library.node_disks import _has_root_device_hints
-from validations.library.node_disks import validate_node_disks
+from library.node_disks import _get_smallest_disk
+from library.node_disks import _has_root_device_hints
+from library.node_disks import validate_node_disks
 
 
 # node_1: 2 disks, 1 larger than 4GB (50GB)

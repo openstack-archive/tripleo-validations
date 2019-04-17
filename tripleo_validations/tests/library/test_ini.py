@@ -23,8 +23,8 @@ Tests for `ini` module.
 import os
 import tempfile
 
+import library.ini as validation
 from tripleo_validations.tests import base
-import validations.library.ini as validation
 
 
 invalid_content = '''

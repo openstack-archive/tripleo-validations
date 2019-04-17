@@ -19,8 +19,8 @@ test_ip_range
 Tests for `ip_range` module.
 """
 
+import library.ip_range as validation
 from tripleo_validations.tests import base
-import validations.library.ip_range as validation
 
 
 class TestIPRange(base.TestCase):

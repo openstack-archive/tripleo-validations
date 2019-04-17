@@ -14,8 +14,8 @@
 # under the License.
 
 
+import library.network_environment as validation
 from tripleo_validations.tests import base
-import validations.library.network_environment as validation
 
 
 class TestNicConfigs(base.TestCase):
