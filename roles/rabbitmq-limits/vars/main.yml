@@ -1,0 +1,7 @@
+---
+metadata:
+  name: Rabbitmq limits
+  description: >
+    Make sure the rabbitmq file descriptor limits are set to reasonable values.
+  groups:
+    - post-deployment
