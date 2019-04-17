@@ -1,0 +1,16 @@
+---
+- name: Get available updates for packages
+  check_package_update:
+    package: "{{ item }}"
+    pkg_mgr: "{{ ansible_pkg_mgr }}"
+  with_items: "{{ packages }}"
+  register: updates
+
+- name: Check if current version is latest minor
+  with_items: "{{ updates.results }}"
+  assert:
+    that: "item.latest_minor_version == item.current_version"
+    msg: >-
+      "A newer version of the {{ item.name }} package is
+      available: {{ item.latest_minor_version }} (currently
+      {{ item.current_version }})."
