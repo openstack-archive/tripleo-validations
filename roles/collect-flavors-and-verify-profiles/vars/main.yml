@@ -1,0 +1,9 @@
+---
+metadata:
+  name: Collect and verify role flavors
+  description: >
+    This validation checks the flavors assigned to roles exist and have the
+    correct capabilities set.
+  groups:
+  - pre-deployment
+  - pre-upgrade
