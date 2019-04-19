@@ -6,8 +6,8 @@
 - name: Get the open_files_limit value
   become: true
   shell: >-
-    "{{ container_cli }}" exec -u root
-    $("{{ container_cli }}" ps -q --filter "name=mysql|galera-bundle" | head -1)
+    "{{ container_cli|default('podman', true) }}" exec -u root
+    $("{{ container_cli|default('podman', true) }}" ps -q --filter "name=mysql|galera-bundle" | head -1)
     /bin/bash -c 'ulimit -n'
   changed_when: False
   register: mysqld_open_files_limit

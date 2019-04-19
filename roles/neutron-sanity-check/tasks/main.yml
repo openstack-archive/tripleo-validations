@@ -14,7 +14,7 @@
 
 - name: Run neutron-sanity-check
   command: >
-    {{ container_cli.value|default('podman') }}
+    {{ container_cli.value|default('podman', true) }}
     exec -u root neutron_ovs_agent
     /bin/bash -c 'neutron-sanity-check --config-file {{ item }}'
   with_items: "{{ configs }}"
