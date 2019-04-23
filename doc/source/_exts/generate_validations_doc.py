@@ -31,6 +31,16 @@ def get_validation_metadata(validation, key):
         return DEFAULT_METADATA.get(key)
 
 
+def get_include_role(validation):
+    try:
+        if 'tasks' in validation:
+            return validation['tasks'][0]['include_role']['name']
+        else:
+            return validation['roles'][0]
+    except KeyError:
+        return list()
+
+
 def get_remaining_metadata(validation):
     try:
         return {k: v for k, v in validation['vars']['metadata'].items()
@@ -75,8 +85,9 @@ def build_detail(group, validations):
 - **groups**: {groups}
 - **metadata**: {metadata}
 - **parameters**: {parameters}
+- **roles**: {roles}
 
-`View validation source code <http://git.openstack.org/cgit/openstack/tripleo-validations/plain/validations/{title}.yaml>`__.
+`View source code for the role <http://git.openstack.org/cgit/openstack/tripleo-validations/tree/roles/{roles}/>`__.
 
 """
         .format(label=(group + '_' + validation['id']),
@@ -88,6 +99,7 @@ def build_detail(group, validations):
                 metadata=format_dict(validation['metadata']),
                 hosts=validation['hosts'],
                 parameters=format_dict(validation['parameters']),
+                roles=validation['roles']
                 )
         for validation in validations]
     with open('doc/source/validations-{}-details.rst'.format(group), 'w') as f:
@@ -101,7 +113,7 @@ def setup(app):
                   'pre-update', 'pre-upgrade',
                   'post-upgrade', 'openshift-on-openstack'))
     validations = []
-    for validation_path in sorted(glob('validations/*.yaml')):
+    for validation_path in sorted(glob('playbooks/*.yaml')):
         with open(validation_path) as f:
             loaded_validation = yaml.safe_load(f.read())[0]
             for group in get_validation_metadata(loaded_validation, 'groups'):
@@ -115,7 +127,8 @@ def setup(app):
                 'groups': get_validation_metadata(loaded_validation, 'groups'),
                 'description': get_validation_metadata(loaded_validation,
                                                        'description'),
-                'metadata': get_remaining_metadata(loaded_validation)
+                'metadata': get_remaining_metadata(loaded_validation),
+                'roles': get_include_role(loaded_validation)
             })
 
     for group in groups:
