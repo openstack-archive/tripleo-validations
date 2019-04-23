@@ -1,0 +1,23 @@
+exclude_paths:
+    - releasenotes/
+parseable: true
+quiet: false
+skip_list:
+    # Lines should be no longer than 120 chars.
+    - '204'
+    # Using command rather module we have where
+    # we need to use curl or rsync.
+    - '303'
+    # shell tasks uses pipeline without pipefail,
+    # this requires refactoring, skip for now.
+    - '306'
+    # Tasks that run when changed should likely be handlers
+    # this requires refactoring, skip for now.
+    - '503'
+    # meta/main.yml should contain relevant info
+    - '701'
+    # Tags must contain lowercase letters and digits only
+    - '702'
+    # meta/main.yml default values should be changed
+    - '703'
+verbosity: 1
