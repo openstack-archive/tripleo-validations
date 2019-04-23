@@ -87,7 +87,7 @@ def build_detail(group, validations):
 - **parameters**: {parameters}
 - **roles**: {roles}
 
-`View source code for the role <http://git.openstack.org/cgit/openstack/tripleo-validations/tree/roles/{roles}/>`__.
+`View source code for the role <https://opendev.org/openstack/tripleo-validations/src/branch/master/roles/{roles}/>`__.
 
 """
         .format(label=(group + '_' + validation['id']),
