@@ -1,0 +1,22 @@
+---
+- name: get httpd status
+  systemd:
+    name: httpd
+  register: httpd_state
+
+- name: ensure httpd is running
+  assert:
+    that: httpd_state.status['SubState'] == 'running'
+    fail_msg: httpd service is not running
+    success_msg: httpd service is running as expected
+
+- name: ensure registry does answer
+  uri:
+    method: HEAD
+    url: "http://{{ container_registry_host }}:{{ container_registry_port }}/v2/"
+    status_code:
+      - 200
+      - 204
+      - 301
+      - 302
+
