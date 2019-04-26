@@ -11,11 +11,19 @@
         - post-deployment
     min_open_files_limit: 16384
   tasks:
+  - name: Set container_cli fact from the inventory
+    set_fact:
+      container_cli: "{{ hostvars[inventory_hostname].container_cli }}"
+
   - name: Get the open_files_limit value
     become: true
-    shell: docker exec -u root $(docker ps -q --filter "name=mysql|galera-bundle" | head -1) /bin/bash -c 'ulimit -n'
+    shell: >-
+      "{{ container_cli }}" exec -u root
+      $("{{ container_cli }}" ps -q --filter "name=mysql|galera-bundle" | head -1)
+      /bin/bash -c 'ulimit -n'
     changed_when: False
     register: mysqld_open_files_limit
+
   - name: Test the open-files-limit value
     fail:
       msg: >
