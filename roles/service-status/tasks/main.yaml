@@ -1,0 +1,15 @@
+---
+- name: get failed systemd units
+  shell: >
+    systemctl list-units --failed --plain --no-legend --no-pager |
+    awk '{print $1}'
+  register: systemd_status
+
+- name: Fails if we find failed units
+  assert:
+    fail_msg: >
+      Failed units were found: {{ systemd_status.stdout_lines|join(',') }}
+    success_msg: >
+      No failed unit were found
+    that:
+      - systemd_status.stdout_lines|length == 0
