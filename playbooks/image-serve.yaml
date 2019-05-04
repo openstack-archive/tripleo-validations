@@ -1,0 +1,13 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Verify image-serve service is working and answering
+      description: >
+        Ensures image-serve vhost is configured and httpd is running.
+      groups:
+        - pre-upgrade
+        - post-deployment
+        - post-upgrade
+  roles:
+    - image-serve

@@ -1,0 +1,7 @@
+metadata:
+  name: Image-serve availability
+  description: Verify that image-serve service is ready
+  groups:
+    - pre-upgrade
+    - post-deployment
+    - post-upgrade
