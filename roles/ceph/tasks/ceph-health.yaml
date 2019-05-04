@@ -6,16 +6,64 @@
   register: ceph_mon_enabled
   changed_when: False
 
-- name: Get ceph health
-  become: true
-  shell: ceph health | awk '{print $1}'
-  register: ceph_health
-  when:
-    - ceph_mon_enabled is succeeded
+- name: End play if ceph_mon is not enabled
+  meta: end_play
+  when: ceph_mon_enabled is not succeeded
 
-- name: Check ceph health
-  warn:
-    msg: Ceph is in {{ ceph_health.stdout }} state.
-  when:
+- name: Set container_cli fact from the inventory
+  set_fact:
+    container_cli: "{{ hostvars[inventory_hostname].container_cli|default('podman') }}"
+
+- name: Set container filter format
+  set_fact:
+    container_filter_format: !unsafe "--format '{{ .Names }}'"
+
+- name: Set ceph_mon_container name
+  become: true
+  shell: "{{ container_cli }} ps {{ container_filter_format }} | grep ceph-mon"
+  ignore_errors: true
+  register: ceph_mon_container
+  changed_when: False
+
+- when:
     - ceph_mon_enabled is succeeded
-    - ceph_health.stdout == 'HEALTH_WARN'
+    - ceph_mon_container is succeeded
+  block:
+  - name: Get ceph health
+    become: true
+    shell: "{{ container_cli }} exec {{ ceph_mon_container.stdout }} ceph health | awk '{print $1}'"
+    register: ceph_health
+
+  - name: Check ceph health
+    warn:
+      msg: Ceph is in {{ ceph_health.stdout }} state.
+    when:
+      - ceph_health.stdout != 'HEALTH_OK'
+      - not fail_on_ceph_health_err|default(false)|bool
+
+  - name: Fail if ceph health is HEALTH_ERR
+    fail:
+      msg: Ceph is in {{ ceph_health.stdout }} state.
+    when:
+      - ceph_health.stdout == 'HEALTH_ERR'
+      - fail_on_ceph_health_err|default(false)|bool
+
+- when:
+    - osd_percentage_min|default(0) > 0
+    - ceph_mon_enabled is succeeded
+    - ceph_mon_container is succeeded
+  block:
+  - name: set jq osd percentage filter
+    set_fact:
+      jq_osd_percentage_filter: '( (.num_in_osds) / (.num_osds) ) * 100'
+
+  - name: Get OSD stat percentage
+    become: true
+    shell: "{{ container_cli }} exec {{ ceph_mon_container.stdout }} ceph osd stat -f json | jq '{{ jq_osd_percentage_filter }}'"
+    register: ceph_osd_in_percentage
+
+  - name: Fail if there is an unacceptable percentage of in OSDs
+    fail:
+      msg: "Only {{ ceph_osd_in_percentage.stdout|float }}% of OSDs are in, but {{ osd_percentage_min|default(0) }}% are required"
+    when:
+      - ceph_osd_in_percentage.stdout|float < osd_percentage_min|default(0)
