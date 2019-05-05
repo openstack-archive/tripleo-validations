@@ -21,6 +21,7 @@ Existing validations:
 .. toctree::
    :maxdepth: 2
 
+   validations-no-op-details
    validations-prep-details
    validations-pre-introspection-details
    validations-pre-deployment-details
