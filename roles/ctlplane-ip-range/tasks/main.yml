@@ -24,6 +24,6 @@
 
 - name: Check the size of the DHCP range for overcloud nodes
   ip_range:
-    start: "{{ dhcp_start.value|default('192.0.2.5') }}"
-    end: "{{ dhcp_end.value|default('192.0.2.24') }}"
+    start: "{{ dhcp_start.value|default('192.0.2.5', true) }}"
+    end: "{{ dhcp_end.value|default('192.0.2.24', true) }}"
     min_size: "{{ ctlplane_iprange_min_size }}"
