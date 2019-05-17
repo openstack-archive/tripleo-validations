@@ -1,0 +1,14 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Confirm that undercloud is setup to register to IdM
+      description: |
+        Checks that the undercloud is ready to set up novajoin and
+        to register to IdM as a client as part of undercloud-install.
+      groups:
+      - prep
+  tasks:
+    - include_role:
+        name: tls-everywhere
+        tasks_from: prep.yaml

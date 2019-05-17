@@ -1,0 +1,270 @@
+---
+# These tasks apply to all nodes.
+
+# variable for handlers to clean up
+- name: set facts for handlers to clean up
+  set_fact:
+    temp_krb_caches: []
+
+# DNS related tasks
+- name: Try to ping ipa-ca
+  command: ping -c 3 ipa-ca
+  register: ipa_ca_ping_status
+  ignore_errors: true
+  changed_when: false
+
+- name: Set facts for ok DNS configuration
+  set_fact:
+    dns_status: "{{ helper_status_ok }}"
+    dns_reason: "DNS is configured correctly"
+    dns_recommendations: null
+  when: ipa_ca_ping_status.rc == 0
+
+- name: Set facts for error in DNS configuration
+  set_fact:
+    dns_status: "{{ helper_status_error }}"
+    dns_reason: "DNS is NOT configured correctly"
+    dns_recommendations:
+      - Check that the DNS server for this node points to IdM/FreeIPA
+      - For the undercloud, you need to set the 'undercloud_nameservers' configuration parameter
+      - For the overcloud, you need to set the 'DnsServers' parameter
+      - Make sure that the relevant 'search' entry is in /etc/resolv.conf
+  when: ipa_ca_ping_status.rc != 0
+
+- name: "DNS check"
+  reportentry:
+    report_status: "{{ dns_status }}"
+    report_reason: "{{ dns_reason }}"
+    report_recommendations: "{{ dns_recommendations }}"
+
+# Firewall related tasks
+- name: Firewall validations
+  when: ipa_ca_ping_status.rc == 0
+  block:
+    - name: Check all relevant ports for IdM/FreeIPA are accessible from {{ ansible_hostname }}
+      wait_for:
+        host: ipa-ca
+        port: "{{ item }}"
+        state: started         # Port should be open
+        delay: 0               # No wait before first check (sec)
+        timeout: 3             # Stop checking after timeout (sec)
+      register: port_status
+      ignore_errors: true
+      loop:
+        - 80
+        - 443
+        - 389
+        - 636
+        - 88
+        - 464
+        - 53
+
+    - name: Set facts for ok firewall settings
+      set_fact:
+        firewall_status: "{{ helper_status_ok }}"
+        firewall_reason: "The host {{ ansible_hostname }} can access FreeIPA through all relevant ports"
+        firewall_recommendations: null
+      when: "'failed' not in port_status"
+
+    - name: Set facts for issues in firewall settings
+      set_fact:
+        firewall_status: "{{ helper_status_error }}"
+        firewall_reason: "The host {{ ansible_hostname }} could NOT access IdM/FreeIPA on some ports"
+        firewall_recommendations:
+          - "Please make sure that the following ports are open on the IdM/FreeIPA node: {{ firewall_query }}"
+      vars:
+        firewall_query: "{{ port_status.results | json_query('[?failed].item') | join(', ') }}"
+      when:
+        - "'failed' in port_status"
+        - port_status.failed|bool
+
+- name: Set facts for skipping firewall checks
+  set_fact:
+    firewall_status: "{{ helper_status_skipped }}"
+    firewall_reason: "skipped {{ ansible_hostname }} firewall checks because DNS wasn't set correctly."
+    firewall_recommendations: null
+  when: ipa_ca_ping_status.rc != 0
+
+- name: "Firewall check"
+  reportentry:
+    report_status: "{{ firewall_status }}"
+    report_reason: "{{ firewall_reason }}"
+    report_recommendations: "{{ firewall_recommendations }}"
+
+# IdM/FreeIPA related tasks
+- name: Check for IdM/FreeIPA host configuration
+  stat:
+    path: /etc/ipa/default.conf
+  register: ipa_conf_stat
+
+- name: Set facts for IdM/FreeIPA configuration present
+  set_fact:
+    ipa_conf_status: "{{ helper_status_ok }}"
+    ipa_conf_reason: "The host {{ ansible_host }} has the file /etc/ipa/default.conf"
+    ipa_conf_recommendations: null
+  when: ipa_conf_stat.stat.exists
+
+- name: Set facts for IdM/FreeIPA configuration missing
+  set_fact:
+    ipa_conf_status: "{{ helper_status_error }}"
+    ipa_conf_reason: "The host {{ ansible_host }} is missing the file /etc/ipa/default.conf"
+    ipa_conf_recommendations:
+      - "The host {{ ansible_host }} needs to be enrolled to IdM/FreeIPA"
+      - If there were enrollment issues, you'll see them in /var/log/ipaclient-install.log
+  when: not ipa_conf_stat.stat.exists
+
+- name: "IdM/FreeIPA host configuration check"
+  reportentry:
+    report_status: "{{ ipa_conf_status }}"
+    report_reason: "{{ ipa_conf_reason }}"
+    report_recommendations: "{{ ipa_conf_recommendations }}"
+
+# NOTE(jaosorior): This currently does a lookup, which only runs on the host that's
+# running the playbook. We assume that all of the hosts are in the same realm, so
+# this is not a problem for now.
+- name: Set fact for IdM/FreeIPA realm
+  ini:
+    path: "/etc/ipa/default.conf"
+    section: global
+    key: realm
+    ignore_missing_file: False
+  register: ipa_realm
+  check_mode: no
+
+- name: Set fact for IdM/FreeIPA host entry
+  set_fact:
+    host_entry: "{{ ansible_fqdn }}@{{ ipa_realm.value }}"
+  when:  ipa_conf_stat.stat.exists
+
+- name: Set fact for IdM/FreeIPA host principal
+  set_fact:
+    host_principal: "host/{{ host_entry }}"
+  when:  ipa_conf_stat.stat.exists
+
+# Kerberos keytab related tasks
+- name: Check for kerberos host keytab
+  stat:
+    path: /etc/krb5.keytab
+  register: krb5_keytab_stat
+
+- name: Set facts for kerberos host keytab present
+  set_fact:
+    krb5_keytab_status: "{{ helper_status_ok }}"
+    krb5_keytab_reason: "The host {{ ansible_host }} has the file /etc/krb5.keytab"
+    krb5_keytab_recommendations: null
+  when: krb5_keytab_stat.stat.exists
+
+- name: Set facts for kerberos host keytab missing
+  set_fact:
+    krb5_keytab_status: "{{ helper_status_error }}"
+    krb5_keytab_reason: "The host {{ ansible_host }} is missing the file /etc/krb5.keytab"
+    krb5_keytab_recommendations:
+      - "The host {{ ansible_host }} needs to be enrolled to IdM/FreeIPA"
+      - If there were enrollment issues, you'll see them in /var/log/ipaclient-install.log
+      - alternatively, you can request the keytab for this host with the ipa-getkeytab command
+  when: not krb5_keytab_stat.stat.exists
+
+- name: "Kerberos host keytab check"
+  reportentry:
+    report_status: "{{ krb5_keytab_status }}"
+    report_reason: "{{ krb5_keytab_reason }}"
+    report_recommendations: "{{ krb5_keytab_recommendations }}"
+
+- name: List Kerberos principals in /etc/krb5.keytab
+  expect:
+    command: ktutil
+    responses:
+      ktutil:
+        - "rkt /etc/krb5.keytab"
+        - "list"
+        - "quit"
+  register: keytab_principal_list
+  changed_when: false
+  become: true
+  when: krb5_keytab_stat.stat.exists
+  check_mode: no
+
+- name: Set facts for host principals in /etc/krb5.keytab
+  set_fact:
+    principal_in_keytab_status: "{{ helper_status_ok }}"
+    principal_in_keytab_reason: "The principal {{ host_principal }} is in the keytab"
+    principal_in_keytab_recommendations: null
+  when:
+    - krb5_keytab_stat.stat.exists
+    - ipa_conf_stat.stat.exists
+    - "host_principal in keytab_principal_list.stdout"
+
+- name: Set facts for host principals NOT in /etc/krb5.keytab
+  set_fact:
+    principal_in_keytab_status: "{{ helper_status_error }}"
+    principal_in_keytab_reason: "The principal {{ host_principal }} is  missing from the keytab"
+    principal_in_keytab_recommendations:
+      - You might have overwritten the keytab. Re-enroll or request the keytab using ipa-getkeytab
+  when:
+    - krb5_keytab_stat.stat.exists
+    - ipa_conf_stat.stat.exists
+    - "host_principal not in keytab_principal_list.stdout"
+
+- name: Set facts for skipping host principals check without IdM/FreeIPA config
+  set_fact:
+    principal_in_keytab_status: "{{ helper_status_skipped }}"
+    principal_in_keytab_reason: "skipped checking for the principal in the host's {{ ansible_host }} because there is no keytab file"
+    principal_in_keytab_recommendations: null
+  when:
+    - not ipa_conf_stat.stat.exists
+    - krb5_keytab_stat.stat.exists
+
+- name: Set facts for skipping host principals check without keytab
+  set_fact:
+    principal_in_keytab_status: "{{ helper_status_skipped }}"
+    principal_in_keytab_reason: "skipped checking for the principal in the host's {{ ansible_host }} because there is no keytab file"
+    principal_in_keytab_recommendations: null
+  when: not krb5_keytab_stat.stat.exists
+
+- name: "Kerberos principal in host keytab check"
+  reportentry:
+    report_status: "{{ principal_in_keytab_status }}"
+    report_reason: "{{ principal_in_keytab_reason }}"
+    report_recommendations: "{{ principal_in_keytab_recommendations }}"
+
+- name: Test if host principal in /etc/krb5.keytab is usable
+  command: kinit -kt /etc/krb5.keytab -c /tmp/my_krb5_ccache
+  become: true
+  register: principal_usable_result
+  ignore_errors: true
+  when: krb5_keytab_stat.stat.exists
+
+- name: Set facts for principal is usable skipped
+  set_fact:
+    principal_usable_status: "{{ helper_status_skipped }}"
+    principal_usable_reason: "skipped checking if the principal is usable for host {{ ansible_host }} because there is no keytab file"
+    principal_usable_recommendations: null
+  when: not krb5_keytab_stat.stat.exists
+
+- name: Set facts for principal is usable success
+  set_fact:
+    principal_usable_status: "{{ helper_status_ok }}"
+    principal_usable_reason: "The principal {{ host_principal }} is usable to obtain a kerberos ticket"
+    principal_usable_recommendations: null
+    temp_krb_caches: "{{ temp_krb_caches + [ '/tmp/my_krb5_ccache' ] }}"
+  changed_when: true
+  when:
+    - krb5_keytab_stat.stat.exists
+    - principal_usable_result is succeeded
+  notify:
+    - clean_up_temp_krb_caches
+
+- name: Set facts for principal is usable failure
+  set_fact:
+    principal_usable_status: "{{ helper_status_error }}"
+    principal_usable_reason: "The principal {{ host_principal }} is unable to obtain a kerberos ticket"
+    principal_usable_recommendations: null
+  when:
+    - krb5_keytab_stat.stat.exists
+    - principal_usable_result is failed
+
+- name: "Kerberos principal in host keytab is usable check"
+  reportentry:
+    report_status: "{{ principal_usable_status }}"
+    report_reason: "{{ principal_usable_reason }}"
+    report_recommendations: "{{ principal_usable_recommendations }}"

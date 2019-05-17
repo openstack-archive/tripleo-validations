@@ -1,0 +1,17 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Confirm undercloud is setup correctly prior to overcloud deploy
+      description: |
+        Checks that the undercloud has novajoin set up corectly and
+        that we are ready to do the overcloud deploy with tls-everywhere.
+      groups:
+      - pre-deployment
+  tasks:
+    - include_role:
+        name: tls-everywhere
+        tasks_from: common.yaml
+    - include_role:
+        name: tls-everywhere
+        tasks_from: pre-deployment.yaml

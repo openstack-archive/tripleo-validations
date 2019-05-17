@@ -1,0 +1,68 @@
+---
+- name: Set facts for undercloud handlers to clean up
+  set_fact:
+    novajoin_temp_krb_caches: []
+
+- name: Get the path of tripleo undercloud config file
+  become: true
+  hiera: name="tripleo_undercloud_conf_file"
+  check_mode: no
+
+- name: Get the Container CLI from the undercloud.conf file (stein+)
+  become: true
+  ini:
+    path: "{{ tripleo_undercloud_conf_file }}"
+    section: DEFAULT
+    key: container_cli
+  register: container_cli
+
+- name: Set container facts (Stein+)
+  set_fact:
+    podman_install: "{{ container_cli.value|default('', true) == 'podman' }}"
+    docker_install: "{{ container_cli.value|default('', true) == 'docker' }}"
+  when: not container_cli|default('')|length == 0
+
+- name: Determine undercloud type  (Rocky and earlier)
+  when:
+    - not podman_install|bool
+    - not docker_install|bool
+  block:
+  - name: Determine if Docker is enabled and has containers running
+    command: docker ps -q
+    register: docker_ps
+    become: true
+    ignore_errors: true
+
+  - name: Set container facts
+    set_fact:
+      docker_install: true
+    when: not docker_ps.stdout|length == 0
+
+  - name: Set container facts
+    set_fact:
+      docker_install: false
+    when: docker_ps.stdout|length == 0
+
+  - name: Set container facts
+    set_fact:
+      podman_install: false
+
+- name: Set podman command prefix
+  set_fact:
+    command_prefix: "podman"
+  when: podman_install|bool
+
+- name: Set docker command prefix
+  set_fact:
+    command_prefix: "docker"
+  when: docker_install|bool
+
+- name: Set containerized_undercloud boolean
+  set_fact:
+    containerized_undercloud: "{{ podman_install|bool or docker_install|bool }}"
+
+- include: pre-deployment-containerized.yaml
+  when: containerized_undercloud|bool
+
+- include: pre-deployment-non-containerized.yaml
+  when: not containerized_undercloud|bool
