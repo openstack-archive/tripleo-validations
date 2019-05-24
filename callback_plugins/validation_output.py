@@ -18,6 +18,7 @@ from __future__ import print_function
 
 import pprint
 
+from ansible import constants as C
 from ansible.plugins.callback import CallbackBase
 
 
@@ -27,11 +28,10 @@ Host: {}
 Message: {}
 """
 
-
 WARNING_TEMPLATE = """\
 Task '{}' succeeded, but had some warnings:
 Host: {}
-Warnings:
+Warnings: {}
 """
 
 DEBUG_TEMPLATE = """\
@@ -46,54 +46,6 @@ def indent(text):
     return ''.join('    {}\n'.format(line) for line in text.splitlines())
 
 
-def print_failure_message(host_name, task_name, results, abridged_result):
-    '''Print a human-readable error info from Ansible result dictionary.'''
-    def is_script(results):
-        return ('rc' in results and
-                'invocation' in results and
-                results['invocation'].get('module_name') == 'script' and
-                '_raw_params' in results['invocation'].get('module_args', {}))
-
-    display_full_results = False
-    if 'rc' in results and 'cmd' in results:
-        command = results['cmd']
-        # The command can be either a list or a string. Concat if it's a list:
-        if type(command) == list:
-            command = " ".join(results['cmd'])
-        message = "Command `{}` exited with code: {}".format(
-            command, results['rc'])
-        # There may be an optional message attached to the command. Display it:
-        if 'msg' in results:
-            message = message + ": " + results['msg']
-    elif is_script(results):
-        script_name = results['invocation']['module_args']['_raw_params']
-        message = "Script `{}` exited with code: {}".format(
-            script_name, results['rc'])
-    elif 'msg' in results:
-        message = results['msg']
-    else:
-        message = "Unknown error"
-        display_full_results = True
-    print(FAILURE_TEMPLATE.format(task_name, host_name, message))
-    stdout = results.get('module_stdout', results.get('stdout', ''))
-    if stdout:
-        print('stdout:')
-        print(indent(stdout))
-    stderr = results.get('module_stderr', results.get('stderr', ''))
-    if stderr:
-        print('stderr:')
-        print(indent(stderr))
-    if display_full_results:
-        print("Could not get an error message. Here is the Ansible output:")
-        pprint.pprint(abridged_result, indent=4)
-    warnings = results.get('warnings', [])
-    if warnings:
-        print("Warnings:")
-        for warning in warnings:
-            print("*", warning)
-        print("")
-
-
 # TODO(shadower): test with async settings
 class CallbackModule(CallbackBase):
     CALLBACK_VERSION = 2.0
@@ -102,6 +54,61 @@ class CallbackModule(CallbackBase):
 
     def __init__(self, display=None):
         super(CallbackModule, self).__init__(display)
+
+    def print_failure_message(self, host_name, task_name, results,
+                              abridged_result):
+        '''Print a human-readable error info from Ansible result dictionary.'''
+
+        def is_script(results):
+            return ('rc' in results and 'invocation' in results
+                    and 'script' in results._task_fields['action']
+                    and '_raw_params' in results._task_fields['args'])
+
+        display_full_results = False
+        if 'rc' in results and 'cmd' in results:
+            command = results['cmd']
+            # The command can be either a list or a string.
+            # Concat if it's a list:
+            if type(command) == list:
+                command = " ".join(results['cmd'])
+            message = "Command `{}` exited with code: {}".format(
+                command, results['rc'])
+            # There may be an optional message attached to the command.
+            # Display it:
+            if 'msg' in results:
+                message = message + ": " + results['msg']
+        elif is_script(results):
+            script_name = results['invocation']['module_args']['_raw_params']
+            message = "Script `{}` exited with code: {}".format(
+                script_name, results['rc'])
+        elif 'msg' in results:
+            message = results['msg']
+        else:
+            message = "Unknown error"
+            display_full_results = True
+
+        self._display.display(
+            FAILURE_TEMPLATE.format(task_name, host_name, message),
+            color=C.COLOR_ERROR)
+
+        stdout = results.get('module_stdout', results.get('stdout', ''))
+        if stdout:
+            print('stdout:')
+            self._display.display(indent(stdout), color=C.COLOR_ERROR)
+        stderr = results.get('module_stderr', results.get('stderr', ''))
+        if stderr:
+            print('stderr:')
+            self._display.display(indent(stderr), color=C.COLOR_ERROR)
+        if display_full_results:
+            print(
+                "Could not get an error message. Here is the Ansible output:")
+            pprint.pprint(abridged_result, indent=4)
+        warnings = results.get('warnings', [])
+        if warnings:
+            print("Warnings:")
+            for warning in warnings:
+                self._display.display("* %s " % warning, color=C.COLOR_WARN)
+            print("")
 
     def v2_playbook_on_play_start(self, play):
         pass  # No need to notify that a play started
@@ -112,36 +119,32 @@ class CallbackModule(CallbackBase):
     def v2_runner_on_ok(self, result, **kwargs):
         host_name = result._host
         task_name = result._task.get_name()
+        task_fields = result._task_fields
         results = result._result  # A dict of the module name etc.
         self._dump_results(results)
         warnings = results.get('warnings', [])
         # Print only tasks that produced some warnings:
         if warnings:
-            print(WARNING_TEMPLATE.format(task_name, host_name))
             for warning in warnings:
-                print("*", warning)
+                warn_msg = "{}\n".format(warning)
+            self._display.display(WARNING_TEMPLATE.format(task_name,
+                                                          host_name,
+                                                          warn_msg),
+                                  color=C.COLOR_WARN)
 
-        # Print the result of debug module
-        if (('invocation' in results) and
-           ('module_name' in results['invocation'])):
+        if 'debug' in task_fields['action']:
+            output = ""
 
-            if ((results['invocation']['module_name'] == 'debug') and
-               ('module_args' in results['invocation'])):
+            if 'var' in task_fields['args']:
+                variable = task_fields['args']['var']
+                value = results[variable]
+                output = "{}: {}".format(variable, str(value))
+            elif 'msg' in task_fields['args']:
+                output = "Message: {}".format(
+                    task_fields['args']['msg'])
 
-                output = ""
-
-                # Variable and its value
-                if 'var' in results['invocation']['module_args']:
-                    variable = results['invocation']['module_args']['var']
-                    value = results[variable]
-                    output = "{}: {}".format(variable, str(value))
-
-                # Debug message
-                elif 'msg' in results['invocation']['module_args']:
-                    output = "Message: {}".format(
-                             results['invocation']['module_args']['msg'])
-
-                print(DEBUG_TEMPLATE.format(host_name, output))
+            self._display.display(DEBUG_TEMPLATE.format(host_name, output),
+                                  color=C.COLOR_OK)
 
     def v2_runner_on_failed(self, result, **kwargs):
         host_name = result._host
@@ -154,11 +157,12 @@ class CallbackModule(CallbackBase):
             # The task is a list of items under `results`
             for item in result_dict['results']:
                 if item.get('failed', False):
-                    print_failure_message(host_name, task_name, item, item)
+                    self.print_failure_message(host_name, task_name,
+                                               item, item)
         else:
             # The task is a "normal" module invocation
-            print_failure_message(host_name, task_name, result_dict,
-                                  abridged_result)
+            self.print_failure_message(host_name, task_name, result_dict,
+                                       abridged_result)
 
     def v2_runner_on_skipped(self, result, **kwargs):
         pass  # No need to print skipped tasks
@@ -167,7 +171,7 @@ class CallbackModule(CallbackBase):
         host_name = result._host
         task_name = result._task.get_name()
         results = {'msg': 'The host is unreachable.'}
-        print_failure_message(host_name, task_name, results, results)
+        self.print_failure_message(host_name, task_name, results, results)
 
     def v2_playbook_on_stats(self, stats):
         def failed(host):
@@ -182,17 +186,21 @@ class CallbackModule(CallbackBase):
                 if len(failed_hosts) == len(hosts):
                     print("Failure! The validation failed for all hosts:")
                     for failed_host in failed_hosts:
-                        print("*", failed_host)
+                        self._display.display("* %s" % failed_host,
+                                              color=C.COLOR_ERROR)
                 else:
                     print("Failure! The validation failed for hosts:")
                     for failed_host in failed_hosts:
-                        print("*", failed_host)
+                        self._display.display("* %s" % failed_host,
+                                              color=C.COLOR_ERROR)
                     print("and passed for hosts:")
                     for host in [h for h in hosts if h not in failed_hosts]:
-                        print("*", host)
+                        self._display.display("* %s" % host,
+                                              color=C.COLOR_OK)
             else:
                 print("Success! The validation passed for all hosts:")
                 for host in hosts:
-                    print("*", host)
+                    self._display.display("* %s" % host,
+                                          color=C.COLOR_OK)
         else:
             print("Warning! The validation did not run on any host.")
