@@ -5,7 +5,7 @@
     path: "{{ item }}"
     section: DEFAULT
     key: debug
-  ignore_missing_file: True
+    ignore_missing_file: True
   register: config_result
   with_items: "{{ services_conf_files }}"
   failed_when: "debug_check|bool  == config_result.value|bool"
