@@ -7,5 +7,3 @@ configs:
   - /etc/neutron/plugins/ml2/openvswitch_agent.ini
   - /etc/neutron/fwaas_driver.ini
   - /etc/neutron/l3_agent.ini
-  - /usr/share/neutron/neutron-lbaas-dist.conf
-  - /etc/neutron/lbaas_agent.ini
