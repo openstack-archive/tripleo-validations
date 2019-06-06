@@ -11,11 +11,27 @@
       - pre-introspection
     cron_check: "keystone-manage token_flush"
   tasks:
+  - name: Get the path of tripleo undercloud config file
+    become: true
+    hiera: name="tripleo_undercloud_conf_file"
+
+  - name: Get the Container CLI from the undercloud.conf file
+    become: true
+    ini:
+      path: "{{ tripleo_undercloud_conf_file }}"
+      section: DEFAULT
+      key: container_cli
+      ignore_missing_file: true
+    register: container_cli
+
   - name: Get keystone crontab
     become: true
-    shell: 'docker exec keystone_cron crontab -l -u keystone |grep -v "^#"'
+    shell: |
+      set -o pipefail
+      {{ container_cli.value|default('podman', true) }} exec keystone_cron crontab -l -u keystone |grep -v '^#'
     register: cron_result
     changed_when: False
+
   - name: Check keystone crontab
     fail:
       msg: >-
