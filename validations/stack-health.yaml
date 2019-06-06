@@ -14,5 +14,7 @@
     assert:
       that:
         - "'_COMPLETE' in item.resource_status"
-      msg: "Health check failed for resource {{ item.resource_name }} with status: {{ item.resource_status }}"
+      msg: >-
+        "Health check failed for resource {{ item.resource_name }}
+        with status: {{ item.resource_status }}"
     with_items: "{{ lookup('stack_resources', wantlist=True) }}"
