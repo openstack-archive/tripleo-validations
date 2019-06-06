@@ -8,7 +8,7 @@
   register: actual_fd_limit
   shell: >-
     "{{ container_cli|default('podman', true) }}"
-    exec $("{{ container_cli|default'(podman', true) }}" ps -q --filter "name=rabbitmq" | head -1)
+    exec $("{{ container_cli|default('podman', true) }}" ps -q --filter "name=rabbitmq" | head -1)
     rabbitmqctl eval 'proplists:get_value(max_fds, erlang:system_info(check_io)).'
   changed_when: false
 
