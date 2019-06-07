@@ -17,7 +17,8 @@
   tasks:
   - name: Get the path of tripleo undercloud config file
     become: true
-    hiera: name="tripleo_undercloud_conf_file"
+    hiera:
+      name: "tripleo_undercloud_conf_file"
 
   - name: Check if telemetry services are enabled
     ini:
@@ -42,5 +43,7 @@
 
   - name: Fail if event_ttl_check is set to -1
     fail:
-      msg: "'{{ panko_config_file }}[database]/{{ event_ttl_check }} is set to -1 or not set'"
+      msg: >-
+        '{{ panko_config_file }}[database]/{{ event_ttl_check }}' is
+        set to -1 or not set
     when: event_check_result.value|int|default(-1) < 0
