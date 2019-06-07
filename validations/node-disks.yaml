@@ -7,15 +7,24 @@
         Check node disk numbers and sizes and whether root device hints are set.
       groups:
         - pre-deployment
+      ironic_conf_file: "/var/lib/config-data/puppet-generated/ironic/etc/ironic/ironic.conf"
   tasks:
   - name: Get Ironic Inspector swift auth_url
     become: true
-    ini: path=/var/lib/config-data/puppet-generated/ironic/etc/ironic/ironic.conf section=inspector key=auth_url
+    ini:
+      path: "{{ ironic_conf_file }}"
+      section: inspector
+      key: auth_url
     register: ironic_auth_url
+
   - name: Get Ironic Inspector swift password
     become: true
-    ini: path=/var/lib/config-data/puppet-generated/ironic/etc/ironic/ironic.conf section=inspector key=password
+    ini:
+      path: "{{ ironic_conf_file }}"
+      section: inspector
+      key: password
     register: ironic_password
+
   - name: Check node disks
     node_disks:
       nodes: "{{ lookup('ironic_nodes', wantlist=True) }}"
