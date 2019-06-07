@@ -41,6 +41,11 @@ class LookupModule(LookupBase):
         container = swift.get_container(variables['plan'])
         for item in container[1]:
             obj = swift.get_object(variables['plan'], item['name'])
+            try:
+                obj = (obj[0], obj[1].decode('utf-8'))
+            except AttributeError:
+                pass
+
             if os.path.splitext(item['name'])[-1] not in EXCLUDED_EXT:
                 ret.append((item['name'], obj))
 
