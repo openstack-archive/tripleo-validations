@@ -12,7 +12,8 @@
   tasks:
   - name: Get the path of tripleo undercloud config file
     become: true
-    hiera: name="tripleo_undercloud_conf_file"
+    hiera:
+      name: "tripleo_undercloud_conf_file"
 
   - name: Get dhcp_start value from the undercloud.conf file
     become: true
@@ -34,6 +35,6 @@
 
   - name: Check the size of the DHCP range for overcloud nodes
     ip_range:
-      start: "{{ dhcp_start.value|default('192.0.2.5') }}"
-      end: "{{ dhcp_end.value|default('192.0.2.24') }}"
+      start: "{{ dhcp_start.value|default('192.0.2.5', true) }}"
+      end: "{{ dhcp_end.value|default('192.0.2.24', true) }}"
       min_size: "{{ ctlplane_iprange_min_size }}"
