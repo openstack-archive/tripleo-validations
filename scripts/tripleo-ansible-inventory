@@ -28,8 +28,8 @@ import traceback
 
 from oslo_config import cfg
 from six.moves import configparser
-
 from tripleo_common import inventory as inv
+from tripleo_common import inventories as invs
 from tripleo_validations import utils
 
 
@@ -46,12 +46,14 @@ opts = [
     cfg.StrOpt('project-name', default=os.environ.get(
         'OS_PROJECT_NAME', os.environ.get('OS_TENANT_NAME'))),
     cfg.StrOpt('cacert', default=os.environ.get('OS_CACERT')),
-    cfg.StrOpt('plan', default=os.environ.get('TRIPLEO_PLAN_NAME'),
-               help=('stack name to use for generating the '
-                     'inventory data.')),
-    cfg.StrOpt('stack', help=('This arg has the same effect '
-                              'as --plan. If both are specified, --stack '
-                              'will take precedence.')),
+    cfg.ListOpt('plan', default=os.environ.get('TRIPLEO_PLAN_NAME'),
+                help=('stack name(s) to use for generating the '
+                      'inventory data. If a comma delimited list '
+                      'of stacks is passed, the inventory will '
+                      'contain the union of those stacks.')),
+    cfg.ListOpt('stack', help=('This arg has the same effect '
+                               'as --plan. If both are specified,'
+                               ' --stack will take precedence.')),
     cfg.StrOpt('ansible_ssh_user', default=os.environ.get('ANSIBLE_SSH_USER',
                'heat-admin')),
     cfg.StrOpt('undercloud-connection',
@@ -132,24 +134,35 @@ def main():
         'timeout': 30
     }
 
-    inventory = inv.TripleoInventory(
-        session=utils.get_auth_session(auth_variables),
-        hclient=utils.get_heat_client(auth_variables),
-        auth_url=configs.auth_url,
-        cacert=configs.cacert,
-        project_name=configs.project_name,
-        username=configs.username,
-        ansible_ssh_user=configs.ansible_ssh_user,
-        plan_name=configs.stack or configs.plan,
-        ansible_python_interpreter=configs.ansible_python_interpreter,
-        undercloud_connection=configs.undercloud_connection,
-        undercloud_key_file=configs.undercloud_key_file,
-        host_network=configs.ssh_network,
-        serial=configs.serial)
+    inventory_map = {}
+    for _plan in (configs.stack or configs.plan):
+        inventory_map[_plan] = inv.TripleoInventory(
+            session=utils.get_auth_session(auth_variables),
+            hclient=utils.get_heat_client(auth_variables),
+            auth_url=configs.auth_url,
+            cacert=configs.cacert,
+            project_name=configs.project_name,
+            username=configs.username,
+            ansible_ssh_user=configs.ansible_ssh_user,
+            plan_name=_plan,
+            ansible_python_interpreter=configs.ansible_python_interpreter,
+            undercloud_connection=configs.undercloud_connection,
+            undercloud_key_file=configs.undercloud_key_file,
+            host_network=configs.ssh_network,
+            serial=configs.serial)
 
+    inventory_keys = inventory_map.keys()
+    if len(inventory_keys) == 1:
+        inventory = inventory_map[inventory_keys[0]]
+    else:
+        inventory = invs.TripleoInventories(inventory_map)
+        inventory.merge()
     if configs.list:
         try:
-            inventory_list = inventory.list()
+            if len(inventory_keys) == 1:
+                inventory_list = inventory.list()
+            else:
+                inventory_list = inventory.inventory
             print(json.dumps(inventory_list))
         except Exception as e:
             print("ERROR: Error creating inventory: {}".format(e),
