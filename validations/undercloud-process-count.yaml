@@ -12,8 +12,22 @@
         - pre-deployment
     max_process_count: 8
   tasks:
+  - name: Get the path of tripleo undercloud config file
+    become: true
+    hiera:
+      name: "tripleo_undercloud_conf_file"
+
+  - name: Get the Container CLI from the undercloud.conf file
+    become: true
+    ini:
+      path: "{{ tripleo_undercloud_conf_file }}"
+      section: DEFAULT
+      key: container_cli
+      ignore_missing_file: true
+    register: container_cli
+
   - name: Collect the number of running processes per OpenStack service
-    command: 'docker exec {{ item.container }} pgrep -f -c {{ item.proc }}'
+    command: "{{ container_cli.value|default('podman', true) }} exec {{ item.container }} pgrep -f -c {{ item.proc }}"
     become: true
     ignore_errors: yes
     register: "process_count"
