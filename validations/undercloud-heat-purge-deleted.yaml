@@ -12,11 +12,31 @@
       - pre-deployment
     cron_check: "heat-manage purge_deleted"
   tasks:
+  - name: Get the path of tripleo undercloud config file
+    become: true
+    hiera: name="tripleo_undercloud_conf_file"
+
+  - name: Get the Container CLI from the undercloud.conf file
+    become: true
+    ini:
+      path: "{{ tripleo_undercloud_conf_file }}"
+      section: DEFAULT
+      key: container_cli
+      ignore_missing_file: true
+    register: container_cli
+
   - name: Get heat crontab
     become: true
-    shell: 'docker exec heat_api_cron crontab -l -u heat |grep -v "^#"'
+    shell: |
+      set -o pipefail
+      {{ container_cli.value|default('podman', true) }} exec heat_api_cron crontab -l -u heat |grep -v '^#'
     register: cron_result
     changed_when: False
+
   - name: Check heat crontab
-    fail: msg="heat-manage purge_deleted does not appear to be enabled via cron.  You should add '<desired interval > {{ cron_check }}' to the heat users crontab."
-    failed_when: "cron_check not in cron_result.stdout"
+    fail:
+      msg: >-
+        heat-manage purge_deleted does not appear to be enabled via cron. You
+        should add '<desired interval> {{ cron_check }}' to the heat
+        users crontab.
+    when: "cron_result.stdout.find('heat-manage purge_deleted') == -1"
