@@ -26,4 +26,4 @@
     register: local_interface
 
   - name: Look for DHCP responses
-    script: files/rogue_dhcp.py {{ local_interface.value|default('eth1') }}
+    script: files/rogue_dhcp.py {{ local_interface.value|default('eth1', true) }}
