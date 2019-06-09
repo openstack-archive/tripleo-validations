@@ -11,15 +11,20 @@
       groups:
         - pre-deployment
     debug_check: "True"
-  tasks:
-  - name: Check the services for debug flag
-    become: true
-    ini: path={{ item }} section=DEFAULT key=debug ignore_missing_file=True
-    register: config_result
-    with_items:
+    services_conf_files:
       - /var/lib/config-data/puppet-generated/nova/etc/nova/nova.conf
       - /var/lib/config-data/puppet-generated/neutron/etc/neutron/neutron.conf
       - /var/lib/config-data/puppet-generated/ceilometer/etc/ceilometer/ceilometer.conf
       - /var/lib/config-data/puppet-generated/heat/etc/heat/heat.conf
       - /var/lib/config-data/puppet-generated/ironic/etc/ironic/ironic.conf
+  tasks:
+  - name: Check the services for debug flag
+    become: True
+    ini:
+      path: "{{ item }}"
+      section: DEFAULT
+      key: debug
+      ignore_missing_file: True
+    register: config_result
+    with_items: "{{ services_conf_files }}"
     failed_when: "debug_check|bool  == config_result.value|bool"
