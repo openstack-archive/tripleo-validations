@@ -7,6 +7,7 @@
         Prints a message if ceph-ansible isn't installed
       groups:
         - pre-deployment
+    fail_without_ceph_ansible: false
   tasks:
   - name: Check if ceph-ansible is installed
     shell: rpm -q ceph-ansible || true
@@ -18,6 +19,14 @@
 
   - name: Warn about missing ceph-ansible
     warn:
-      msg: If planning to use Ceph, it is necessary to install the ceph-ansible on the undercloud
+      msg: If planning to use Ceph, it is necessary to install the ceph-ansible package on the undercloud
     when:
       - ceph_ansible_installed.stdout.find('is not installed') != -1
+      - not fail_without_ceph_ansible|default(false)|bool
+
+  - name: Fail if ceph-ansible is missing
+    fail:
+      msg: If planning to use Ceph, it is necessary to install the ceph-ansible package on the undercloud
+    when:
+      - ceph_ansible_installed.stdout.find('is not installed') != -1
+      - fail_without_ceph_ansible|default(false)|bool
