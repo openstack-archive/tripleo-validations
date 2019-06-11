@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # IF running on Undercloud
-source /home/stack/stackrc
+source ${HOME}/stackrc || { echo "The stackrc file is missing or cannot be read"; exit 1; }
 # IF running on standalone, replace by
 # export OS_CLOUD=standalone
 
@@ -71,7 +71,7 @@ fi
 
 VALIDATIONS_BASEDIR="/usr/share/openstack-tripleo-validations"
 
-VAL=$(find $VALIDATIONS_BASEDIR/playbooks -type f -regex ".*${VALIDATION}\.y[a]?ml")
+VAL=$(find $VALIDATIONS_BASEDIR/playbooks -type f -regex ".*playbooks\/${VALIDATION}\.y[a]?ml")
 if [[ -z ${VAL} ]]; then
     echo "The ${VALIDATION} validation doesn't exist"
     exit 1
