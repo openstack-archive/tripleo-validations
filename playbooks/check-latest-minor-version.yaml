@@ -8,7 +8,5 @@
         before starting an upgrade.
       groups:
         - pre-upgrade
-    packages:
-      - python-tripleoclient
   roles:
     - check-latest-minor-version
