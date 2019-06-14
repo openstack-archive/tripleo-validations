@@ -1,3 +1,2 @@
 ---
-container_registry_host: 127.0.0.1
 container_registry_port: 8787
