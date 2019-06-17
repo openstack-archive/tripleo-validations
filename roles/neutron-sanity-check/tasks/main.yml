@@ -1,21 +1,35 @@
 ---
-- name: Get the path of tripleo undercloud config file
-  become: true
-  hiera: name="tripleo_undercloud_conf_file"
+- name: Set oc_container_cli and container_name for the Controller
+  set_fact:
+    oc_container_cli: "{{ hostvars[inventory_hostname].container_cli | default('podman', true) }}"
+    container_name: "neutron_api"
+  when: "'Controller' in group_names"
 
-- name: Get the Container CLI from the undercloud.conf file
-  become: true
-  ini:
-    path: "{{ tripleo_undercloud_conf_file }}"
-    section: DEFAULT
-    key: container_cli
-    ignore_missing_file: true
-  register: container_cli
+- when: "'Undercloud' in group_names"
+  block:
+  - name: Get the path of tripleo undercloud config file
+    become: true
+    hiera:
+      name: "tripleo_undercloud_conf_file"
+
+  - name: Get the Container CLI from the undercloud.conf file
+    become: true
+    ini:
+      path: "{{ tripleo_undercloud_conf_file }}"
+      section: DEFAULT
+      key: container_cli
+      ignore_missing_file: true
+    register: container_cli
+
+  - name: Set uc_container_cli and container_name for the Undercloud
+    set_fact:
+      uc_container_cli: "{{ container_cli.value|default('podman', true) }}"
+      container_name: "neutron_ovs_agent"
 
 - name: Run neutron-sanity-check
   command: >
-    {{ container_cli.value|default('podman', true) }}
-    exec -u root neutron_ovs_agent
+    {% if oc_container_cli is defined %}{{ oc_container_cli }}{% else %}{{ uc_container_cli }}{% endif %}
+    exec -u root {{ container_name }}
     /bin/bash -c 'neutron-sanity-check --config-file {{ item }}'
   with_items: "{{ configs }}"
   become: true
