@@ -1,16 +1,35 @@
 ---
-- name: get httpd status
+- name: Get the path of tripleo undercloud config file
+  become: true
+  hiera:
+    name: "tripleo_undercloud_conf_file"
+
+- name: Get local_ip value from the undercloud.conf file
+  become: true
+  ini:
+    path: "{{ tripleo_undercloud_conf_file }}"
+    section: DEFAULT
+    key: local_ip
+    ignore_missing_file: True
+  register: local_ip
+
+- name: Set container registry host
+  set_fact:
+    container_registry_host: >-
+      {{ local_ip.value|default('0.0.0.0', true)|ipaddr('address') }}
+
+- name: Get httpd status
   systemd:
     name: httpd
   register: httpd_state
 
-- name: ensure httpd is running
+- name: Ensure httpd is running
   assert:
     that: httpd_state.status['SubState'] == 'running'
     fail_msg: httpd service is not running
     success_msg: httpd service is running as expected
 
-- name: ensure registry does answer
+- name: Ensure registry does answer
   uri:
     method: HEAD
     url: "http://{{ container_registry_host }}:{{ container_registry_port }}/v2/"
@@ -19,4 +38,3 @@
       - 204
       - 301
       - 302
-
