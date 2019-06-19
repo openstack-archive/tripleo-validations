@@ -10,7 +10,8 @@ Team and repository tags
 TripleO Validations
 ===================
 
-A collection of Ansible playbooks to detect and report potential issues during TripleO deployments
+A collection of Ansible roles and playbooks to detect and report potential
+issues during TripleO deployments.
 
 The validations will help detect issues early in the deployment process and
 prevent field engineers from wasting time on misconfiguration or hardware

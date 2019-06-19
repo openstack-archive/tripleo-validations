@@ -10,8 +10,8 @@ Team and repository tags
 TripleO Validations
 ===================
 
-A collection of Ansible playbooks to detect and report potential issues during
-TripleO deployments.
+A collection of Ansible roles and playbooks to detect and report potential
+issues during TripleO deployments.
 
 The validations will help detect issues early in the deployment process and
 prevent field engineers from wasting time on misconfiguration or hardware
@@ -25,15 +25,15 @@ available independently from the UI or the command line client.
 * Free software: Apache license
 * Documentation: https://docs.openstack.org/tripleo-validations/latest/
 * Release notes: https://docs.openstack.org/releasenotes/tripleo-validations/
-* Source: https://git.openstack.org/cgit/openstack/tripleo-validations
-* Bugs: https://bugs.launchpad.net/tripleo/+bugs?field.tag=validations
+* Source: https://opendev.org/openstack/tripleo-validations
+* Bugs: https://storyboard.openstack.org/#!/project/openstack/tripleo-validations
 
 Prerequisites
 -------------
 
-The TripleO validations require Ansible 2.0 or above::
+The TripleO validations require Ansible 2.7 or above::
 
-    $ sudo pip install 'ansible>=2'
+    $ sudo pip install 'ansible>=2.7'
 
 Existing validations
 --------------------
@@ -110,47 +110,58 @@ examples.
 Directory Structure
 ~~~~~~~~~~~~~~~~~~~
 
-All validations are located in the ``validations`` directory. It
-contains a couple of subdirectories:
+All validations consist of an Ansible role located in the ``roles`` directory
+and a playbook located in the ``playbooks`` directory.
 
-- the ``files`` directory contains scripts that are directly executable;
+- the ``playbooks`` one contains all the validations playbooks you can run;
+- the ``lookup_plugins`` one is for custom Ansible look up plugins available
+  to the validations;
 - the ``library`` one is for custom Ansible modules available to the
   validations;
-- ``tasks`` is for common steps that can be shared between the validations.
+- the ``roles`` one contains all the necessary Ansible roles to validate your
+  TripleO deployment;
 
 Here is what the tree looks like::
 
-    validations
-    ├── first_validation.yaml
-    ├── second_validation.yaml
-    ├── files
-    │   └── some_script.sh
-    ├── library
-    │   ├── another_module.py
-    │   └── some_module.py
-    └── tasks
-        └── some_task.yaml
+    playbooks/
+      ├── first_validation.yaml
+      ├── second_validation.yaml
+      ├── third_validation.yaml
+      └── etc...
+    library/
+      ├── another_module.py
+      ├── some_module.py
+      └── etc...
+    lookup_plugins/
+      ├── one_lookup_plugin.py
+      ├── another_lookup_plugin.py
+      └── etc...
+    roles
+      ├── first_role
+      ├── second_role
+      └── etc...
+
 
 Sample Validation
 ~~~~~~~~~~~~~~~~~
 
-Each validation is an Ansible playbook with a known location and some
-meta-data. Here is what a minimal validation would look like::
+Each validation is an Ansible playbook located in the ``playbooks`` directory
+calling his own Ansible role located in the ``roles`` directory. Each playbook
+have some metadata. Here is what a minimal validation would look like::
 
     ---
-    - hosts: overcloud
+    - hosts: undercloud
       vars:
         metadata:
           name: Hello World
           description: This validation prints Hello World!
-      tasks:
-      - name: Run an echo command
-        command: echo Hello World!
+      roles:
+      - hello-world
 
-It should be saved as ``validations/hello_world.yaml``.
+It should be saved as ``playbooks/hello_world.yaml``.
 
 As shown here, the validation playbook requires three top-level directives:
-``hosts``, ``vars -> metadata`` and ``tasks``.
+``hosts``, ``vars -> metadata`` and ``roles``.
 
 ``hosts`` specify which nodes to run the validation on. Based on the
 ``hosts.sample`` structure, the options can be ``all`` (run on all nodes),
@@ -160,7 +171,7 @@ As shown here, the validation playbook requires three top-level directives:
 The ``vars`` section serves for storing variables that are going to be
 available to the Ansible playbook. The validations API uses the ``metadata``
 section to read each validation's name and description. These values are then
-reported by the API and shown in the UI.
+reported by the API.
 
 The validations can be grouped together by specifying a ``groups`` metadata.
 Groups function similar to tags and a validation can thus be part of many
@@ -172,10 +183,10 @@ groups.  Here is, for example, how to have a validation be part of the
         - pre-deployment
         - hardware
 
-``tasks`` contain a list of Ansible tasks to run. Each task is a YAML
-dictionary that must at minimum contain a name and a module to use.
-Module can be any module that ships with Ansible or any of the custom
-ones in the ``library`` subdirectory.
+``roles`` include the Ansible role, which contains all the tasks to run,
+associated to this validation. Each task is a YAML dictionary that must at
+minimum contain a name and a module to use.  Module can be any module that ships
+with Ansible or any of the custom ones in the ``library`` directory.
 
 The `Ansible documentation on playbooks
 <https://docs.ansible.com/ansible/playbooks.html>`__ provides more detailed
@@ -192,9 +203,20 @@ Tripleo-validations ships with a `dynamic inventory
 contacts the various OpenStack services to provide the addresses of the
 deployed nodes as well as the undercloud.
 
-Just pass ``-i /usr/bin/tripleo-ansible-inventory`` to ``ansible-playbook`` command::
+Just pass ``-i /usr/bin/tripleo-ansible-inventory`` to ``ansible-playbook``
+command.
 
-    ansible-playbook -i /usr/bin/tripleo-ansible-inventory validations/hello_world.yaml
+As the playbooks are located in their own directory and not at the same level as
+the ``roles``, ``callback_plugins``, ``library`` and ``lookup_plugins``
+directories, you will have to export some Ansible variables first::
+
+    $ cd tripleo-validations/
+    $ export ANSIBLE_CALLBACK_PLUGINS="${PWD}/callback_plugins"
+    $ export ANSIBLE_ROLES_PATH="${PWD}/roles"
+    $ export ANSIBLE_LOOKUP_PLUGINS="${PWD}/lookup_plugins"
+    $ export ANSIBLE_LIBRARY="${PWD}/library"
+
+    $ ansible-playbook -i /usr/bin/tripleo-ansible-inventory playbooks/hello_world.yaml
 
 Hosts file
 ++++++++++
@@ -246,7 +268,7 @@ Custom Modules
 In case the `available Ansible modules
 <https://docs.ansible.com/ansible/modules_by_category.html>`__ don't cover your
 needs, it is possible to write your own. Modules belong to the
-``validations/library`` directory.
+``library`` directory.
 
 Here is a sample module that will always fail::
 
@@ -258,7 +280,7 @@ Here is a sample module that will always fail::
         module = AnsibleModule(argument_spec={})
         module.fail_json(msg="This module always fails.")
 
-Save it as ``validations/library/my_module.py`` and use it in a validation like
+Save it as ``library/my_module.py`` and use it in a validation like
 so::
 
     tasks:
@@ -297,7 +319,21 @@ up to SSH to them.
 ::
 
     $ source ~/stackrc
-    $ ansible-playbook -i /usr/bin/tripleo-ansible-inventory path/to/validation.yaml
+    $ /bin/run-validations.sh --help
+    Usage:
+        run-validations.sh [--help]
+                           [--debug]
+                           [--ansible-default-callback]
+                           [--plan <overcloud>]
+                           --validation-name <validation_name>
+
+    --debug:                      Enable ansible verbose mode (-vvvv connection debugging)
+    --ansible-default-callback:   Use the 'default' Ansible callback plugin instead of the
+                                  tripleo-validations custom callback 'validation_output'
+    --plan:                       Stack name to use for generating the inventory data
+    --validation-name:            The name of the validation
+
+    $ /bin/run-validations.sh --validation-name validation
 
 Example: Verify Undercloud RAM requirements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -305,7 +341,7 @@ Example: Verify Undercloud RAM requirements
 The Undercloud has a requirement of 16GB RAM. Let's write a validation
 that verifies this is indeed the case before deploying anything.
 
-Let's create ``validations/undercloud-ram.yaml`` and put some metadata
+Let's create ``playbooks/undercloud-ram.yaml`` and put some metadata
 in there::
 
     ---
@@ -328,29 +364,59 @@ TripleO UI so make sure to put something meaningful there. The ``groups``
 metadata applies a tag to the validation and allows to group them together in
 order to perform group operations, such are running them all in one call.
 
-Now let's add an Ansible task to test that it's all set up properly. Add
-this under the same indentation as ``hosts`` and ``vars``::
+Now let's include the Ansible role associated to this validation. Add this under
+the same indentation as ``hosts`` and ``vars``::
 
-      tasks:
-      - name: Test Output
-        debug: msg="Hello World!"
+    roles:
+    - undercloud-ram
+
+Now let's create the ``undercloud-ram`` Ansible role which will contain the
+necessary task(s) for checking if the Undercloud has the mininum amount of RAM
+required.::
+
+    $ cd tripleo-validations
+    $ ansible-galaxy init --init-path=roles/ undercloud-ram
+    - undercloud-ram was created successfully
+
+The tree of the new created role should look like::
+
+    undercloud-ram/
+      ├── defaults
+      │   └── main.yml
+      ├── meta
+      │   └── main.yml
+      ├── tasks
+      │   └── main.yml
+      └── vars
+          └── main.yml
+
+Now let's add an Ansible task to test that it's all set up properly::
+
+    $ cd roles
+    $ cat <<EOF >> undercloud-ram/tasks/main.yml
+    - name: Test Output
+      debug:
+        msg: "Hello World!"
+    EOF
 
 When running it, it should output something like this::
 
-    $ ansible-playbook -i /usr/bin/tripleo-ansible-inventory validations/undercloud-ram.yaml
+    $ /bin/run-validations.sh --validation-name undercloud-ram.yaml --ansible-default-callback
 
-    PLAY [undercloud] *************************************************************
+    PLAY [undercloud] *********************************************************
 
-    GATHERING FACTS ***************************************************************
-    ok: [localhost]
+    TASK [Gathering Facts] ****************************************************
+    ok: [undercloud]
 
-    TASK: [Test Output] ***********************************************************
-    ok: [localhost] => {
+    TASK [undercloud-ram : Test Output] ***************************************
+    ok: [undercloud] => {
         "msg": "Hello World!"
     }
 
-    PLAY RECAP ********************************************************************
-    localhost                  : ok=2    changed=0    unreachable=0    failed=0
+    PLAY RECAP ****************************************************************
+    undercloud                 : ok=2    changed=0    unreachable=0    failed=0
+
+
 
 Writing the full validation code is quite easy in this case because Ansible has
 done all the hard work for us already. We can use the ``ansible_memtotal_mb``
@@ -420,31 +486,14 @@ Let's do that to test both success and failure cases.
 
 This should succeed but saying the RAM requirement is 1 GB::
 
-    ansible-playbook -i /usr/bin/tripleo-ansible-inventory validations/undercloud-ram.yaml -e minimum_ram_gb=1
+    ansible-playbook -i /usr/bin/tripleo-ansible-inventory playbooks/undercloud-ram.yaml -e minimum_ram_gb=1
 
 And this should fail by requiring much more RAM than is necessary::
 
-    ansible-playbook -i /usr/bin/tripleo-ansible-inventory validations/undercloud-ram.yaml -e minimum_ram_gb=128
+    ansible-playbook -i /usr/bin/tripleo-ansible-inventory playbooks/undercloud-ram.yaml -e minimum_ram_gb=128
 
 (the actual values may be different in your configuration -- just make sure one
 is low enough and the other too high)
 
 And that's it! The validation is now finished and you can start using it in
 earnest.
-
-For reference, here's the full validation::
-
-    ---
-    - hosts: undercloud
-      vars:
-        metadata:
-          name: Minimum RAM required on the undercloud
-          description: Make sure the undercloud has enough RAM.
-          groups:
-            - prep
-            - pre-introspection
-        minimum_ram_gb: 16
-      tasks:
-      - name: Verify the RAM requirements
-        fail: msg="The RAM on the undercloud node is {{ ansible_memtotal_mb }} MB, the minimal recommended value is {{ minimum_ram_gb|int * 1024 }} MB."
-        failed_when: "({{ ansible_memtotal_mb }}) < {{ minimum_ram_gb|int * 1024 }}"
