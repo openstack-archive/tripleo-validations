@@ -20,6 +20,11 @@ from six import string_types
 
 import collections
 
+try:
+    collectionsAbc = collections.abc
+except AttributeError:
+    collectionsAbc = collections
+
 from glanceclient import client as glance_client
 from heatclient import client as heat_client
 from ironicclient import client as ironic_client
@@ -101,12 +106,12 @@ def get_nested(data, name, path):
                 raise ValueError("The '{}' property of '{}' must be a {}."
                                  "".format(key, name, instance_name))
             return data[key]
-        for item in data.values():
-            if isinstance(item, collections.Mapping):
-                return deep_find_key(key_data, item, name)
+        for k, v in sorted(data.items()):
+            if isinstance(v, collectionsAbc.Mapping):
+                return deep_find_key(key_data, v, name)
         return None
 
-    if not isinstance(data, collections.Mapping):
+    if not isinstance(data, collectionsAbc.Mapping):
         raise ValueError(
             "'{}' is not a valid resource.".format(name))
 
