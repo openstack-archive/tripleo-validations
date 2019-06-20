@@ -15,6 +15,12 @@
 # under the License.
 
 import collections
+
+try:
+    collectionsAbc = collections.abc
+except AttributeError:
+    collectionsAbc = collections
+
 import os.path
 import yaml
 
@@ -114,18 +120,18 @@ def validate_switch_vlans(netenv_path, template_files, introspection_data):
     # Get the VLANs which are actually used in nic configs
     for nic_config_name, nic_config_path, nic_config in nic_configs:
         resources = nic_config.get('resources')
-        if not isinstance(nic_config, collections.Mapping):
+        if not isinstance(nic_config, collectionsAbc.Mapping):
             return [], ["nic_config parameter must be a dictionary."]
 
-        if not isinstance(resources, collections.Mapping):
+        if not isinstance(resources, collectionsAbc.Mapping):
             return [], ["The nic_data must contain the 'resources' key "
                         "and it must be a dictionary."]
         for name, resource in six.iteritems(resources):
             try:
                 nested_path = [
-                    ('properties', collections.Mapping, 'dictionary'),
-                    ('config', collections.Mapping, 'dictionary'),
-                    ('network_config', collections.Iterable, 'list'),
+                    ('properties', collectionsAbc.Mapping, 'dictionary'),
+                    ('config', collectionsAbc.Mapping, 'dictionary'),
+                    ('network_config', collectionsAbc.Iterable, 'list'),
                 ]
                 nw_config = utils.get_nested(resource, name, nested_path)
             except ValueError as e:
@@ -159,7 +165,7 @@ def validate_switch_vlans(netenv_path, template_files, introspection_data):
     if not vlans_in_templates:
         warnings.append("No VLANs are used on templates files")
 
-    return warnings, errors
+    return set(warnings), set(errors)
 
 
 def vlan_exists_on_switch(vlan_id, introspection_data):
