@@ -1,0 +1,16 @@
+---
+features:
+  - |
+    The behavior of the ``ironic-boot-configuration`` validation has changed
+    in order to suppport multi-arch. It now checks that each node has the
+    correct associated ramdisk and kernel image according to the node's
+    architecture and platform, and, when it does appear that the correct image
+    is associated, checks that there is only one image in Glance with that
+    name. Also, the vars ``deploy_kernel_name`` and ``deploy_ramdisk_name``
+    have changed to ``deploy_kernel_name_base`` and
+    ``deploy_ramdisk_name_base`` respectively.
+other:
+  - |
+    The ``deployment-images`` validation has been removed, as its intended
+    functionality became inseparable from ``ironic-boot-configuration`` in the
+    multi-arch case.
