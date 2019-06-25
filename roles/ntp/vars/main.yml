@@ -4,7 +4,7 @@ metadata:
   description: >
     Each overcloud node should have their clocks synchronised.
 
-    The deployment should configure and run ntpd. This validation verifies
-    that it is indeed running and connected to an NPT server on all nodes.
+    The deployment should configure and run chronyd. This validation verifies
+    that it is indeed running and connected to an NTP server on all nodes.
   groups:
   - post-deployment
