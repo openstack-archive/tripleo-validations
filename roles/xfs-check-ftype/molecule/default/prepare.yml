@@ -1,0 +1,60 @@
+---
+# Copyright 2019 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+
+- name: Prepare
+  hosts: all
+
+  vars:
+    xfs_image_file: "/root/xfs_{{ ansible_distribution|lower }}.img"
+
+  post_tasks:
+    - name: Create a blank image
+      command: "dd if=/dev/zero of={{ xfs_image_file }} bs=1M count=50"
+      tags:
+        - skip_ansible_lint
+
+    - name: Install tools for managing XFS partitions
+      package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - parted
+        - xfsprogs
+
+    - name: Map the partition file to the loop device
+      command: "losetup --find --show {{ xfs_image_file }}"
+      register: losetup
+      tags:
+        - skip_ansible_lint
+
+    - name: Format the partition with XFS with ftype=1
+      filesystem:
+        fstype: xfs
+        dev: "{{ losetup.stdout }}"
+        opts: -n ftype=1
+
+    - name: Create a directory for the partition to mount onto
+      file:
+        path: /xfs
+        state: directory
+
+    - name: Mount the XFS partition
+      mount:
+        path: /xfs
+        src: "{{ losetup.stdout }}p1"
+        fstype: xfs
+        state: present
