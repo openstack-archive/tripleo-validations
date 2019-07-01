@@ -12,6 +12,8 @@
         - pre-deployment
     max_process_count: 8
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Get the path of tripleo undercloud config file
     become: true
     hiera:

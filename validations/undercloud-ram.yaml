@@ -13,6 +13,8 @@
         - pre-upgrade
     min_undercloud_ram_gb: 24
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Verify the RAM requirements
     fail:
       msg: >-

@@ -11,6 +11,8 @@
       - pre-introspection
     cron_check: "keystone-manage token_flush"
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Get the path of tripleo undercloud config file
     become: true
     hiera: name="tripleo_undercloud_conf_file"

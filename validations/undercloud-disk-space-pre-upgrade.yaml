@@ -17,4 +17,5 @@
       - {mount: /,                    min_size: 20}
 
   tasks:
+  - include_tasks: tasks/deprecation.yaml
   - include_tasks: tasks/disk_space.yaml

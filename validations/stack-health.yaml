@@ -10,6 +10,8 @@
         - pre-upgrade
         - post-upgrade
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Check stack resource statuses
     assert:
       that:

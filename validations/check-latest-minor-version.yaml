@@ -11,6 +11,7 @@
     packages:
       - python-tripleoclient
   tasks:
+  - include_tasks: tasks/deprecation.yaml
   - name: Get available updates for packages
     check_package_update:
       package: "{{ item }}"

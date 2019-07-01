@@ -11,6 +11,8 @@
     nproc_min: 2048
 
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Get nofiles limit
     become: true
     # NOTE: `ulimit` is a shell builtin so we have to invoke it like this:

@@ -28,6 +28,8 @@
     - /etc/neutron/lbaas_agent.ini
 
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Run neutron-sanity-check
     command: "docker exec -u root neutron_ovs_agent /bin/bash -c 'neutron-sanity-check --config-file {{ item }}'"
     with_items: "{{ configs }}"

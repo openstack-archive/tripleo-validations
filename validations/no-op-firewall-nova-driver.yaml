@@ -9,6 +9,8 @@
       groups:
       - post-deployment
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Read the `firewall_driver` value
     become: true
     ini:

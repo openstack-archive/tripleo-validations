@@ -11,6 +11,8 @@
       groups:
       - post-deployment
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Run ntpstat
     # ntpstat returns 0 if synchronised and non-zero otherwise:
     command: ntpstat

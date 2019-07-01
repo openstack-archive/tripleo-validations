@@ -9,6 +9,7 @@
       groups:
         - pre-upgrade
   tasks:
+  - include_tasks: tasks/deprecation.yaml
   - name: Check if there are XFS volumes with ftype=0
     become: true
     shell: |

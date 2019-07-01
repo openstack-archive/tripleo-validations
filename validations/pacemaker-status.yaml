@@ -12,6 +12,8 @@
       groups:
         - post-deployment
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Check pacemaker service is running
     become: True
     command: "/usr/bin/systemctl show pacemaker --property ActiveState"

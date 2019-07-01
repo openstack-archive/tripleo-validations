@@ -9,6 +9,8 @@
         - post-deployment
     min_fd_limit: 16384
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Set container_cli fact from the inventory
     set_fact:
       container_cli: "{{ hostvars[inventory_hostname].container_cli }}"

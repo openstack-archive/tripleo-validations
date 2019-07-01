@@ -12,6 +12,8 @@
       groups:
         - pre-upgrade
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: List repositories
     command: 'yum repolist -v'
     args:

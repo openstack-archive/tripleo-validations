@@ -9,6 +9,8 @@
       groups:
       - pre-deployment
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Retrieve the hypervisor statistics
     set_fact:
       statistics: "{{ lookup('nova_hypervisor_statistics', wantlist=True) }}"
@@ -47,4 +49,3 @@
         {{ available_count }} requests. Check that enough nodes are
         in 'available' state with maintenance mode off.
     failed_when: statistics.count < available_count|int
-

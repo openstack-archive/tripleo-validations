@@ -9,6 +9,8 @@
       groups:
         - pre-introspection
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Get the path of tripleo undercloud config file
     become: true
     hiera:

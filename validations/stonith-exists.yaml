@@ -11,6 +11,8 @@
       groups:
         - post-deployment
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Check if we are in HA cluster environment
     become: True
     register: pcs_cluster_status

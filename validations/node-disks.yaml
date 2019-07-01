@@ -9,6 +9,8 @@
         - pre-deployment
       ironic_conf_file: "/var/lib/config-data/puppet-generated/ironic/etc/ironic/ironic.conf"
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Get Ironic Inspector swift auth_url
     become: true
     ini:

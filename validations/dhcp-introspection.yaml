@@ -14,6 +14,8 @@
         - pre-introspection
       ironic_inspector_conf: "/var/lib/config-data/puppet-generated/ironic_inspector/etc/ironic-inspector/inspector.conf"
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Look up the introspection interface
     become: True
     ini:

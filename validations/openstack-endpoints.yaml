@@ -12,6 +12,8 @@
       - pre-upgrade
       - post-upgrade
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Set fact to identify if the overcloud was deployed
     set_fact:
        overcloud_deployed: "{{ groups['overcloud'] is defined }}"

@@ -10,6 +10,8 @@
       - post-deployment
     keystone_conf_file: "/var/lib/config-data/puppet-generated/keystone/etc/keystone/keystone.conf"
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Fetch token value
     become: true
     ini:

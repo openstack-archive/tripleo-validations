@@ -10,6 +10,8 @@
         - pre-introspection
     ctlplane_iprange_min_size: 25
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Get the path of tripleo undercloud config file
     become: true
     hiera:

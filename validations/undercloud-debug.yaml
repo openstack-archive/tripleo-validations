@@ -18,6 +18,8 @@
       - /var/lib/config-data/puppet-generated/heat/etc/heat/heat.conf
       - /var/lib/config-data/puppet-generated/ironic/etc/ironic/ironic.conf
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Check the services for debug flag
     become: True
     ini:

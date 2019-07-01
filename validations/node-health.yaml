@@ -9,6 +9,8 @@
       groups:
         - pre-upgrade
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Collect IPs for overcloud nodes
     set_fact: ansible_host="{{ hostvars[item]['ansible_host'] }}"
     register: oc_ips
