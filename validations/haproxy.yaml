@@ -14,6 +14,8 @@
     defaults_timeout_server: '2m'
     defaults_timeout_check: '10s'
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Gather the HAProxy config
     become: true
     haproxy_conf:

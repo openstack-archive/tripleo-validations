@@ -32,7 +32,7 @@
     resource_reqs_prod: False
 
   tasks:
-
+  - include_tasks: tasks/deprecation.yaml
   # Get auth token and service catalog from Keystone and extract service urls.
   - name: Get token and catalog from Keystone
     uri:

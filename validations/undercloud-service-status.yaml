@@ -9,6 +9,8 @@
         - post-upgrade
         - pre-upgrade
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Check Services are running
     command: "/usr/bin/systemctl show {{ item }} --property ActiveState"
     become: true

@@ -11,6 +11,8 @@
     deploy_kernel_name: "bm-deploy-kernel"
     deploy_ramdisk_name: "bm-deploy-ramdisk"
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Get id for deploy kernel by name
     set_fact:
       deploy_kernel_id: "{{ lookup('glance_images', 'name', ['{{ deploy_kernel_name }}'], wantlist=True) | map(attribute='id') | join(', ') }}"

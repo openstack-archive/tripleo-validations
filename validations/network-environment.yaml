@@ -18,6 +18,8 @@
     plan_env_path: plan-environment.yaml
     ip_pools_path: environments/ips-from-pool-all.yaml
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Validate the network environment files
     network_environment:
       netenv_path: "{{ network_environment_path }}"

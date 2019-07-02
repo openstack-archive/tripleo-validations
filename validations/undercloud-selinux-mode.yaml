@@ -9,6 +9,8 @@
         - prep
         - pre-introspection
   tasks:
+    - include_tasks: tasks/deprecation.yaml
+
     - name:  Get current SELinux mode
       command: getenforce
       become: true
@@ -32,4 +34,3 @@
       when:
         - "sestatus.stdout != 'Enforcing'"
         - "ansible_distribution == 'CentOS'"
-

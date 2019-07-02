@@ -101,4 +101,5 @@
       - zaqar
       - zaqar_websocket
   tasks:
+  - include_tasks: tasks/deprecation.yaml
   - include_tasks: tasks/containerized_services.yaml

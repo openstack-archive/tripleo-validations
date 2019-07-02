@@ -1,0 +1,10 @@
+---
+deprecations:
+  - |
+    All the validations in the `validations` directory have been migrated into
+    their own Ansible roles from Stein release and will be removed from Train.
+
+    You can now run the validations from the `playbooks` directory. For more
+    information, please see:
+
+    https://docs.openstack.org/tripleo-validations/latest/readme.html#directory-structure

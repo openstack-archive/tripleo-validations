@@ -26,6 +26,8 @@
     notify_nova_on_port_status_check: "notify_nova_on_port_status_changes"
     tenant_name_check: "tenant_name"
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Get VIF Plugging setting values from nova.conf
     become: True
     ini:

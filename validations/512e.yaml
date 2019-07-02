@@ -10,6 +10,7 @@
         - prep
         - pre-deployment
   tasks:
+  - include_tasks: tasks/deprecation.yaml
   - name: List the available drives
     register: drive_list
     command: "ls /sys/class/block/"

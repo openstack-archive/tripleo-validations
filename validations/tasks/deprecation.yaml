@@ -1,0 +1,12 @@
+---
+- name: Display Deprecation Warning
+  warn:
+    msg: >
+      [DEPRECATION WARNING] All the validations in the `validations` directory
+      have been migrated into their own Ansible roles from the Stein release and
+      will be removed from Train.
+
+      You can now run the validations from the `playbooks` directory. For more
+      information, please consult the latest tripleo-validations documentation:
+
+      https://docs.openstack.org/tripleo-validations/latest/readme.html#directory-structure

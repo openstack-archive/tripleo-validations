@@ -13,6 +13,8 @@
   become: true
 
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Get OVS DPDK PMD cores mask value
     become_method: sudo
     register: pmd_cpu_mask

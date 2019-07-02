@@ -10,6 +10,7 @@
       groups:
         - post-deployment
   tasks:
+  - include_tasks: tasks/deprecation.yaml
   - name: Check if ceph_mon is deployed
     become: true
     shell: hiera -c /etc/puppet/hiera.yaml enabled_services | egrep -sq ceph_mon

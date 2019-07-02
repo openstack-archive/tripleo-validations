@@ -10,6 +10,8 @@
       - pre-deployment
       - pre-upgrade
   tasks:
+  - include_tasks: tasks/deprecation.yaml
+
   - name: Collect and check the flavors
     check_flavors:
       roles_info: "{{ lookup('roles_info', wantlist=True) }}"

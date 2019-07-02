@@ -9,6 +9,7 @@
         - pre-deployment
     fail_without_ceph_ansible: false
   tasks:
+  - include_tasks: tasks/deprecation.yaml
   - name: Check if ceph-ansible is installed
     shell: rpm -q ceph-ansible || true
     args:
