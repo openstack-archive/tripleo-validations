@@ -9,8 +9,8 @@
 
       groups:
         - post-deployment
-      fail_on_ceph_health_err: false
-      osd_percentage_min: 0
+    fail_on_ceph_health_err: false
+    osd_percentage_min: 0
   tasks:
     - include_role:
         name: ceph
