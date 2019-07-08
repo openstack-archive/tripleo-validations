@@ -15,9 +15,9 @@
 from mock import MagicMock
 from mock import patch
 
+from library.check_package_update import check_update
+from library.check_package_update import get_package_details
 from tripleo_validations.tests import base
-from validations.library.check_package_update import check_update
-from validations.library.check_package_update import get_package_details
 
 
 PKG_INSTALLED = """\
@@ -67,7 +67,7 @@ class TestCheckUpdate(base.TestCase):
         self.module.fail_json.assert_called_with(
             msg='Package manager "apt" is not supported.')
 
-    @patch('validations.library.check_package_update._command')
+    @patch('library.check_package_update._command')
     def test_fails_if_installed_package_not_found(self, mock_command):
         mock_command.side_effect = [
             ['', 'No package found.'],
@@ -76,7 +76,7 @@ class TestCheckUpdate(base.TestCase):
         self.module.fail_json.assert_called_with(
             msg='No package found.')
 
-    @patch('validations.library.check_package_update._command')
+    @patch('library.check_package_update._command')
     def test_returns_current_and_available_versions(self, mock_command):
         mock_command.side_effect = [
             [PKG_INSTALLED, ''],
@@ -89,7 +89,7 @@ class TestCheckUpdate(base.TestCase):
                                                  latest_minor_version='6.2.0',
                                                  latest_major_version='8.0.0')
 
-    @patch('validations.library.check_package_update._command')
+    @patch('library.check_package_update._command')
     def test_returns_current_version_if_no_updates(self, mock_command):
         mock_command.side_effect = [
             [PKG_INSTALLED, ''],

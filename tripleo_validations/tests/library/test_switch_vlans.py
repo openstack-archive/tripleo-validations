@@ -14,8 +14,8 @@
 # under the License.
 
 
+import library.switch_vlans as validation
 from tripleo_validations.tests import base
-import validations.library.switch_vlans as validation
 
 
 class TestSwitchVlans(base.TestCase):
@@ -182,6 +182,6 @@ class TestSwitchVlans(base.TestCase):
         netenv_path = "network_environment.yaml"
         warnings, errors = validation.validate_switch_vlans(
             netenv_path, self.network_data, self.introspect_data)
-        self.assertEqual(warnings, [])
-        self.assertEqual(errors, ['VLAN ID 107 not on attached switch',
-                                  'VLAN ID 107 not on attached switch'])
+        self.assertEqual(warnings, set([]))
+        self.assertEqual(errors, set(['VLAN ID 107 not on attached switch',
+                                      'VLAN ID 107 not on attached switch']))
