@@ -8,7 +8,5 @@
       groups:
         - pre-deployment
         - pre-upgrade
-    deploy_kernel_name_base: "bm-deploy-kernel"
-    deploy_ramdisk_name_base: "bm-deploy-ramdisk"
   roles:
     - ironic-boot-configuration

@@ -19,115 +19,74 @@ from tripleo_validations.tests import base
 
 import mock
 
-KERNEL_IMAGE_ID = 111
-RAMDISK_IMAGE_ID = 112
-KERNEL_NAME_BASE = "bm-deploy-kernel"
-RAMDISK_NAME_BASE = "bm-deploy-ramdisk"
+UUIDs = [
+    '13c319a4-7704-4b44-bb2e-501951879f96',
+    '8201bb8e-be20-4a97-bcf4-91bcf7eeff86',
+    'cc04effd-6bac-45ba-a0dc-83e6cd2c589d',
+    'cbb12140-a088-4646-a873-73eeb055ccc2'
+]
 
 
 class TestCheckIronicBootConfig(base.TestCase):
 
-    def _image_helper(self, prefixes):
-        # first set of images gets the magic ID
-        yield {
-            "id": KERNEL_IMAGE_ID,
-            "name": prefixes[0] + KERNEL_NAME_BASE
+    def _node_helper(self, n_id, k_id, r_id, arch=None, platform=None):
+        node = {
+            "uuid": n_id,
+            "driver_info": {
+                "deploy_kernel": k_id,
+                "deploy_ramdisk": r_id,
+            },
+            "properties": {},
+            "extra": {},
         }
-        yield {
-            "id": RAMDISK_IMAGE_ID,
-            "name": prefixes[0] + RAMDISK_NAME_BASE
-        }
-        if len(prefixes) > 1:
-            # if there's a second set of images give them some other ID
-            yield {
-                "id": KERNEL_IMAGE_ID + 2,
-                "name": prefixes[1] + KERNEL_NAME_BASE
-            }
-            yield {
-                "id": RAMDISK_IMAGE_ID + 2,
-                "name": prefixes[1] + RAMDISK_NAME_BASE
-            }
-
-    def _node_helper(self, arch, platform):
-        # just create one node
-        nodes = [
-            {"uuid": 222,
-             "driver_info":
-                 {
-                     "deploy_kernel": KERNEL_IMAGE_ID,  # magic ID
-                     "deploy_ramdisk": RAMDISK_IMAGE_ID  # magic ID
-                 },
-             "properties": {},
-             "extra": {},
-             }
-        ]
         if arch:
-            nodes[0]["properties"]["cpu_arch"] = arch
+            node["properties"]["cpu_arch"] = arch
         if platform:
-            nodes[0]["extra"]["tripleo_platform"] = platform
-        return nodes
+            node["extra"]["tripleo_platform"] = platform
+        return node
 
-    def _do_test_case(
-            self, image_prefixes, node_arch=None, node_platform=None):
-        images = self._image_helper(image_prefixes)
-        nodes = self._node_helper(node_arch, node_platform)
-        return validation.validate_boot_config(
-            images, nodes, KERNEL_NAME_BASE, RAMDISK_NAME_BASE)
+    def _do_positive_test_case(self, nodes):
+        res = validation.validate_boot_config(nodes)
+        self.assertEqual([], res)
 
-    def test_successes(self):
-        self.assertEqual(
-            [], self._do_test_case(['p9-ppc64le-'], 'ppc64le', 'p9'))
-        self.assertEqual(
-            [], self._do_test_case([''], 'ppc64le', 'p9'))
-        self.assertEqual(
-            [], self._do_test_case(
-                ['ppc64le-', 'p8-ppc64le-'], 'ppc64le', 'p9'))
-        self.assertEqual(
-            [], self._do_test_case(
-                ['', 'SB-x86_64-'], 'ppc64le', 'p9'))
-        self.assertEqual(
-            [], self._do_test_case([''], 'x86_64'))
-        self.assertEqual(
-            [], self._do_test_case(['']))
+    def _do_negative_test_case(self, nodes, fail_reason='too_diverse'):
+        with mock.patch(
+                'library.check_ironic_boot_config._%s' % fail_reason) as e:
+            validation.validate_boot_config(nodes)
+            e.assert_called()
 
-    @mock.patch('library.check_ironic_boot_config.NO_CANDIDATES')
-    @mock.patch('library.check_ironic_boot_config.MISMATCH')
-    def test_errors(self, mismatch, no_candidates):
-        self._do_test_case(['p8-ppc64le-', 'p9-ppc64le-'], 'ppc64le', 'p9')
-        mismatch.format.assert_called()
-        no_candidates.format.assert_not_called()
+    def test_basic_functionality(self):
+        nodes = [
+            self._node_helper(1, UUIDs[0], UUIDs[1], 'ppc64le', 'p9'),
+            self._node_helper(2, UUIDs[0], UUIDs[1], 'ppc64le', 'p9')
+        ]
+        self._do_positive_test_case(nodes)
 
-        mismatch.reset_mock()
-        no_candidates.reset_mock()
+        nodes.append(
+            self._node_helper(
+                3, 'file://k.img', 'file://r.img', 'ppc64le', 'p9')
+        )
+        self._do_positive_test_case(nodes)
 
-        self._do_test_case(['ppc64le-', 'p9-ppc64le-'], 'ppc64le', 'p9')
-        mismatch.format.assert_called()
-        no_candidates.format.assert_not_called()
+        nodes.append(
+            self._node_helper(4, UUIDs[0], UUIDs[1], 'ppc64le')
+        )
+        self._do_positive_test_case(nodes)
 
-        mismatch.reset_mock()
-        no_candidates.reset_mock()
+        nodes.append(
+            self._node_helper(5, UUIDs[2], UUIDs[3], 'ppc64le', 'p9'),
+        )
+        self._do_negative_test_case(nodes)
+        nodes = nodes[:-1]
 
-        self._do_test_case(['', 'ppc64le-'], 'ppc64le')
-        mismatch.format.assert_called()
-        no_candidates.format.assert_not_called()
+        nodes.append(
+            self._node_helper(
+                5, 'file://k2.img', 'file://r2.img', 'ppc64le', 'p9')
+        )
+        self._do_negative_test_case(nodes)
+        nodes = nodes[:-1]
 
-        mismatch.reset_mock()
-        no_candidates.reset_mock()
-
-        self._do_test_case(['p9-ppc64le-', ''], 'ppc64le')
-        mismatch.format.assert_called()
-        no_candidates.format.assert_not_called()
-
-        mismatch.reset_mock()
-        no_candidates.reset_mock()
-
-        self._do_test_case(['p8-ppc64le-'], 'ppc64le', 'p9')
-        mismatch.format.assert_not_called()
-        no_candidates.format.assert_called()
-
-        mismatch.reset_mock()
-        no_candidates.reset_mock()
-
-        self._do_test_case(['p9-ppc64le-', 'x86_64-'], 'ppc64le')
-        mismatch.format.assert_not_called()
-        no_candidates.format.assert_called()
+        nodes.append(
+            self._node_helper(5, 'not_uuid_or_path', 'not_uuid_or_path')
+        )
+        self._do_negative_test_case(nodes, 'invalid_image_entry')
