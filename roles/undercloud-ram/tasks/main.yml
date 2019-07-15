@@ -1,6 +1,6 @@
 ---
 - name: Verify the RAM requirements
-  debug:
+  fail:
     msg: >-
       The RAM on the undercloud node is {{ ansible_memtotal_mb }} MB,
       the minimal recommended value is
