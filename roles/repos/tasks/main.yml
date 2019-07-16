@@ -1,6 +1,7 @@
 ---
 - name: List repositories
-  command: 'yum repolist -v'
+  become: True
+  command: '{{ ansible_pkg_mgr }} repolist -v'
   args:
     warn: no
   changed_when: False
@@ -13,7 +14,7 @@
 
 - name: Check if there is at least one repository baseurl
   fail:
-    msg: No repository found in yum repolist
+    msg: No repository found in {{ ansible_pkg_mgr }} repolist
   when: repository_urls.stdout_lines|length < 1
 
 - name: Call repository URLs
