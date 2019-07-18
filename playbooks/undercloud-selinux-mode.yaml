@@ -1,5 +1,6 @@
 ---
 - hosts: undercloud
+  gather_facts: yes
   vars:
     metadata:
       name: Undercloud SELinux Enforcing Mode Check

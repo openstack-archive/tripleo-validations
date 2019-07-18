@@ -1,5 +1,6 @@
 ---
 - hosts: undercloud, overcloud
+  gather_facts: yes
   vars:
     metadata:
       name: Check correctness of current repositories
