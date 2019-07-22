@@ -497,3 +497,16 @@ is low enough and the other too high)
 
 And that's it! The validation is now finished and you can start using it in
 earnest.
+
+Create a new role with automation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The role addition process is also automated using ansible. If ansible is
+available on the development workstation change directory to the root of
+the `tripleo-validations` repository and run the the following command which
+will perform the basic tasks noted above.
+
+.. code-block:: console
+
+    $ cd tripleo-validations/
+    $ ansible-playbook -i localhost, role-addition.yml -e role_name=${NEWROLENAME}
