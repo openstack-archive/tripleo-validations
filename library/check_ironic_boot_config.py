@@ -21,10 +21,10 @@ from ansible.module_utils.basic import AnsibleModule  # noqa
 DOCUMENTATION = '''
 ---
 module: check_ironic_boot_config
-short_description: >
+short_description:
     - Check that overcloud nodes have the correct associated ramdisk and kernel
       image
-description: >
+description:
     - Each overcloud node needs to have the correct associated ramdisk and
       kernel image according to its architecture and platform. When it does
       appear that the correct image is associated, we also need to check that

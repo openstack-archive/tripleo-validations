@@ -35,8 +35,8 @@ module: switch_vlans
 short_description: Check configured VLANs against Ironic introspection data
 description:
     - Validate that the VLANs defined in TripleO nic config files are in the
-    LLDP info received from network switches.  The LLDP data is stored in
-    Ironic introspection data per interface.
+      LLDP info received from network switches.  The LLDP data is stored in
+      Ironic introspection data per interface.
 options:
     path:
         required: true

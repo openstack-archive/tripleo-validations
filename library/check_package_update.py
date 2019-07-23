@@ -25,6 +25,8 @@ DOCUMENTATION = '''
 ---
 module: check_package_update
 short_description: Check for available updates for a given package
+description:
+    - Check for available updates for a given package
 options:
     package:
         required: true
@@ -45,7 +47,7 @@ EXAMPLES = '''
     - name: Get available updates for packages
       check_package_update:
         package: python-tripleoclient
-        pkg_mgr: {{ ansible_pkg_mgr}}
+        pkg_mgr: "{{ ansible_pkg_mgr}}"
 '''
 
 SUPPORTED_PKG_MGRS = (

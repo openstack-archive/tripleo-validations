@@ -87,7 +87,9 @@ def build_detail(group, validations):
 - **parameters**: {parameters}
 - **roles**: {roles}
 
-`View source code for the role <http://git.openstack.org/cgit/openstack/tripleo-validations/tree/roles/{roles}/>`__.
+.. toctree::
+
+   roles/role-{roles}
 
 """
         .format(label=(group + '_' + validation['id']),

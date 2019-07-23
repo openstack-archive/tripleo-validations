@@ -22,7 +22,7 @@ module: node_disks
 short_description: Check disks, flavors and root device hints
 description:
     - Check if each node has a root device hint set if there is more
-    than one disk and compare flavors to disk sizes.
+      than one disk and compare flavors to disk sizes.
 options:
     nodes:
         required: true
