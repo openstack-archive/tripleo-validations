@@ -1,0 +1,78 @@
+---
+### check for certmonger user service ###
+- name: Check if the certmonger user service has been enabled
+  become: true
+  hiera:
+    name: "certmonger_user_enabled"
+  check_mode: no
+
+- name: Set facts for certmonger user service not enabled
+  set_fact:
+    certmonger_user_service_status: "{{ helper_status_error }}"
+    certmonger_user_service_reason: "The certmonger user service is not enabled for this role"
+    certmonger_user_service_recommendations:
+      - "Please add the 'OS::TripleO::Services::CertmongerUser' service to all of your TripleO roles."
+  when: certmonger_user_enabled != "true"
+
+- name: Set facts for certmonger user service enabled
+  set_fact:
+    certmonger_user_service_status: "{{ helper_status_ok }}"
+    certmonger_user_service_reason: "This role contains the certmonger user service"
+    certmonger_user_service_recommendations: null
+  when: certmonger_user_enabled == "true"
+
+- name: Report on Certmonger user service check
+  reportentry:
+    report_status: "{{ certmonger_user_service_status }}"
+    report_reason: "{{ certmonger_user_service_reason }}"
+    report_recommendations: "{{ certmonger_user_service_recommendations }}"
+
+### certificate checks ###
+
+# Get all the certificates that certmonger is tracking. Given the
+# command that's used, we can retrieve each entry using stdout_lines.
+- name: Get all certificate names in each node
+  shell: getcert list | grep 'Request ID' | sed "s/Request ID '\(.*\)':/\1/"
+  become: true
+  changed_when: false
+  register: all_certnames
+  check_mode: no
+
+# Get status of all certificates and trim the leading whitespaces
+- name: Get status of all certificates
+  shell: getcert list -i {{ certname }} | grep "status:" | sed "s/^\s*//"
+  become: true
+  changed_when: false
+  loop: "{{ all_certnames.stdout_lines }}"
+  loop_control:
+    loop_var: certname
+  register: all_cert_status
+  check_mode: no
+
+- name: Gather certificates that are not in MONITORING status
+  set_fact:
+    failed_certs: "{{ all_cert_status.results | json_query(cert_status_query) }}"
+  vars:
+    cert_status_query: "[?stdout != 'status: MONITORING'].certname"
+
+- name: Set facts for certificates in failed status
+  set_fact:
+    cert_status_status: "{{ helper_status_error }}"
+    cert_status_reason: 'The following certificates are not in a healthy status: {{ failed_certs | join(", ") }}'
+    cert_status_recommendations:
+      - "Log into this host and do 'getcert list -i <cert name>' to verify the failure reason"
+      - "Verify that the service principal of the certificate is present in IdM/FreeIPA for this host"
+  when: failed_certs
+
+- name: Set facts for all certificates in monitoring status
+  set_fact:
+    cert_status_status: "{{ helper_status_ok }}"
+    cert_status_reason: "All of the certificates are a healthy status"
+    cert_status_recommendations: null
+  when: not failed_certs
+
+- name: Report on status of the certificates check
+  reportentry:
+    report_status: "{{ cert_status_status }}"
+    report_reason: "{{ cert_status_reason }}"
+    report_recommendations: "{{ cert_status_recommendations }}"

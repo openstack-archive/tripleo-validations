@@ -1,0 +1,18 @@
+---
+- hosts: overcloud
+  vars:
+    metadata:
+      name: Confirm that overcloud nodes are setup correctly
+      description: |
+        Checks that overcloud nodes are registered with IdM
+        and that all certs being tracked by certmonger are in the
+        MONITORING state.
+      groups:
+      - post-deployment
+  tasks:
+    - include_role:
+        name: tls-everywhere
+        tasks_from: common.yaml
+    - include_role:
+        name: tls-everywhere
+        tasks_from: overcloud-post-deployment.yaml

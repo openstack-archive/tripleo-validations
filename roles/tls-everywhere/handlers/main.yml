@@ -1,0 +1,6 @@
+---
+- name: clean_up_temp_krb_caches
+  command: kdestroy -c {{ item }}
+  ignore_errors: false
+  become: true
+  with_items: "{{ temp_krb_caches }}"

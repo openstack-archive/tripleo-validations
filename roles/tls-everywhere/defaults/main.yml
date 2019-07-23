@@ -1,0 +1,6 @@
+---
+helper_status_ok: OK
+helper_status_error: ERROR
+helper_status_skipped: SKIPPED
+helper_report_path: /tmp/report.txt
+helper_undercloud_path: "/home/{{ ansible_ssh_user }}"

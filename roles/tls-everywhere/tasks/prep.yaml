@@ -1,0 +1,122 @@
+---
+- name: Get the path of tripleo undercloud config file
+  become: true
+  hiera:
+    name: "tripleo_undercloud_conf_file"
+  check_mode: no
+
+- name: Verify that nameservers are set in undercloud.conf
+  become: true
+  ini:
+    path: "{{ tripleo_undercloud_conf_file }}"
+    section: DEFAULT
+    key: undercloud_nameservers
+    ignore_missing_file: False
+  register: undercloud_nameservers
+  check_mode: no
+
+- name: Check that nameservers point to IdM/FreeIPA
+  set_fact:
+    undercloud_conf_dns_query: "{{ lookup('dig', 'ipa-ca', '@{{ item }}') }}"
+  loop: "{{ undercloud_nameservers.value.split(',') }}"
+  when: undercloud_nameservers.value | length > 0 and undercloud_nameservers.value != []
+
+- name: Set facts undercloud.conf DNS is not configured
+  set_fact:
+    undercloud_conf_dns_status: "{{ helper_status_error }}"
+    undercloud_conf_dns_reason: "DNS is not set up correctly in undercloud.conf"
+    undercloud_conf_dns_recommendations:
+      - "Please set the 'undercloud_nameservers' parameter to point to IdM/FreeIPA in undercloud.conf"
+  when: undercloud_conf_dns_query|default('NXDOMAIN') == "NXDOMAIN"
+
+- name: Set facts undercloud.conf DNS is configured
+  set_fact:
+    undercloud_conf_dns_status: "{{ helper_status_ok }}"
+    undercloud_conf_dns_reason: "DNS is set up correctly in undercloud.conf"
+    undercloud_conf_dns_recommendations: null
+  when: undercloud_conf_dns_query|default('NXDOMAIN') != "NXDOMAIN"
+
+- name: Report on DNS setup in undercloud.conf check
+  reportentry:
+    report_status: "{{ undercloud_conf_dns_status }}"
+    report_reason: "{{ undercloud_conf_dns_reason }}"
+    report_recommendations: "{{ undercloud_conf_dns_recommendations }}"
+
+# undercloud neutron domain check
+- name: Block for neutron domain check in undercloud.conf
+  when: undercloud_conf_dns_query|default('NXDOMAIN') != "NXDOMAIN"
+  block:
+    # NOTE(jaosorior): This returns a complete answer about the
+    # query. We're just gonna get the FQDN out of this.
+    - name: Get IdM/FreeIPA hostname from ip
+      shell: host {{ undercloud_conf_dns_query }} | awk '{print $5}'
+      register: host_from_ip_reg
+      changed_when: false
+      check_mode: no
+
+    - name: Get domain as set in undercloud.conf
+      become: true
+      ini:
+        path: "{{ tripleo_undercloud_conf_file }}"
+        section: DEFAULT
+        key: overcloud_domain_name
+        ignore_missing_file: False
+      register: undercloud_overcloud_domain
+      check_mode: no
+
+    - name: Set facts undercloud.conf domain is not configured correctly
+      set_fact:
+        undercloud_conf_domain_status: "{{ helper_status_error }}"
+        undercloud_conf_domain_reason: "Domain is not set up correctly in undercloud.conf"
+        undercloud_conf_domain_recommendations:
+          - "Please set the 'overcloud_domain_name' parameter to point to the IdM/FreeIPA's domain in undercloud.conf"
+      when: undercloud_overcloud_domain.value | length == 0 or
+            undercloud_overcloud_domain.value == [] or
+            undercloud_overcloud_domain.value not in host_from_ip_reg.stdout
+
+    - name: Set facts undercloud.conf domain is configured correctly
+      set_fact:
+        undercloud_conf_domain_status: "{{ helper_status_ok }}"
+        undercloud_conf_domain_reason: "Domain is set up correctly in undercloud.conf"
+        undercloud_conf_domain_recommendations: null
+      when:
+        - undercloud_overcloud_domain.value | length > 0
+        - undercloud_overcloud_domain.value != []
+        - undercloud_overcloud_domain.value in host_from_ip_reg.stdout
+
+    - name: Report on domain setup in undercloud.conf check
+      reportentry:
+        report_status: "{{ undercloud_conf_domain_status }}"
+        report_reason: "{{ undercloud_conf_domain_reason }}"
+        report_recommendations: "{{ undercloud_conf_domain_recommendations }}"
+
+- name: Get enable_novajoin flag from undercloud.conf
+  become: true
+  ini:
+    path: "{{ tripleo_undercloud_conf_file }}"
+    section: DEFAULT
+    key: enable_novajoin
+    ignore_missing_file: False
+  register: undercloud_enable_novajoin
+  check_mode: no
+
+- name: Set facts undercloud.conf enable novajoin is disabled
+  set_fact:
+    undercloud_conf_enable_novajoin_status: "{{ helper_status_error }}"
+    undercloud_conf_enable_novajoin_reason: "enable_novajoin is not enabled undercloud.conf"
+    undercloud_conf_enable_novajoin_recommendations:
+      - "Please set 'enable_novajoin' to True in undercloud.conf"
+  when: not undercloud_enable_novajoin.value|bool
+
+- name: Set facts undercloud.conf enable novajoin is enabled
+  set_fact:
+    undercloud_conf_enable_novajoin_status: "{{ helper_status_ok }}"
+    undercloud_conf_enable_novajoin_reason: "enable_novajoin is enabled undercloud.conf"
+    undercloud_conf_enable_novajoin_recommendations: null
+  when: undercloud_enable_novajoin.value|bool
+
+- name: Report on enable novajoin setup in undercloud.conf check
+  reportentry:
+    report_status: "{{ undercloud_conf_enable_novajoin_status }}"
+    report_reason: "{{ undercloud_conf_enable_novajoin_reason }}"
+    report_recommendations: "{{ undercloud_conf_enable_novajoin_recommendations }}"

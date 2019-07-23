@@ -1,0 +1,202 @@
+---
+### join.conf check ###
+- name: Verify that join.conf exists (containzerized)
+  command: "{{ command_prefix }} exec novajoin_server test -e /etc/novajoin/join.conf"
+  register: containerized_join_conf_st
+  become: true
+
+- name: Fail if join.conf is not present (containerized)
+  fail:
+    msg: join.conf is necessary to continue the validations
+  when: containerized_join_conf_st.rc != 0
+
+- name: Set join.conf location (containerized)
+  set_fact:
+    joinconf_location: "/var/lib/config-data/puppet-generated/novajoin/etc/novajoin/join.conf"
+
+- name: Get novajoin keytab path from join.conf
+  become: true
+  ini:
+    path: "{{ joinconf_location }}"
+    section: DEFAULT
+    key: keytab
+    ignore_missing_file: True
+  register: novajoin_keytab_path
+  check_mode: no
+
+- name: Get novajoin server port from join.conf
+  become: true
+  ini:
+    path: "{{ joinconf_location }}"
+    section: DEFAULT
+    key: join_listen_port
+    ignore_missing_file: True
+  register: novajoin_server_port
+  check_mode: no
+
+- name: Get novajoin server host from join.conf
+  become: true
+  ini:
+    path: "{{ joinconf_location }}"
+    section: DEFAULT
+    key: join_listen
+    ignore_missing_file: True
+  register: novajoin_server_host
+  check_mode: no
+
+### verify that the keytab and principal are usable ###
+# TODO(alee): We need to move this to a subfile so we can run
+#             this against novajoin_server and novajoin_notifier
+
+- name: Verify the novajoin keytab is usable (containerized)
+  become: true
+  block:
+    - name: Set fact for novajoin user principal
+      set_fact:
+        novajoin_principal: "nova/{{ host_entry }}"
+
+    - name: Check for novajoin kerberos host keytab
+      command: "{{ command_prefix }} exec novajoin_server test -e /etc/novajoin/krb5.keytab"
+      register: containerized_novajoin_krb5_keytab_stat
+      become: true
+
+    - name: Test if novajoin principal in novajoin keytab is usable
+      command: "{{ command_prefix }} exec novajoin_server kinit -kt {{ novajoin_keytab_path.value }} -c /tmp/my_novajoin_krb5_ccache {{ novajoin_principal }}"
+      register: containerized_novajoin_principal_usable_result
+      ignore_errors: true
+      when:
+        - containerized_novajoin_krb5_keytab_stat.rc == 0
+
+    - name: Set facts for novajoin principal is usable skipped
+      set_fact:
+        principal_usable_status: "{{ helper_status_skipped }}"
+        principal_usable_reason: "skipped checking if the novajoin principal is usable for host {{ ansible_host }} because there is no keytab file"
+        principal_usable_recommendations: null
+      when:
+        - not containerized_novajoin_krb5_keytab_stat.rc == 0
+
+    - name: Set facts for novajoin principal is usable success
+      set_fact:
+        principal_usable_status: "{{ helper_status_ok }}"
+        principal_usable_reason: "The principal {{ novajoin_principal }} is able to obtain a kerberos ticket"
+        principal_usable_recommendations: null
+        temp_krb_caches: "{{ novajoin_temp_krb_caches + [ '/tmp/my_novajoin_krb5_ccache' ] }}"
+      changed_when: true
+      when:
+        - containerized_novajoin_krb5_keytab_stat.rc == 0
+        - containerized_novajoin_principal_usable_result is succeeded
+
+    - name: Clean up temporary kerberos cache on novajoin_server container
+      shell: "{{ command_prefix }} exec novajoin_server kdestroy -c {{ item }}"
+      with_items: "{{ temp_krb_caches }}"
+      ignore_errors: false
+      become: true
+      when:
+        - containerized_novajoin_krb5_keytab_stat.rc == 0
+        - containerized_novajoin_principal_usable_result is succeeded
+
+    - name: Set facts for principal is usable failure
+      set_fact:
+        principal_usable_status: "{{ helper_status_error }}"
+        principal_usable_reason: "Tho principal {{ novajoin_principal }} is unable to obtain a kerberos ticket"
+        principal_usable_recommendations: null
+      when:
+        - containerized_novajoin_krb5_keytab_stat.rc == 0
+        - containerized_novajoin_principal_usable_result is failed
+
+    - name: Report on Kerberos principal in novajoin keytab is usable check
+      reportentry:
+        report_status: "{{ principal_usable_status }}"
+        report_reason: "{{ principal_usable_reason }}"
+        report_recommendations: "{{ principal_usable_recommendations }}"
+
+- name: Verify that novajoin_server is running (containerized)
+  block:
+    - name: Check if novajoin_server is runing
+      shell: "{{ command_prefix }} ps | grep novajoin_server"
+      register: novajoin_server_status_result
+      become: true
+      ignore_errors: true
+
+    - name: Set facts for novajoin-server is running success
+      set_fact:
+        service_running_status: "{{ helper_status_ok }}"
+        service_running_reason: "The novajoin_server container is running"
+        service_running_recommendations: null
+      when: novajoin_server_status_result.rc == 0
+
+    - name: Set facts for novajoin_server is running failure
+      set_fact:
+        service_running_status: "{{ helper_status_error }}"
+        service_running_reason: "The novajoin_server container is not running"
+        service_running_recommendations:
+          - "Start the novajoin_server service with {{ command_prefix }} ... TBD"
+      when: novajoin_server_status_result.rc != 0
+
+    - name: Report on is novajoin_server running check
+      reportentry:
+        report_status: "{{ service_running_status }}"
+        report_reason: "{{ service_running_reason }}"
+        report_recommendations: "{{ service_running_recommendations }}"
+
+- name: Verify that novajoin_server is reachable (containerized)
+  when: novajoin_server_status_result is success
+  block:
+    - name: Check if novajoin_server port is reachable
+      wait_for:
+        port: "{{ novajoin_server_port.value }}"
+        host: "{{ novajoin_server_host.value }}"
+        timeout: 20
+      register: novajoin_server_port_status
+      ignore_errors: true
+
+    - name: Set facts for novajoin_server port status success
+      set_fact:
+        port_reachable_status: "{{ helper_status_ok }}"
+        port_reachable_reason: "The novajoin_server container is reachable on {{ novajoin_server_port.value }}"
+        port_reachable_recommendations: null
+      when: novajoin_server_port_status is success
+
+    - name: Set facts for novajoin_server port status failure
+      set_fact:
+        port_reachable_status: "{{ helper_status_error }}"
+        port_reachable_reason: "The novajoin_server container is started, but not reachable locally on {{ novajoin_server_port.value }}"
+        port_reachable_recommendations:
+          - "Check the novajoin-server logs and journal entry"
+      when: novajoin_server_port_status is failed
+
+    - name: Report on is novajoin_server port reachable check
+      reportentry:
+        report_status: "{{ port_reachable_status }}"
+        report_reason: "{{ port_reachable_reason }}"
+        report_recommendations: "{{ port_reachable_recommendations }}"
+
+- name: Verify that novajoin-notify is running (containerized)
+  block:
+    - name: Check if novajoin-notify is running
+      shell: "{{ command_prefix }} ps | grep novajoin_notifier"
+      register: novajoin_notify_status_result
+      become: true
+      ignore_errors: true
+
+    - name: Set facts for novajoin-notify is running success
+      set_fact:
+        service_running_status: "{{ helper_status_ok }}"
+        service_running_reason: "The novajoin_notifier container is running"
+        service_running_recommendations: null
+      when: novajoin_notify_status_result.rc == 0
+
+    - name: Set facts for novajoin-notify is running failure
+      set_fact:
+        service_running_status: "{{ helper_status_error }}"
+        service_running_reason: "The novajoin_notifier container is not running"
+        service_running_recommendations:
+          - "Start the novajoin-notify service with {{ command_prefix }} ... TBD"
+      when: novajoin_notify_status_result.rc != 0
+
+    - name: Report on is novajoin-notify running check
+      reportentry:
+        report_status: "{{ service_running_status }}"
+        report_reason: "{{ service_running_reason }}"
+        report_recommendations: "{{ service_running_recommendations }}"
+
