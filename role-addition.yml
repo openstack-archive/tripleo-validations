@@ -33,3 +33,14 @@
         --init-path=roles {{ role_name }}
       args:
         creates: "roles/{{ role_name }}"
+
+    - name: Create role documentation
+      copy:
+        content: |
+          {{ '=' * (role_name | length) }}
+          {{ role_name }}
+          {{ '=' * (role_name | length) }}
+
+          .. ansibleautoplugin::
+             :role: roles/{{ role_name }}
+        dest: "doc/source/roles/role-{{ role_name }}.rst"

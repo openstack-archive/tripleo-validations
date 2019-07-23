@@ -27,6 +27,7 @@ sys.path.insert(0, os.path.join(os.path.abspath('.'), '_exts'))
 extensions = [
     'sphinx.ext.autodoc',
     'generate_validations_doc',
+    'ansible-autodoc',
     'openstackdocstheme'
 ]
 
@@ -41,7 +42,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-copyright = u'2016, OpenStack Foundation'
+copyright = u'2019, OpenStack Foundation'
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 add_function_parentheses = True
@@ -71,9 +72,6 @@ latex_documents = [
      u'tripleo-validations Documentation',
      u'OpenStack Foundation', 'manual'),
 ]
-
-# Example configuration for intersphinx: refer to the Python standard library.
-#intersphinx_mapping = {'http://docs.python.org/': None}
 
 # openstackdocstheme options
 repository_name = 'openstack/tripleo-validations'
