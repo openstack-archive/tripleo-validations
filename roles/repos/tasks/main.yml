@@ -1,26 +1,19 @@
 ---
 - name: List repositories
   become: True
-  command: '{{ ansible_pkg_mgr }} repolist -v'
+  shell: |
+    {{ ansible_pkg_mgr }} repolist enabled -v 2>&1 || exit 0
   args:
     warn: no
   changed_when: False
   register: repositories
 
-- name: Find repository URLs
-  shell: 'echo "{{ repositories.stdout }}" | grep Repo-baseurl | sed  "s/Repo-baseurl.*\(http[^ ]*\).*/\1/g"'
-  register: repository_urls
-  changed_when: False
-
-- name: Check if there is at least one repository baseurl
+- name: Fail if we detect error in repolist output
   fail:
-    msg: No repository found in {{ ansible_pkg_mgr }} repolist
-  when: repository_urls.stdout_lines|length < 1
-
-- name: Call repository URLs
-  uri:
-    url: "{{ item }}"
-  with_items: "{{ repository_urls.stdout_lines }}"
+    msg: |
+      One or more repositories are either broken or unreachable. Please correct.
+  when:
+    repositories.stdout is regex('(cannot|could not|failure)', ignorecase=True)
 
 - name: Find repository IDs
   changed_when: False
