@@ -20,32 +20,18 @@ from library.check_package_update import get_package_details
 from tripleo_validations.tests import base
 
 
-PKG_INSTALLED = """\
-Last metadata expiration check: 1 day, 3:05:37 ago on Mon Jun  5 11:55:16 2017.
-Installed Packages
-foo-package.x86_64          2:6.1.5-1          @spideroak-one-stable
-"""
+PKG_INSTALLED = "foo-package|6.1.5|1|x86_64"
 
-# This stretches the boundaries of a realistic yum list output a bit
-# but it's more explicit for testing.
 PKG_AVAILABLE = """\
-Last metadata expiration check: 1 day, 3:06:30 ago on Mon Jun  5 11:55:16 2017.
 Available Packages
-foo-package.i386              2:9.1.0-1          foo-stable
-foo-package.i386              2:6.2.3-1          foo-stable
-foo-package.x86_64            2:8.0.0-1          foo-stable
-foo-package.x86_64            2:7.0.0-1          foo-stable
-foo-package.x86_64            2:6.2.0-1          foo-stable
-foo-package.x86_64            2:6.1.6-1          foo-stable
+foo-package.x86_64        8.0.0-1         foo-stable
 """
 
 
 class TestGetPackageDetails(base.TestCase):
     def setUp(self):
         super(TestGetPackageDetails, self).setUp()
-        self.entry = get_package_details("""\
-foo-package.x86_64            2:6.2.0-1          spideroak-one-stable
-""")
+        self.entry = get_package_details("foo-package|6.2.0|1|x86_64")
 
     def test_name(self):
         self.assertEqual(self.entry.name, 'foo-package')
@@ -55,6 +41,9 @@ foo-package.x86_64            2:6.2.0-1          spideroak-one-stable
 
     def test_version(self):
         self.assertEqual(self.entry.version, '6.2.0')
+
+    def test_release(self):
+        self.assertEqual(self.entry.release, '1')
 
 
 class TestCheckUpdate(base.TestCase):
@@ -82,12 +71,14 @@ class TestCheckUpdate(base.TestCase):
             [PKG_INSTALLED, ''],
             [PKG_AVAILABLE, ''],
         ]
+
         check_update(self.module, 'foo-package', 'yum')
         self.module.exit_json.assert_called_with(changed=False,
                                                  name='foo-package',
                                                  current_version='6.1.5',
-                                                 latest_minor_version='6.2.0',
-                                                 latest_major_version='8.0.0')
+                                                 current_release='1',
+                                                 new_version='8.0.0',
+                                                 new_release='1')
 
     @patch('library.check_package_update._command')
     def test_returns_current_version_if_no_updates(self, mock_command):
@@ -99,5 +90,6 @@ class TestCheckUpdate(base.TestCase):
         self.module.exit_json.assert_called_with(changed=False,
                                                  name='foo-package',
                                                  current_version='6.1.5',
-                                                 latest_minor_version='6.1.5',
-                                                 latest_major_version=None)
+                                                 current_release='1',
+                                                 new_version=None,
+                                                 new_release=None)

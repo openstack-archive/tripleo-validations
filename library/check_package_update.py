@@ -55,18 +55,17 @@ SUPPORTED_PKG_MGRS = (
 
 
 PackageDetails = collections.namedtuple('PackageDetails',
-                                        ['name', 'arch', 'version'])
+                                        ['name', 'version', 'release', 'arch'])
 
 
-def get_package_details(line):
-    # Parses an output line from a package manager's
-    # `list (available|installed)` command and returns
-    # a named tuple
-    parts = line.rstrip().split()
-    name, arch = parts[0].split('.')
-    # Version string, excluding release string and epoch
-    version = parts[1].split('-')[0].split(':')[-1]
-    return PackageDetails(name, arch, version)
+def get_package_details(output):
+    if output:
+        return PackageDetails(
+            output.split('|')[0],
+            output.split('|')[1],
+            output.split('|')[2],
+            output.split('|')[3],
+        )
 
 
 def _command(command):
@@ -79,37 +78,6 @@ def _command(command):
     return process.communicate()
 
 
-def _get_installed_version_from_output(output, package):
-    for line in output.split('\n'):
-        if package in line:
-            return get_package_details(line)
-
-
-def _get_latest_available_versions(output, installed):
-    # Returns the latest available minor and major versions,
-    # one for each.
-    latest_minor = None
-    latest_major = None
-    # Get all packages with the same architecture
-    packages = list([get_package_details(line) for line in output.split('\n')
-                     if '{i.name}.{i.arch}'.format(i=installed) in line])
-    # Get all packages with the *same* major version
-    minor = sorted((p for p in packages
-                    if p.version[0] == installed.version[0]))
-    if len(minor) > 0:
-        latest_minor = minor[-1].version
-    # Get all packages with a *higher* available major version
-    major = sorted((p for p in packages
-                    if p.version[0] > installed.version[0]))
-    if len(major) > 0:
-        latest_major = major[-1].version
-    # If the output doesn't contain packages with the same major version
-    # let's assume the currently installed version as latest minor one.
-    if latest_minor is None:
-        latest_minor = installed.version
-    return latest_minor, latest_major
-
-
 def check_update(module, package, pkg_mgr):
     if pkg_mgr not in SUPPORTED_PKG_MGRS:
         module.fail_json(
@@ -117,23 +85,47 @@ def check_update(module, package, pkg_mgr):
         return
 
     installed_stdout, installed_stderr = _command(
-        [pkg_mgr, 'list', 'installed', package])
+        ['rpm', '-qa', '--qf',
+         '%{NAME}|%{VERSION}|%{RELEASE}|%{ARCH}',
+         package])
+
     # Fail the module if for some reason we can't lookup the current package.
     if installed_stderr != '':
         module.fail_json(msg=installed_stderr)
         return
-    installed = _get_installed_version_from_output(installed_stdout, package)
+    elif not installed_stdout:
+        module.fail_json(
+            msg='"{}" is not an installed package.'.format(package))
+        return
+
+    installed = get_package_details(installed_stdout)
+
+    pkg_mgr_option = 'available'
+    if pkg_mgr == 'dnf':
+        pkg_mgr_option = '--available'
 
     available_stdout, available_stderr = _command(
-        [pkg_mgr, 'list', 'available', installed.name])
-    latest_minor_version, latest_major_version = \
-        _get_latest_available_versions(available_stdout, installed)
+        [pkg_mgr, '-q', 'list', pkg_mgr_option, installed.name])
 
-    module.exit_json(changed=False,
-                     name=installed.name,
-                     current_version=installed.version,
-                     latest_minor_version=latest_minor_version,
-                     latest_major_version=latest_major_version)
+    if available_stdout:
+        new_pkg_info = available_stdout.split('\n')[1].rstrip().split()[:2]
+        new_ver, new_rel = new_pkg_info[1].split('-')
+
+        module.exit_json(
+            changed=False,
+            name=installed.name,
+            current_version=installed.version,
+            current_release=installed.release,
+            new_version=new_ver,
+            new_release=new_rel)
+    else:
+        module.exit_json(
+            changed=False,
+            name=installed.name,
+            current_version=installed.version,
+            current_release=installed.release,
+            new_version=None,
+            new_release=None)
 
 
 def main():
