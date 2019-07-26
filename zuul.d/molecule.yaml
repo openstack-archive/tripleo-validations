@@ -21,6 +21,7 @@
       - tripleo-validations-centos-7-molecule-undercloud-heat-purge-deleted
       - tripleo-validations-centos-7-molecule-undercloud-tokenflush
       - tripleo-validations-centos-7-molecule-rabbitmq-limits
+      - tripleo-validations-centos-7-molecule-stonith-exists
     gate:
       queue: integrated
       jobs:
@@ -42,6 +43,7 @@
       - tripleo-validations-centos-7-molecule-undercloud-heat-purge-deleted
       - tripleo-validations-centos-7-molecule-undercloud-tokenflush
       - tripleo-validations-centos-7-molecule-rabbitmq-limits
+      - tripleo-validations-centos-7-molecule-stonith-exists
     name: tripleo-validations-molecule-jobs
 - job:
     files:
@@ -170,3 +172,10 @@
     parent: tripleo-validations-centos-7-base
     vars:
       tripleo_validations_role_name: rabbitmq-limits
+- job:
+    files:
+    - ^roles/stonith-exists/.*
+    name: tripleo-validations-centos-7-molecule-stonith-exists
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: stonith-exists
