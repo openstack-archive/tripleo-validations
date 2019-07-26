@@ -18,6 +18,7 @@
       - tripleo-validations-centos-7-molecule-nova-status
       - tripleo-validations-centos-7-molecule-image-serve
       - tripleo-validations-centos-7-molecule-check-network-gateway
+      - tripleo-validations-centos-7-molecule-undercloud-heat-purge-deleted
     gate:
       queue: integrated
       jobs:
@@ -36,6 +37,7 @@
       - tripleo-validations-centos-7-molecule-nova-status
       - tripleo-validations-centos-7-molecule-image-serve
       - tripleo-validations-centos-7-molecule-check-network-gateway
+      - tripleo-validations-centos-7-molecule-undercloud-heat-purge-deleted
     name: tripleo-validations-molecule-jobs
 - job:
     files:
@@ -143,3 +145,10 @@
     parent: tripleo-validations-centos-7-base
     vars:
       tripleo_validations_role_name: check-network-gateway
+- job:
+    files:
+    - ^roles/undercloud-heat-purge-deleted/.*
+    name: tripleo-validations-centos-7-molecule-undercloud-heat-purge-deleted
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: undercloud-heat-purge-deleted
