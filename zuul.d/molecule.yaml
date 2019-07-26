@@ -20,6 +20,7 @@
       - tripleo-validations-centos-7-molecule-check-network-gateway
       - tripleo-validations-centos-7-molecule-undercloud-heat-purge-deleted
       - tripleo-validations-centos-7-molecule-undercloud-tokenflush
+      - tripleo-validations-centos-7-molecule-rabbitmq-limits
     gate:
       queue: integrated
       jobs:
@@ -40,6 +41,7 @@
       - tripleo-validations-centos-7-molecule-check-network-gateway
       - tripleo-validations-centos-7-molecule-undercloud-heat-purge-deleted
       - tripleo-validations-centos-7-molecule-undercloud-tokenflush
+      - tripleo-validations-centos-7-molecule-rabbitmq-limits
     name: tripleo-validations-molecule-jobs
 - job:
     files:
@@ -161,3 +163,10 @@
     parent: tripleo-validations-centos-7-base
     vars:
       tripleo_validations_role_name: undercloud-tokenflush
+- job:
+    files:
+    - ^roles/rabbitmq-limits/.*
+    name: tripleo-validations-centos-7-molecule-rabbitmq-limits
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: rabbitmq-limits

@@ -1,14 +1,15 @@
 ---
 - name: Set container_cli fact from the inventory
   set_fact:
-    container_cli: "{{ hostvars[inventory_hostname].container_cli }}"
+    container_cli: "{{ hostvars[inventory_hostname].container_cli |default('podman', true) }}"
+  when: container_cli is not defined
 
 - name: Get file_descriptors total_limit
   become: true
   register: actual_fd_limit
   shell: >-
-    "{{ container_cli|default('podman', true) }}"
-    exec $("{{ container_cli|default('podman', true) }}" ps -q --filter "name=rabbitmq" | head -1)
+    "{{ container_cli }}"
+    exec $("{{ container_cli }}" ps -q --filter "name=rabbitmq" | head -1)
     rabbitmqctl eval 'proplists:get_value(max_fds, erlang:system_info(check_io)).'
   changed_when: false
 
