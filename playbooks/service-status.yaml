@@ -1,0 +1,16 @@
+---
+- hosts: undercloud, overcloud
+  vars:
+    metadata:
+      name: Ensure services state
+      description: >
+        Detect services status on the target host and fails if we find
+        a failed service.
+      groups:
+        - prep
+        - pre-deployment
+        - pre-upgrade
+        - post-deployment
+        - post-upgrade
+  roles:
+    - service-status
