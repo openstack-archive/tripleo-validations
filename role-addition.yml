@@ -34,6 +34,51 @@
       args:
         creates: "roles/{{ role_name }}"
 
+    - name: Read zuul molecule file
+      slurp:
+        src: zuul.d/molecule.yaml
+      register: molecule_yaml
+
+    - name: Create molecule entry
+      copy:
+        content: |-
+          ---
+          {% set items = molecule_yaml['content'] | b64decode | from_yaml %}
+          {% set job_index = [] %}
+          {% set new_job_name = "tripleo-validations-centos-7-molecule-" ~ role_name %}
+          {% for item in items %}
+          {%   if 'project-template' in item %}
+          {%     if item['project-template']['name'] == "tripleo-validations-molecule-jobs" %}
+          {%       if not (new_job_name in item['project-template']['check']['jobs']) %}
+          {%         set _ = item['project-template']['check']['jobs'].append(new_job_name) %}
+          {%       endif %}
+          {%       if not (new_job_name in item['project-template']['gate']['jobs']) %}
+          {%         set _ = item['project-template']['gate']['jobs'].append(new_job_name) %}
+          {%       endif %}
+          {%     endif %}
+          {%   else %}
+          {%     if item['job']['name'] == new_job_name %}
+          {%       set _ = job_index.append(new_job_name) %}
+          {%     endif %}
+          {%   endif %}
+          {% endfor %}
+          {% if (job_index | length) < 1 %}
+          {%   set new_job = {
+                  "name": new_job_name,
+                  "parent": "tripleo-validations-centos-7-base",
+                  "files": [
+                    "^roles/" ~ role_name ~ "/.*"
+                  ],
+                  "vars": {
+                    "tripleo_validations_role_name": role_name
+                  }
+               }
+          %}
+          {%   set _ = items.append({"job": new_job}) %}
+          {% endif %}
+          {{ items | to_nice_yaml(indent=2, width=1337) }}
+        dest: zuul.d/molecule.yaml
+
     - name: Create role documentation
       copy:
         content: |

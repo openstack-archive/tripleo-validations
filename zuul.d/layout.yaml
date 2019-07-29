@@ -4,12 +4,13 @@
     - openstack-python-jobs
     - openstack-python35-jobs
     - openstack-python36-jobs
+    - tripleo-validations-molecule-jobs
     - check-requirements
-    - publish-openstack-docs-pti
     - release-notes-jobs-python3
     check:
       jobs:
       - openstack-tox-linters
+      - tripleo-validations-docs
       - openstack-tox-lower-constraints
       - tripleo-ci-centos-7-scenario004-standalone:
           files:
@@ -17,7 +18,11 @@
     gate:
       jobs:
       - openstack-tox-linters
+      - tripleo-validations-docs
       - openstack-tox-lower-constraints
       - tripleo-ci-centos-7-scenario004-standalone:
           files:
             - ^roles/ceph.*$
+    post:
+      jobs:
+      - publish-openstack-tox-docs

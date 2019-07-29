@@ -175,8 +175,9 @@ class CallbackModule(CallbackBase):
 
     def v2_playbook_on_stats(self, stats):
         def failed(host):
-            return (stats.summarize(host).get('failures', 0) > 0 or
-                    stats.summarize(host).get('unreachable', 0) > 0)
+            _failures = stats.summarize(host).get('failures', 0) > 0
+            _unreachable = stats.summarize(host).get('unreachable', 0) > 0
+            return (_failures or _unreachable)
 
         hosts = sorted(stats.processed.keys())
         failed_hosts = [host for host in hosts if failed(host)]

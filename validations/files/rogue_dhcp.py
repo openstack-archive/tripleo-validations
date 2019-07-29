@@ -109,9 +109,8 @@ class DHCPDiscover(object):
 
     def udp_checksum(self):
         pseudo_header = self.ip_pseudo_header()
-        generated_checksum = self._checksum(pseudo_header +
-                                            self.udp_header(checksum=0) +
-                                            self.dhcp_discover_payload())
+        generated_checksum = self._checksum(pseudo_header + self.udp_header(
+            checksum=0) + self.dhcp_discover_payload())
         return socket.htons(generated_checksum)
 
     def ip_pseudo_header(self):
