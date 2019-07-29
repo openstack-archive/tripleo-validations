@@ -4,6 +4,7 @@
     systemctl list-units --failed --plain --no-legend --no-pager |
     awk '{print $1}'
   register: systemd_status
+  changed_when: False
 
 - name: Fails if we find failed units
   assert:

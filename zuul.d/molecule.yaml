@@ -1,0 +1,109 @@
+---
+- project-template:
+    check:
+      queue: integrated
+      jobs:
+      - tripleo-validations-centos-7-molecule-controller-token
+      - tripleo-validations-centos-7-molecule-controller-ulimits
+      - tripleo-validations-centos-7-molecule-ctlplane-ip-range
+      - tripleo-validations-centos-7-molecule-dns
+      - tripleo-validations-centos-7-molecule-haproxy
+      - tripleo-validations-centos-7-molecule-repos
+      - tripleo-validations-centos-7-molecule-undercloud-cpu
+      - tripleo-validations-centos-7-molecule-undercloud-ram
+      - tripleo-validations-centos-7-molecule-undercloud-debug
+      - tripleo-validations-centos-7-molecule-undercloud-disk-space
+      - tripleo-validations-centos-7-molecule-xfs-check-ftype
+    gate:
+      queue: integrated
+      jobs:
+      - tripleo-validations-centos-7-molecule-controller-token
+      - tripleo-validations-centos-7-molecule-controller-ulimits
+      - tripleo-validations-centos-7-molecule-ctlplane-ip-range
+      - tripleo-validations-centos-7-molecule-dns
+      - tripleo-validations-centos-7-molecule-haproxy
+      - tripleo-validations-centos-7-molecule-repos
+      - tripleo-validations-centos-7-molecule-undercloud-cpu
+      - tripleo-validations-centos-7-molecule-undercloud-ram
+      - tripleo-validations-centos-7-molecule-undercloud-debug
+      - tripleo-validations-centos-7-molecule-undercloud-disk-space
+      - tripleo-validations-centos-7-molecule-xfs-check-ftype
+    name: tripleo-validations-molecule-jobs
+- job:
+    files:
+    - ^roles/controller-token/.*
+    name: tripleo-validations-centos-7-molecule-controller-token
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: controller-token
+- job:
+    files:
+    - ^roles/controller-ulimits/.*
+    name: tripleo-validations-centos-7-molecule-controller-ulimits
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: controller-ulimits
+- job:
+    files:
+    - ^roles/ctlplane-ip-range/.*
+    name: tripleo-validations-centos-7-molecule-ctlplane-ip-range
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: ctlplane-ip-range
+- job:
+    files:
+    - ^roles/dns/.*
+    name: tripleo-validations-centos-7-molecule-dns
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: dns
+- job:
+    files:
+    - ^roles/haproxy/.*
+    name: tripleo-validations-centos-7-molecule-haproxy
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: haproxy
+- job:
+    files:
+    - ^roles/repos/.*
+    name: tripleo-validations-centos-7-molecule-repos
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: repos
+- job:
+    files:
+    - ^roles/undercloud-cpu/.*
+    name: tripleo-validations-centos-7-molecule-undercloud-cpu
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: undercloud-cpu
+- job:
+    files:
+    - ^roles/undercloud-ram/.*
+    name: tripleo-validations-centos-7-molecule-undercloud-ram
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: undercloud-ram
+- job:
+    files:
+    - ^roles/undercloud-debug/.*
+    name: tripleo-validations-centos-7-molecule-undercloud-debug
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: undercloud-debug
+- job:
+    files:
+    - ^roles/undercloud-disk-space/.*
+    name: tripleo-validations-centos-7-molecule-undercloud-disk-space
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: undercloud-disk-space
+- job:
+    files:
+    - ^roles/xfs-check-ftype/.*
+    name: tripleo-validations-centos-7-molecule-xfs-check-ftype
+    parent: tripleo-validations-centos-7-base
+    voting: false
+    vars:
+      tripleo_validations_role_name: xfs-check-ftype

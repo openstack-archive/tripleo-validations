@@ -524,3 +524,37 @@ will perform the basic tasks noted above.
 
     $ cd tripleo-validations/
     $ ansible-playbook -i localhost, role-addition.yml -e role_name=${NEWROLENAME}
+
+When the role is ready for CI, add a **job** entry into the
+`zuul.d/molecule.yaml`.
+
+.. code-block:: yaml
+
+    - job:
+        files:
+        - ^roles/${NEWROLENAME}/.*
+        name: tripleo-validations-centos-7-molecule-${NEWROLENAME}
+        parent: tripleo-validations-centos-7-base
+        vars:
+          tripleo_validations_role_name: ${NEWROLENAME}
+
+
+Make sure to add the **job** name into the check and gate section at the top
+of the `molecule.yaml` file.
+
+.. code-block:: yaml
+
+    - project:
+        check:
+          jobs:
+            - tripleo-validations-centos-7-molecule-${NEWROLENAME}
+        gate:
+          jobs:
+            - tripleo-validations-centos-7-molecule-${NEWROLENAME}
+
+
+Finally add a role documentation file at
+`doc/source/roles/role-${NEWROLENAME}.rst`. This file will need to contain
+a title, a literal include of the defaults yaml and a literal include of
+the molecule playbook, or playbooks, used to test the role, which is noted
+as an "example" playbook.
