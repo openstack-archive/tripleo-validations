@@ -3,6 +3,7 @@
 - name: Verify that join.conf exists (containzerized)
   command: "{{ command_prefix }} exec novajoin_server test -e /etc/novajoin/join.conf"
   register: containerized_join_conf_st
+  changed_when: False
   become: true
 
 - name: Fail if join.conf is not present (containerized)
@@ -87,9 +88,10 @@
         - containerized_novajoin_principal_usable_result is succeeded
 
     - name: Clean up temporary kerberos cache on novajoin_server container
-      shell: "{{ command_prefix }} exec novajoin_server kdestroy -c {{ item }}"
+      command: "{{ command_prefix }} exec novajoin_server kdestroy -c {{ item }}"
       with_items: "{{ temp_krb_caches }}"
       ignore_errors: false
+      changed_when: False
       become: true
       when:
         - containerized_novajoin_krb5_keytab_stat.rc == 0
@@ -199,4 +201,3 @@
         report_status: "{{ service_running_status }}"
         report_reason: "{{ service_running_reason }}"
         report_recommendations: "{{ service_running_recommendations }}"
-

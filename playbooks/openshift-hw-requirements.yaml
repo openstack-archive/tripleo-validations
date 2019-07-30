@@ -7,15 +7,10 @@
         Check if there are enough resources for an OpenShift deployment on top
         of Openstack
         deployment:
-        - Is there a flavor that meets the minimum requirements for a test
-          environment?
-          (4GB RAM, 40GB disk)
-        - Is there a flavor that meets the minimum requirements for a
-          production environment?
-          (16GB RAM, 40GB disk, 4 VCPUs)
+        - Is there a flavor that meets the minimum requirements for a test environment? (4GB RAM, 40GB disk)
+        - Is there a flavor that meets the minimum requirements for a production environment? (16GB RAM, 40GB disk, 4 VCPUs)
         - Are images named centos or rhel available?
-        - Are there sufficient compute resources available for a default setup?
-          (1 Master node, 1 Infra node, 2 App nodes)
+        - Are there sufficient compute resources available for a default setup? (1 Master node, 1 Infra node, 2 App nodes)
       groups:
       - openshift-on-openstack
     min_total_ram_testing: 16384    # 4 per node
@@ -33,4 +28,4 @@
   tasks:
     - include_role:
         name: openshift-on-openstack
-        tasks_from: openshift-hw-requirements
+        tasks_from: openshift-hw-requirements.yaml

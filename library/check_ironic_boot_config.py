@@ -84,6 +84,7 @@ def _all_possible_names(arch, platform, image_name_base):
         yield _name_helper(image_name_base, arch=arch)
     yield _name_helper(image_name_base)
 
+
 MISMATCH = (
     "\nNode {} has an incorrectly configured driver_info/deploy_{}. Expected "
     "{} but got {}."
@@ -181,6 +182,7 @@ def main():
         module.fail_json(msg="".join(errors))
     else:
         module.exit_json()
+
 
 if __name__ == '__main__':
     main()

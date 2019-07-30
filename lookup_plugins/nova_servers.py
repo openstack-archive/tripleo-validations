@@ -15,6 +15,12 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from ansible.plugins.lookup import LookupBase
+from novaclient.exceptions import NotFound
+
+from tripleo_validations import utils
+
+
 DOCUMENTATION = """
     lookup: nova_servers
     description: Retrieve server information from Nova
@@ -50,11 +56,6 @@ RETURN = """
 _raw:
     description: A Python list with results from the API call.
 """
-
-from ansible.plugins.lookup import LookupBase
-from novaclient.exceptions import NotFound
-
-from tripleo_validations import utils
 
 
 class LookupModule(LookupBase):

@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to tripleo-validations's documentation!
-========================================================
+===============================================
 
 Contents:
 
@@ -13,7 +13,6 @@ Contents:
 
    readme
    installation
-   usage
    contributing
    roles
    modules
@@ -38,4 +37,3 @@ Indices and tables
 
 * :ref:`genindex`
 * :ref:`search`
-
