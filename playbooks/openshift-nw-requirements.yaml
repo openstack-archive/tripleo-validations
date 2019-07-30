@@ -11,4 +11,4 @@
   tasks:
     - include_role:
         name: openshift-on-openstack
-        tasks_from: openshift-nw-requirements
+        tasks_from: openshift-nw-requirements.yaml

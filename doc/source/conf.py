@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,7 +27,7 @@ sys.path.insert(0, os.path.join(os.path.abspath('.'), '_exts'))
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
     'sphinx.ext.autodoc',
-    #'sphinx.ext.intersphinx',
+    # 'sphinx.ext.intersphinx',
     'generate_validations_doc',
     'ansible-autodoc',
     'openstackdocstheme'

@@ -17,6 +17,10 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+
+from ansible.module_utils.basic import AnsibleModule
+
+import itertools
 import six
 six.add_metaclass(type)
 
@@ -113,10 +117,6 @@ docker:
         returned: always
         type: list
 """
-
-import itertools
-
-from ansible.module_utils.basic import AnsibleModule
 
 DOCKER_SUBCOMMAND_LOOKUP = [
     ('images', 'images', '-q'),

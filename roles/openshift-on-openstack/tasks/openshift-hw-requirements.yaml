@@ -132,14 +132,16 @@
     warning_msg: |
       {{ lookup('template', './templates/openshift-hw-requirements-warnings.j2') }}
 
-- name: Fail if minimum requirements aren't met
-  fail: msg="{{ warning_msg }}"
+- name: Fail if minimum requirements are not met
+  fail:
+    msg: "{{ warning_msg }}"
   when: not matching_flavors_testing
         or not matching_image
         or not resource_reqs_testing
 
-- name: Warn if production requirements aren't met
-  warn: msg="{{ warning_msg }}"
+- name: Warn if production requirements are not met
+  warn:
+    msg: "{{ warning_msg }}"
   when: not matching_flavors_prod
         or not matching_image
         or not resource_reqs_prod

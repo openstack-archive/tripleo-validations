@@ -48,6 +48,7 @@ def parse_args():
 
     return p.parse_args()
 
+
 args = parse_args()
 path_args = args.path_args
 quiet = args.quiet
