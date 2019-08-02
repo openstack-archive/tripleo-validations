@@ -14,6 +14,10 @@ skip_list:
     # Tasks that run when changed should likely be handlers
     # this requires refactoring, skip for now.
     - '503'
+    # Remote package tasks should have a retry
+    # TODO(gchamoul): This rule has been removed in newer ansible-lint
+    # release, should be removed once we will use newer version.
+    - '405'
     # meta/main.yml should contain relevant info
     - '701'
     # Tags must contain lowercase letters and digits only
