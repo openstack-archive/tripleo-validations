@@ -1,7 +1,8 @@
 ---
 - name: Set container_cli fact from the inventory
   set_fact:
-    container_cli: "{{ hostvars[inventory_hostname].container_cli }}"
+    container_cli: "{{ hostvars[inventory_hostname].container_cli | default('podman', true) }}"
+  when: container_cli is not defined
 
 - name: Check nova upgrade status
   become: true
