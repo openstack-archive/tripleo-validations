@@ -3,11 +3,11 @@
   gather_facts: yes
   vars:
     metadata:
-      name: Check if latest minor version is installed
+      name: Check if latest version of packages is installed
       description: >
-        Makes sure python-tripleoclient is at its latest minor version
+        Makes sure python-tripleoclient is at its latest version
         before starting an upgrade.
       groups:
         - pre-upgrade
   roles:
-    - check-latest-minor-version
+    - check-latest-packages-version
