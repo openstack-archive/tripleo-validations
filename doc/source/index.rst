@@ -15,6 +15,8 @@ Contents:
    installation
    usage
    contributing
+   roles
+   modules
 
 Existing validations:
 
