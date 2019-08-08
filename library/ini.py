@@ -79,6 +79,7 @@ def get_result(path, section, key):
         ret = ReturnValue.KEY_NOT_FOUND
         return (ret, msg, value)
 
+
 DOCUMENTATION = '''
 ---
 module: ini

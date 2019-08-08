@@ -69,7 +69,7 @@ introspection.
 Pre Deployment
 ~~~~~~~~~~~~~~
 
-Validation that are run right before deploying the overcloud.
+Validations that are run right before deploying the overcloud.
 
 .. include:: validations-pre-deployment.rst
 
@@ -93,6 +93,20 @@ Pre Upgrade
 Validations that are run right before a major upgrade of the undercloud or overcloud.
 
 .. include:: validations-pre-upgrade.rst
+
+Post Upgrade
+~~~~~~~~~~~~
+
+Validations that are run right after a major upgrade of the undercloud or overcloud.
+
+.. include:: validations-post-upgrade.rst
+
+OpenShift On OpenStack
+~~~~~~~~~~~~~~~~~~~~~~
+
+Validations that are run right after the undercloud is installed.
+
+.. include:: validations-openshift-on-openstack.rst
 
 
 Writing Validations

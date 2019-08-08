@@ -56,14 +56,14 @@ def generic_ini_style_conf_parser(file_path, section_regex, option_regex):
                 config[current_section] = {}
             match_option = re.match(option_regex, line)
             if match_option and current_section:
-                option = re.sub('\s+', ' ', match_option.group(1))
+                option = re.sub(r'\s+', ' ', match_option.group(1))
                 config[current_section][option] = match_option.group(2)
     return config
 
 
 def parse_haproxy_conf(file_path):
-    section_regex = '^(\w+)'
-    option_regex = '^(?:\s+)(\w+(?:\s+\w+)*?)\s+([\w/]*)$'
+    section_regex = r'^(\w+)'
+    option_regex = r'^(?:\s+)(\w+(?:\s+\w+)*?)\s+([\w/]*)$'
     return generic_ini_style_conf_parser(file_path, section_regex,
                                          option_regex)
 

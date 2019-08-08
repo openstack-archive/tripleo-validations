@@ -58,10 +58,14 @@ def get_validation_parameters(validation):
 
 
 def build_summary(group, validations):
-    entries = ["* :ref:`{}`: {}".format(group + '_' + validation['id'], validation['name'])
-               for validation in validations]
+    entries = [
+        "* :ref:`{}`: {}".format(group + '_' + validation['id'],
+                                 validation['name'])
+        for validation in validations
+    ]
     with open('doc/source/validations-{}.rst'.format(group), 'w') as f:
         f.write("\n".join(entries))
+        f.write("\n")
 
 
 def format_dict(my_dict):
@@ -83,13 +87,15 @@ def build_detail(group, validations):
 
 - **hosts**: {hosts}
 - **groups**: {groups}
-- **metadata**: {metadata}
-- **parameters**: {parameters}
+- **parameters**:{parameters}
 - **roles**: {roles}
+
+Role documentation
 
 .. toctree::
 
    roles/role-{roles}
+
 """
         .format(label=(group + '_' + validation['id']),
                 title=validation['id'],
