@@ -29,9 +29,15 @@
     - ceph_mon_enabled is succeeded
     - ceph_mon_container is succeeded
   block:
+  - name: Set ceph cluster name
+    become: true
+    shell: find /etc/ceph -name '*.conf' -prune -print -quit | xargs basename -s '.conf'
+    register: ceph_cluster_name
+    changed_when: False
+
   - name: Get ceph health
     become: true
-    shell: "{{ container_cli }} exec {{ ceph_mon_container.stdout }} ceph health | awk '{print $1}'"
+    shell: "{{ container_cli }} exec {{ ceph_mon_container.stdout }} ceph --cluster {{ ceph_cluster_name.stdout }} health | awk '{print $1}'"
     register: ceph_health
 
   - name: Check ceph health
@@ -59,7 +65,7 @@
 
   - name: Get OSD stat percentage
     become: true
-    shell: "{{ container_cli }} exec {{ ceph_mon_container.stdout }} ceph osd stat -f json | jq '{{ jq_osd_percentage_filter }}'"
+    shell: "{{ container_cli }} exec {{ ceph_mon_container.stdout }} ceph --cluster {{ ceph_cluster_name.stdout }} osd stat -f json | jq '{{ jq_osd_percentage_filter }}'"
     register: ceph_osd_in_percentage
 
   - name: Fail if there is an unacceptable percentage of in OSDs

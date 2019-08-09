@@ -9,6 +9,12 @@
     check:
       jobs:
         - openstack-tox-lower-constraints
+        - tripleo-ci-centos-7-scenario004-standalone:
+            files:
+              - ^roles/ceph.*$
     gate:
       jobs:
         - openstack-tox-lower-constraints
+        - tripleo-ci-centos-7-scenario004-standalone:
+            files:
+              - ^roles/ceph.*$
