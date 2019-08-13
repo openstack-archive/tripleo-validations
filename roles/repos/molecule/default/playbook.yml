@@ -1,0 +1,79 @@
+---
+# Copyright 2019 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+
+- name: Converge
+  hosts: all
+
+  tasks:
+    - name: test role without failure
+      include_role:
+        name: repos
+
+    - name: run with failure
+      block:
+        - name: inject faulty repository
+          yum_repository:
+            name: faulty
+            description: really faulty repository
+            baseurl: http://this.repository.do-not.exists/like-not-at-all
+            enabled: yes
+
+        - name: execute role
+          include_role:
+            name: repos
+
+      rescue:
+        - name: clean host error
+          meta: clear_host_errors
+
+        - name: Molecule output
+          debug:
+            msg: Successfully detected first broken repository
+
+    - name: run with another failure
+      block:
+        - name: remove faulty repository
+          yum_repository:
+            name: faulty
+            state: absent
+
+        - name: push another faulty repository with working DNS
+          yum_repository:
+            name: faulty-bis
+            description: faulty repository with working DNS
+            baseurl: http://download.fedoraproject.org/pub/fedora/blah
+            enabled: yes
+
+        - name: execute role
+          include_role:
+            name: repos
+
+      rescue:
+        - name: clean host error
+          meta: clear_host_errors
+
+        - name: Molecule output
+          debug:
+            msg: Successfully detected second faulty repository. Exiting!
+
+        - name: End play
+          meta: end_play
+
+    - name: Fail the test
+      fail:
+        msg: |
+          The repos validation failed detecting broken/non-working repository
