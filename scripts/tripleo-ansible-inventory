@@ -57,6 +57,8 @@ opts = [
     cfg.StrOpt('undercloud-connection', default=inv.UNDERCLOUD_CONNECTION_SSH,
                help=('Ansible connection to the undercloud, either "local" '
                      'or "ssh". Defaults to "local".')),
+    cfg.StrOpt('undercloud-key-file', default=None),
+    cfg.StrOpt('ssh-network', default='ctlplane'),
     cfg.StrOpt('ansible_python_interpreter', default=None),
     cfg.BoolOpt('debug', help='Print tracebacks for exceptions')
 ]
@@ -137,7 +139,9 @@ def main():
         username=configs.username,
         ansible_ssh_user=configs.ansible_ssh_user,
         plan_name=configs.stack or configs.plan,
-        ansible_python_interpreter=configs.ansible_python_interpreter)
+        ansible_python_interpreter=configs.ansible_python_interpreter,
+        undercloud_key_file=configs.undercloud_key_file,
+        host_network=configs.ssh_network)
 
     if configs.list:
         try:
