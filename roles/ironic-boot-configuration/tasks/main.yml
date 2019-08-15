@@ -1,7 +1,4 @@
 ---
 - name: Check ironic boot config
   check_ironic_boot_config:
-    images: "{{ lookup('glance_images', wantlist=True) }}"
     nodes: "{{ lookup('ironic_nodes', wantlist=True) }}"
-    deploy_kernel_name_base: "{{ deploy_kernel_name_base }}"
-    deploy_ramdisk_name_base: "{{ deploy_ramdisk_name_base }}"

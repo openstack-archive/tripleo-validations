@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    The behavior of the ``ironic-boot-configuration`` validations has changed
+    substantially in acknowledgment that deploy images may or may not be
+    Glance images. The new validatoin logic is more generalized than before,
+    in that now it checks that the deploy images associated to the nodes of a
+    certain arch/platform do not exceed a certain standard of diversity.
