@@ -1,20 +1,27 @@
 - project:
     templates:
-      - tripleo-multinode-container-minimal
-      - openstack-python-jobs
-      - openstack-python3-train-jobs
-      - check-requirements
-      - publish-openstack-docs-pti
-      - release-notes-jobs-python3
+    - tripleo-multinode-container-minimal
+    - openstack-python-jobs
+    - openstack-python3-train-jobs
+    - tripleo-validations-molecule-jobs
+    - check-requirements
+    - release-notes-jobs-python3
     check:
       jobs:
-        - openstack-tox-lower-constraints
-        - tripleo-ci-centos-7-scenario004-standalone:
-            files:
-              - ^roles/ceph.*$
+      - openstack-tox-linters
+      - tripleo-validations-docs
+      - openstack-tox-lower-constraints
+      - tripleo-ci-centos-7-scenario004-standalone:
+          files:
+            - ^roles/ceph.*$
     gate:
       jobs:
-        - openstack-tox-lower-constraints
-        - tripleo-ci-centos-7-scenario004-standalone:
-            files:
-              - ^roles/ceph.*$
+      - openstack-tox-linters
+      - tripleo-validations-docs
+      - openstack-tox-lower-constraints
+      - tripleo-ci-centos-7-scenario004-standalone:
+          files:
+            - ^roles/ceph.*$
+    post:
+      jobs:
+      - publish-openstack-tox-docs

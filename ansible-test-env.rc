@@ -1,0 +1,22 @@
+export TRIPLEO_VALIDATIONS_WORKPATH="$(dirname $(readlink -f ${BASH_SOURCE[0]}))"
+export ANSIBLE_STDOUT_CALLBACK=debug
+export ANSIBLE_CALLBACK_PLUGINS="${TRIPLEO_VALIDATIONS_WORKPATH}/callback_plugins"
+export ANSIBLE_LIBRARY="${TRIPLEO_VALIDATIONS_WORKPATH}/library"
+export ANSIBLE_LOOKUP_PLUGINS="${TRIPLEO_VALIDATIONS_WORKPATH}/lookup_plugins"
+export ANSIBLE_ROLES_PATH="${TRIPLEO_VALIDATIONS_WORKPATH}/roles"
+export ANSIBLE_INVENTORY="${TRIPLEO_VALIDATIONS_WORKPATH}/tests/hosts.ini"
+export ANSIBLE_RETRY_FILES_ENABLED="0"
+export ANSIBLE_LOAD_CALLBACK_PLUGINS="1"
+export ANSIBLE_HOST_KEY_CHECKING=False
+
+function unset-ansible-test-env {
+  for i in $(env | grep ANSIBLE_ | awk -F'=' '{print $1}'); do
+    unset ${i}
+  done
+  unset TRIPLEO_VALIDATIONS_WORKPATH
+  echo -e "Ansible test environment deactivated.\n"
+  unset -f unset-ansible-test-env
+}
+
+echo -e "Ansible test environment is now active"
+echo -e "Run 'unset-ansible-test-env' to deactivate.\n"
