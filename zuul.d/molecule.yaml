@@ -15,6 +15,7 @@
       - tripleo-validations-centos-7-molecule-undercloud-disk-space
       - tripleo-validations-centos-7-molecule-xfs-check-ftype
       - tripleo-validations-centos-7-molecule-no-op-firewall-nova-driver
+      - tripleo-validations-centos-7-molecule-nova-status
     gate:
       queue: integrated
       jobs:
@@ -30,6 +31,7 @@
       - tripleo-validations-centos-7-molecule-undercloud-disk-space
       - tripleo-validations-centos-7-molecule-xfs-check-ftype
       - tripleo-validations-centos-7-molecule-no-op-firewall-nova-driver
+      - tripleo-validations-centos-7-molecule-nova-status
     name: tripleo-validations-molecule-jobs
 - job:
     files:
@@ -116,3 +118,10 @@
     parent: tripleo-validations-centos-7-base
     vars:
       tripleo_validations_role_name: no-op-firewall-nova-driver
+- job:
+    files:
+    - ^roles/nova-status/.*
+    name: tripleo-validations-centos-7-molecule-nova-status
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: nova-status
