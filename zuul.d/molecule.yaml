@@ -16,6 +16,7 @@
       - tripleo-validations-centos-7-molecule-xfs-check-ftype
       - tripleo-validations-centos-7-molecule-no-op-firewall-nova-driver
       - tripleo-validations-centos-7-molecule-nova-status
+      - tripleo-validations-centos-7-molecule-image-serve
     gate:
       queue: integrated
       jobs:
@@ -32,6 +33,7 @@
       - tripleo-validations-centos-7-molecule-xfs-check-ftype
       - tripleo-validations-centos-7-molecule-no-op-firewall-nova-driver
       - tripleo-validations-centos-7-molecule-nova-status
+      - tripleo-validations-centos-7-molecule-image-serve
     name: tripleo-validations-molecule-jobs
 - job:
     files:
@@ -125,3 +127,10 @@
     parent: tripleo-validations-centos-7-base
     vars:
       tripleo_validations_role_name: nova-status
+- job:
+    files:
+    - ^roles/image-serve/.*
+    name: tripleo-validations-centos-7-molecule-image-serve
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: image-serve
