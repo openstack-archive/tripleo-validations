@@ -141,6 +141,7 @@ def main():
         ansible_ssh_user=configs.ansible_ssh_user,
         plan_name=configs.stack or configs.plan,
         ansible_python_interpreter=configs.ansible_python_interpreter,
+        undercloud_connection=configs.undercloud_connection,
         undercloud_key_file=configs.undercloud_key_file,
         host_network=configs.ssh_network,
         serial=configs.serial)
