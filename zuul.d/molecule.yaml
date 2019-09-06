@@ -22,6 +22,7 @@
       - tripleo-validations-centos-7-molecule-undercloud-tokenflush
       - tripleo-validations-centos-7-molecule-rabbitmq-limits
       - tripleo-validations-centos-7-molecule-stonith-exists
+      - tripleo-validations-centos-7-molecule-check-latest-packages-version
     gate:
       queue: integrated
       jobs:
@@ -44,6 +45,7 @@
       - tripleo-validations-centos-7-molecule-undercloud-tokenflush
       - tripleo-validations-centos-7-molecule-rabbitmq-limits
       - tripleo-validations-centos-7-molecule-stonith-exists
+      - tripleo-validations-centos-7-molecule-check-latest-packages-version
     name: tripleo-validations-molecule-jobs
 - job:
     files:
@@ -179,3 +181,10 @@
     parent: tripleo-validations-centos-7-base
     vars:
       tripleo_validations_role_name: stonith-exists
+- job:
+    files:
+    - ^roles/check-latest-packages-version/.*
+    name: tripleo-validations-centos-7-molecule-check-latest-packages-version
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: check-latest-packages-version
