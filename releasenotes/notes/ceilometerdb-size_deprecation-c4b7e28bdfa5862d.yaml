@@ -1,0 +1,5 @@
+---
+deprecations:
+  - |
+    Since Panko has been deprecated during the Train cycle, the
+    ceilometerdb-size validation is now considered as deprecated as well.
