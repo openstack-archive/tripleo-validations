@@ -46,7 +46,7 @@ opts = [
     cfg.StrOpt('project-name', default=os.environ.get(
         'OS_PROJECT_NAME', os.environ.get('OS_TENANT_NAME'))),
     cfg.StrOpt('cacert', default=os.environ.get('OS_CACERT')),
-    cfg.ListOpt('plan', default=os.environ.get('TRIPLEO_PLAN_NAME'),
+    cfg.ListOpt('plan', default=[os.environ.get('TRIPLEO_PLAN_NAME')],
                 help=('stack name(s) to use for generating the '
                       'inventory data. If a comma delimited list '
                       'of stacks is passed, the inventory will '
