@@ -1,4 +1,10 @@
 ---
+- name: Deprecation WARNING
+  warn:
+    msg: >-
+      Panko has been deprecated since the Train Release.
+      The 'ceilometerdb-size' validation is now considered as deprecated too.
+
 - name: Get the path of tripleo undercloud config file
   become: true
   hiera:

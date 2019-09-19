@@ -2,7 +2,7 @@
 - hosts: undercloud
   vars:
     metadata:
-      name: Events Database Size Check
+      name: Events Database Size Check (DEPRECATED)
       description: >
         The undercloud's events database can grow to a substantial
         size if event_time_to_live is set to a negative value (infinite limit).
@@ -10,6 +10,8 @@
         This validation checks event_time_to_live and fails if the variable is
         set to a negative value or if it has no custom setting
         (their value is -1 by default).
+
+        WARNING! This validation is considered as deprecated since Train release
       groups:
         - pre-deployment
     event_ttl_check: "event_time_to_live"
