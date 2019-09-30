@@ -46,7 +46,9 @@ opts = [
     cfg.StrOpt('project-name', default=os.environ.get(
         'OS_PROJECT_NAME', os.environ.get('OS_TENANT_NAME'))),
     cfg.StrOpt('cacert', default=os.environ.get('OS_CACERT')),
-    cfg.ListOpt('plan', default=[os.environ.get('TRIPLEO_PLAN_NAME')],
+    cfg.ListOpt('plan',
+                default=([os.environ.get('TRIPLEO_PLAN_NAME')]
+                         if os.environ.get('TRIPLEO_PLAN_NAME') else None),
                 help=('stack name(s) to use for generating the '
                       'inventory data. If a comma delimited list '
                       'of stacks is passed, the inventory will '
@@ -84,7 +86,7 @@ def _parse_config():
     if '/v2.0' in configs.auth_url:
         configs.auth_url = configs.auth_url.replace('/v2.0', '/v3')
     if not configs.plan:
-        configs.plan = 'overcloud'
+        configs.plan = ['overcloud']
     return configs
 
 
