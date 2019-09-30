@@ -79,6 +79,24 @@
           {{ items | to_nice_yaml(indent=2, width=1337) }}
         dest: zuul.d/molecule.yaml
 
+    - name: Create the playbook
+      copy:
+        content: |
+          ---
+          - hosts: undercloud
+            vars:
+              metadata:
+                name: Validation's name
+                description: >-
+                  Write a description of your validations
+                groups:
+                  - group1
+                  - group2
+              {{ role_name | replace('-', '_') }}_debug: false
+            roles:
+              - {{ role_name }}
+        dest: "playbooks/{{ role_name }}.yaml"
+
     - name: Create role documentation
       copy:
         content: |
