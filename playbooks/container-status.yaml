@@ -1,0 +1,13 @@
+---
+- hosts: undercloud, overcloud
+  vars:
+    metadata:
+      name: Ensure container status
+      description: >
+        Detect failed containers and raise an error.
+      groups:
+        - pre-upgrade
+        - post-deployment
+        - post-upgrade
+  roles:
+    - container-status
