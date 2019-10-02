@@ -1,0 +1,8 @@
+---
+# The default values for the two following variables are set up to wait up to
+# 300s for the first healthcheck to run.
+retries_number: 10
+delay_number: 30
+# Please use inflight_healtcheck_services when using this role through the
+# inflight validations.
+inflight_healthcheck_services: []

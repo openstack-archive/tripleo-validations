@@ -1,0 +1,14 @@
+---
+- hosts: undercloud, overcloud
+  vars:
+    metadata:
+      name: Healthcheck systemd services Check
+      description: >
+        Check for failed healthcheck systemd services.
+      groups:
+        - post-deployment
+    retries_number: 1
+    delay_number: 1
+    inflight_healthcheck_services: []
+  roles:
+    - healthcheck-service-status
