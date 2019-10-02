@@ -7,7 +7,7 @@
       description: >
         Make sure that the undercloud has enough CPU cores.
 
-        https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux_OpenStack_Platform/7/html/Director_Installation_and_Usage/sect-Undercloud_Requirements.html
+        https://access.redhat.com/documentation/en-us/red_hat_openstack_platform/15/html/director_installation_and_usage/planning-your-undercloud#determining-environment-scale
       groups:
         - prep
         - pre-introspection
