@@ -13,7 +13,7 @@
           files:
           - ^doc/.*
           - ^README.rst
-            - openstack-tox-lower-constraints
+      - openstack-tox-lower-constraints
       - tripleo-ci-centos-7-scenario004-standalone:
           files:
             - ^roles/ceph.*$
