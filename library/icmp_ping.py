@@ -14,7 +14,9 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+
 from ansible.module_utils.basic import AnsibleModule
+from yaml import safe_load as yaml_safe_load
 
 DOCUMENTATION = '''
 ---
@@ -44,9 +46,7 @@ EXAMPLES = '''
 
 def main():
     module = AnsibleModule(
-        argument_spec=dict(
-            host=dict(required=True, type='str'),
-        )
+        argument_spec=yaml_safe_load(DOCUMENTATION)['options']
     )
 
     host = module.params.pop('host')

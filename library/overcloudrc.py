@@ -14,10 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from ansible.module_utils.basic import AnsibleModule
-
 import os.path
 import subprocess
+
+from ansible.module_utils.basic import AnsibleModule
+from yaml import safe_load as yaml_safe_load
 
 DOCUMENTATION = '''
 ---
@@ -38,14 +39,15 @@ EXAMPLES = '''
 - hosts: webservers
   tasks:
   - name: Source overcloudrc
-    overcloudrc: path=/home/stack/overcloudrc
+    overcloudrc:
+      path: /home/stack/overcloudrc
 '''
 
 
 def main():
-    module = AnsibleModule(argument_spec=dict(
-        path=dict(required=True, type='str'),
-    ))
+    module = AnsibleModule(
+        argument_spec=yaml_safe_load(DOCUMENTATION)['options']
+    )
 
     overcloudrc_path = os.path.expanduser(module.params.get('path'))
 

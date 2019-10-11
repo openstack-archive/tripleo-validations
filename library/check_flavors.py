@@ -15,6 +15,8 @@
 # under the License.
 
 from ansible.module_utils.basic import AnsibleModule  # noqa
+from yaml import safe_load as yaml_safe_load
+
 import re
 
 DOCUMENTATION = '''
@@ -156,10 +158,9 @@ def validate_roles_and_flavors(roles_info, flavors):
 
 
 def main():
-    module = AnsibleModule(argument_spec=dict(
-        roles_info=dict(required=True, type='list'),
-        flavors=dict(required=True, type='dict')
-    ))
+    module = AnsibleModule(
+        argument_spec=yaml_safe_load(DOCUMENTATION)['options']
+    )
 
     roles_info = module.params.get('roles_info')
     flavors = module.params.get('flavors')

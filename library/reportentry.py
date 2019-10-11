@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 from ansible.module_utils.basic import AnsibleModule
+from yaml import safe_load as yaml_safe_load
 
 DOCUMENTATION = '''
 ---
@@ -26,8 +26,11 @@ options:
         required: true
         description:
           - The report status. Should be 'OK', 'ERROR' or 'SKIPPED'.
+        choices:
+          - 'OK'
+          - 'ERROR'
+          - 'SKIPPED'
         type: str
-        choices: ['OK', 'ERROR', 'SKIPPED']
     report_reason:
         required: true
         description:
@@ -63,17 +66,10 @@ def format_msg_report(status, reason, recommendations):
 
 
 def main():
-    fields = {
-        "report_reason": {"required": True, "type": "str"},
-        "report_recommendations": {"required": True, "type": "list"},
-        "report_status": {
-            "default": "OK",
-            "choices": ['OK', 'ERROR', 'SKIPPED'],
-            "type": 'str'
-        },
-    }
+    module = AnsibleModule(
+        argument_spec=yaml_safe_load(DOCUMENTATION)['options']
+    )
 
-    module = AnsibleModule(argument_spec=fields)
     status = module.params.get('report_status')
     msg = format_msg_report(module.params.get('report_status'),
                             module.params.get('report_reason'),

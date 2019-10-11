@@ -20,6 +20,7 @@ import collections
 import subprocess
 
 from ansible.module_utils.basic import AnsibleModule
+from yaml import safe_load as yaml_safe_load
 
 DOCUMENTATION = '''
 ---
@@ -131,10 +132,9 @@ def check_update(module, package, pkg_mgr):
 
 
 def main():
-    module = AnsibleModule(argument_spec=dict(
-        package=dict(required=True, type='str'),
-        pkg_mgr=dict(required=True, type='str')
-    ))
+    module = AnsibleModule(
+        argument_spec=yaml_safe_load(DOCUMENTATION)['options']
+    )
 
     check_update(module,
                  module.params.get('package'),

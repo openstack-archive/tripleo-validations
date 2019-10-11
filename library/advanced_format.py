@@ -15,6 +15,7 @@
 # under the License.
 
 from os import path
+from yaml import safe_load as yaml_safe_load
 
 from ansible.module_utils.basic import AnsibleModule
 
@@ -58,9 +59,9 @@ def read_int(module, file_path):
 
 
 def main():
-    module = AnsibleModule(argument_spec=dict(
-        drive=dict(required=True, type='str')
-    ))
+    module = AnsibleModule(
+        argument_spec=yaml_safe_load(DOCUMENTATION)['options']
+    )
 
     drive = module.params.get('drive')
     queue_path = path.join('/sys/class/block', drive, 'queue')

@@ -17,6 +17,7 @@
 import netaddr
 
 from ansible.module_utils.basic import AnsibleModule
+from yaml import safe_load as yaml_safe_load
 
 DOCUMENTATION = '''
 ---
@@ -102,11 +103,9 @@ def check_IP_range(start, end, min_size):
 
 
 def main():
-    module = AnsibleModule(argument_spec=dict(
-        start=dict(required=True, type='str'),
-        end=dict(required=True, type='str'),
-        min_size=dict(required=True, type='int'),
-    ))
+    module = AnsibleModule(
+        argument_spec=yaml_safe_load(DOCUMENTATION)['options']
+    )
 
     start = module.params.get('start')
     end = module.params.get('end')

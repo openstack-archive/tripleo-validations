@@ -22,12 +22,12 @@ except AttributeError:
     collectionsAbc = collections
 
 import os.path
-import yaml
 
 import six
 
 from ansible.module_utils.basic import AnsibleModule  # noqa
 from tripleo_validations import utils
+from yaml import safe_load as yaml_safe_load
 
 DOCUMENTATION = '''
 ---
@@ -73,7 +73,7 @@ def open_network_environment_files(netenv_path, template_files):
     errors = []
 
     try:
-        network_data = yaml.safe_load(template_files[netenv_path])
+        network_data = yaml_safe_load(template_files[netenv_path])
     except Exception as e:
         return ({}, {}, ["Can't open network environment file '{}': {}"
                          .format(netenv_path, e)])
@@ -86,7 +86,7 @@ def open_network_environment_files(netenv_path, template_files):
             try:
                 nic_configs.append((
                     nic_name, nic_config_path,
-                    yaml.safe_load(template_files[nic_config_path])))
+                    yaml_safe_load(template_files[nic_config_path])))
             except Exception as e:
                 errors.append(
                     "Can't open the resource '{}' reference file '{}': {}"
@@ -204,11 +204,9 @@ def vlan_exists_on_switch(vlan_id, introspection_data):
 
 
 def main():
-    module = AnsibleModule(argument_spec=dict(
-        path=dict(required=True, type='str'),
-        template_files=dict(required=True, type='list'),
-        introspection_data=dict(required=True, type='list')
-    ))
+    module = AnsibleModule(
+        argument_spec=yaml_safe_load(DOCUMENTATION)['options']
+    )
 
     netenv_path = module.params.get('path')
     template_files = {name: content[1] for (name, content) in

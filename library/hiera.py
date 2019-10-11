@@ -17,6 +17,7 @@
 import subprocess
 
 from ansible.module_utils.basic import AnsibleModule
+from yaml import safe_load as yaml_safe_load
 
 DOCUMENTATION = '''
 ---
@@ -42,9 +43,9 @@ EXAMPLES = '''
 
 
 def main():
-    module = AnsibleModule(argument_spec=dict(
-        name=dict(required=True, type='str'),
-    ))
+    module = AnsibleModule(
+        argument_spec=yaml_safe_load(DOCUMENTATION)['options']
+    )
 
     name = module.params.get('name')
 

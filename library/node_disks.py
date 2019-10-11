@@ -14,7 +14,9 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+
 from ansible.module_utils.basic import AnsibleModule  # noqa
+from yaml import safe_load as yaml_safe_load
 
 DOCUMENTATION = '''
 ---
@@ -33,7 +35,7 @@ options:
         required: true
         description:
             - A list of flavors
-        type: list
+        type: dict
     introspection_data:
         required: true
         description:
@@ -130,11 +132,9 @@ def validate_node_disks(nodes, flavors, introspection_data):
 
 
 def main():
-    module = AnsibleModule(argument_spec=dict(
-        nodes=dict(required=True, type='list'),
-        flavors=dict(required=True, type='dict'),
-        introspection_data=dict(required=True, type='list')
-    ))
+    module = AnsibleModule(
+        argument_spec=yaml_safe_load(DOCUMENTATION)['options']
+    )
 
     nodes = {node['name']: node for node in module.params.get('nodes')}
     flavors = module.params.get('flavors')

@@ -18,6 +18,7 @@ import collections
 
 from ansible.module_utils.basic import AnsibleModule  # noqa
 from oslo_utils import uuidutils
+from yaml import safe_load as yaml_safe_load
 
 DOCUMENTATION = '''
 ---
@@ -108,9 +109,9 @@ def validate_boot_config(nodes):
 
 
 def main():
-    module = AnsibleModule(argument_spec=dict(
-        nodes=dict(required=True, type='list')
-    ))
+    module = AnsibleModule(
+        argument_spec=yaml_safe_load(DOCUMENTATION)['options']
+    )
 
     nodes = module.params.get('nodes')
 

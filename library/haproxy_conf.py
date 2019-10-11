@@ -17,6 +17,7 @@
 import re
 
 from ansible.module_utils.basic import AnsibleModule
+from yaml import safe_load as yaml_safe_load
 
 DOCUMENTATION = '''
 ---
@@ -69,9 +70,9 @@ def parse_haproxy_conf(file_path):
 
 
 def main():
-    module = AnsibleModule(argument_spec=dict(
-        path=dict(required=True, type='str'),
-    ))
+    module = AnsibleModule(
+        argument_spec=yaml_safe_load(DOCUMENTATION)['options']
+    )
 
     haproxy_conf_path = module.params.get('path')
 

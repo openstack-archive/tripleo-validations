@@ -19,7 +19,6 @@ import collections
 import itertools
 import netaddr
 import os.path
-import yaml
 
 import six
 
@@ -27,6 +26,7 @@ from ansible.module_utils.basic import AnsibleModule
 # from os_net_config import validator
 
 from tripleo_validations.utils import get_nested
+from yaml import safe_load as yaml_safe_load
 
 
 DOCUMENTATION = '''
@@ -75,7 +75,7 @@ def open_network_environment_files(netenv_path, template_files):
     errors = []
 
     try:
-        network_data = yaml.safe_load(template_files[netenv_path])
+        network_data = yaml_safe_load(template_files[netenv_path])
     except Exception as e:
         return ({}, {}, ["Can't open network environment file '{}': {}"
                          .format(netenv_path, e)])
@@ -88,7 +88,7 @@ def open_network_environment_files(netenv_path, template_files):
             try:
                 nic_configs.append((
                     nic_name, nic_config_path,
-                    yaml.safe_load(template_files[nic_config_path])))
+                    yaml_safe_load(template_files[nic_config_path])))
             except Exception as e:
                 errors.append(
                     "Can't open the resource '{}' reference file '{}': {}"
@@ -453,8 +453,8 @@ def duplicate_static_ips(static_ips):
 
 def validate_node_pool_size(plan_env_path, ip_pools_path, template_files):
     warnings = []
-    plan_env = yaml.safe_load(template_files[plan_env_path])
-    ip_pools = yaml.safe_load(template_files[ip_pools_path])
+    plan_env = yaml_safe_load(template_files[plan_env_path])
+    ip_pools = yaml_safe_load(template_files[ip_pools_path])
 
     param_defaults = plan_env.get('parameter_defaults')
     node_counts = {
@@ -498,12 +498,9 @@ def validate_node_pool_size(plan_env_path, ip_pools_path, template_files):
 
 
 def main():
-    module = AnsibleModule(argument_spec=dict(
-        netenv_path=dict(required=True, type='str'),
-        plan_env_path=dict(required=True, type='str'),
-        ip_pools_path=dict(required=True, type='str'),
-        template_files=dict(required=True, type='list')
-    ))
+    module = AnsibleModule(
+        argument_spec=yaml_safe_load(DOCUMENTATION)['options']
+    )
 
     netenv_path = module.params.get('netenv_path')
     plan_env_path = module.params.get('plan_env_path')

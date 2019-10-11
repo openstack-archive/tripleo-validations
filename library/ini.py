@@ -34,6 +34,7 @@ from enum import Enum
 import os
 
 from ansible.module_utils.basic import AnsibleModule
+from yaml import safe_load as yaml_safe_load
 
 
 # Possible return values
@@ -119,12 +120,9 @@ EXAMPLES = '''
 
 
 def main():
-    module = AnsibleModule(argument_spec=dict(
-        path=dict(required=True, type='str'),
-        section=dict(required=True, type='str'),
-        key=dict(required=True, type='str'),
-        ignore_missing_file=dict(required=False, type='bool'),
-    ))
+    module = AnsibleModule(
+        argument_spec=yaml_safe_load(DOCUMENTATION)['options']
+    )
 
     ini_file_path = module.params.get('path')
     ignore_missing = module.params.get('ignore_missing_file')

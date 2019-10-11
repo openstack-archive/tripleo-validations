@@ -15,6 +15,7 @@
 # under the License.
 
 from ansible.module_utils.basic import AnsibleModule
+from yaml import safe_load as yaml_safe_load
 
 DOCUMENTATION = '''
 ---
@@ -40,9 +41,9 @@ EXAMPLES = '''
 
 
 def main():
-    module = AnsibleModule(argument_spec=dict(
-        msg=dict(required=True, type='str'),
-    ))
+    module = AnsibleModule(
+        argument_spec=yaml_safe_load(DOCUMENTATION)['options']
+    )
 
     msg = module.params.get('msg')
 

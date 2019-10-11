@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from xml.etree import ElementTree
-
 from ansible.module_utils.basic import AnsibleModule
+from xml.etree import ElementTree
+from yaml import safe_load as yaml_safe_load
 
 DOCUMENTATION = '''
 ---
@@ -62,9 +62,9 @@ def format_failure(failure):
 
 
 def main():
-    module = AnsibleModule(argument_spec=dict(
-        status=dict(required=True, type='str'),
-    ))
+    module = AnsibleModule(
+        argument_spec=yaml_safe_load(DOCUMENTATION)['options']
+    )
 
     pcs_status = parse_pcs_status(module.params.get('status'))
     failures = pcs_status['failures']

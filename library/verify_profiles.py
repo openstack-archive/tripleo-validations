@@ -15,6 +15,7 @@
 # under the License.
 
 from ansible.module_utils.basic import AnsibleModule  # noqa
+from yaml import safe_load as yaml_safe_load
 
 DOCUMENTATION = '''
 ---
@@ -143,10 +144,9 @@ def verify_profiles(nodes, flavors):
 
 
 def main():
-    module = AnsibleModule(argument_spec=dict(
-        nodes=dict(required=True, type='list'),
-        flavors=dict(required=True, type='dict')
-    ))
+    module = AnsibleModule(
+        argument_spec=yaml_safe_load(DOCUMENTATION)['options']
+    )
 
     nodes = module.params.get('nodes')
     flavors = module.params.get('flavors')
