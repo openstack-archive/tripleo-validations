@@ -79,13 +79,9 @@ def get_heat_client(auth_variables):
 
 
 def get_ironic_client(auth_variables):
-    session = get_auth_session(auth_variables)
-    ironic_url = session.get_endpoint(service_type='baremetal',
-                                      interface='public')
     return ironic_client.get_client(
         1,
-        ironic_url=ironic_url,
-        os_auth_token=auth_variables.get('os_auth_token')
+        session=get_auth_session(auth_variables)
     )
 
 
