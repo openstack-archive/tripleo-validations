@@ -14,6 +14,7 @@
     section: swift
     key: password
   register: password
+  no_log: true
 
 - name: Check that switch vlans are present if used in nic-config files
   switch_vlans:
