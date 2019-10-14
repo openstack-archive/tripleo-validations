@@ -26,6 +26,7 @@
     return_content: yes
     status_code: 201
   register: keystone_result
+  no_log: true
   when: overcloud_keystone_url|default('')
 
 - name: Set auth token

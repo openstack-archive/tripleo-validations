@@ -14,6 +14,7 @@
     section: inspector
     key: password
   register: ironic_password
+  no_log: true
 
 - name: Check node disks
   node_disks:
