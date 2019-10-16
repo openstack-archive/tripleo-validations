@@ -8,7 +8,7 @@
         `dhcp_end` fields in `undercloud.conf` is not too low.
       groups:
         - pre-introspection
-    ctlplane_iprange_min_size: 25
+    ctlplane_iprange_min_size: 20
   tasks:
   - name: Get the path of tripleo undercloud config file
     become: true
