@@ -8,7 +8,7 @@ platforms:
   - name: centos7
     hostname: centos7
     image: centos:7
-    pkg_extras: python-setuptools
+    pkg_extras: python-setuptools PyYAML
     easy_install:
       - pip
     environment: &env
@@ -18,7 +18,7 @@ platforms:
   - name: fedora28
     hostname: fedora28
     image: fedora:28
-    pkg_extras: python*-setuptools
+    pkg_extras: python*-setuptools PyYAML
     environment:
       <<: *env
 
