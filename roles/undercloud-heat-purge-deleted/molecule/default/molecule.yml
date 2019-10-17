@@ -10,7 +10,7 @@ platforms:
     image: centos:7
     override_command: True
     command: python -m SimpleHTTPServer 8787
-    pkg_extras: python-setuptools python-enum34 python-netaddr epel-release ruby
+    pkg_extras: python-setuptools python-enum34 python-netaddr epel-release ruby PyYAML
     easy_install:
       - pip
     environment: &env
@@ -22,7 +22,7 @@ platforms:
     image: fedora:28
     override_command: True
     command: python3 -m http.server 8787
-    pkg_extras: python*-setuptools python*-enum python*-netaddr ruby
+    pkg_extras: python*-setuptools python*-enum python*-netaddr ruby PyYAML
     environment:
       <<: *env
 
