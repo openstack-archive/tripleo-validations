@@ -8,7 +8,7 @@
         `dhcp_end` fields in `undercloud.conf` is not too low.
       groups:
         - pre-introspection
-    ctlplane_iprange_min_size: 25
+    ctlplane_iprange_min_size: 20
   tasks:
   - include_tasks: tasks/deprecation.yaml
 
