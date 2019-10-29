@@ -15,7 +15,7 @@
          {{ healthcheck_services_list.stdout_lines }}
        {%- endif -%}
 
-- name: Get systemd healthcheck service status
+- name: "[Healthcheck] Get {{ item }} status"
   systemd:
     name: "{{ item }}"
   retries: "{{ retries_number|int }}"
