@@ -101,6 +101,23 @@ class TestIni(base.TestCase):
                           "in file {}.").format(tmp_name), msg)
         self.assertIsNone(value)
 
+    def test_get_result_key_not_found_with_default(self):
+        '''Test ini when key is not found but has a default'''
+
+        tmpfile = self.create_tmp_ini()
+        tmp_name = os.path.relpath(tmpfile.name)
+        tmpfile.write(valid_content.encode('utf-8'))
+        tmpfile.seek(0)
+        ret, msg, value = validation.get_result(tmp_name, 'section', 'key',
+                                                'foo')
+        tmpfile.close()
+
+        self.assertEqual(validation.ReturnValue.OK, ret)
+        self.assertEqual(("There is no key 'key' under section 'section' "
+                          "in file {}. Using default value '{}'"
+                          ).format(tmp_name, 'foo'), msg)
+        self.assertEqual(value, 'foo')
+
     def test_get_result_ok(self):
         '''Test ini when key is not found'''
 
