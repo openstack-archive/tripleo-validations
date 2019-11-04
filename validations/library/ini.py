@@ -52,7 +52,7 @@ def check_file(path, ignore_missing):
         return ''
 
 
-def get_result(path, section, key):
+def get_result(path, section, key, default=None):
     '''Get value based on section and key'''
 
     msg = ''
@@ -73,10 +73,16 @@ def get_result(path, section, key):
         ret = ReturnValue.OK
         return (ret, msg, value)
     except ConfigParser.Error:
-        value = None
-        msg = "There is no key '{}' under the section '{}' in file {}.".format(
-              key, section, path)
-        ret = ReturnValue.KEY_NOT_FOUND
+        if default:
+            msg = ("There is no key '{}' under section '{}' in file {}. Using"
+                   " default value '{}'".format(key, section, path, default))
+            ret = ReturnValue.OK
+            value = default
+        else:
+            value = None
+            msg = "There is no key '{}' under the section '{}' in file {}.".format(
+                  key, section, path)
+            ret = ReturnValue.KEY_NOT_FOUND
         return (ret, msg, value)
 
 
@@ -102,6 +108,10 @@ options:
         description:
             - Section key to look up
         type: str
+    default:
+        required: false
+        description:
+            - Default value if key isn't found
     ignore_missing_file:
         required: false
         description:
@@ -142,8 +152,9 @@ def main():
         # Try to parse the result from ini file
         section = module.params.get('section')
         key = module.params.get('key')
+        default = module.params.get('default')
 
-        ret, msg, value = get_result(ini_file_path, section, key)
+        ret, msg, value = get_result(ini_file_path, section, key, default)
 
         if ret == ReturnValue.INVALID_FORMAT:
             module.fail_json(msg=msg)

@@ -24,6 +24,7 @@
       section: ctlplane-subnet
       key: dhcp_start
       ignore_missing_file: True
+      default: "192.0.2.5"
     register: dhcp_start
 
   - name: Get dhcp_end value from the undercloud.conf file
@@ -33,10 +34,11 @@
       section: ctlplane-subnet
       key: dhcp_end
       ignore_missing_file: True
+      default: "192.0.2.24"
     register: dhcp_end
 
   - name: Check the size of the DHCP range for overcloud nodes
     ip_range:
-      start: "{{ dhcp_start.value|default('192.0.2.5', true) }}"
-      end: "{{ dhcp_end.value|default('192.0.2.24', true) }}"
+      start: "{{ dhcp_start.value }}"
+      end: "{{ dhcp_end.value }}"
       min_size: "{{ ctlplane_iprange_min_size }}"
