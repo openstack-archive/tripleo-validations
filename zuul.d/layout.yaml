@@ -14,6 +14,8 @@
           - ^README.rst
       - openstack-tox-lower-constraints
       - tripleo-ci-centos-7-scenario004-standalone:
+          dependencies: &deps
+            - openstack-tox-linters
           files:
             - ^roles/ceph.*$
     gate:
