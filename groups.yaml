@@ -1,0 +1,34 @@
+---
+no-op:
+  - description: >-
+      Validations which will run a no-op operation to verify that the workflow is
+      working as it supposed to, it will run in both the Undercloud and Overcloud
+      Nodes.
+prep:
+  - description: >-
+      Validations check the hardware configuration of the Undercloud node and
+      should be run before **openstack undercloud install**.
+openshift-on-openstack:
+  - description: >-
+      Validations which will check that the environment meets the requirements
+      to be able to deploy OpenShift on OpenStack.
+pre-introspection:
+  - description: >-
+      Validations which should be run before the nodes introspection using
+      Ironic Inspector.
+pre-deployment:
+  - description: >-
+      Validations which should be executed before **openstack overcloud
+      deploy**.
+post-deployment:
+  - description: >-
+      Validations which should be executed after the Overcloud deployment has
+      finished.
+pre-upgrade:
+  - description: >-
+      Validations which try to validate your OpenStack deployment before you
+      upgrade it.
+post-upgrade:
+  - description: >-
+      Validations which try to validate your OpenStack deployment after you
+      upgrade it.
