@@ -6,7 +6,7 @@
 
 - name: Get dhcp_start value from the undercloud.conf file
   become: true
-  ini:
+  validations_read_ini:
     path: "{{ tripleo_undercloud_conf_file }}"
     section: ctlplane-subnet
     key: dhcp_start
@@ -16,7 +16,7 @@
 
 - name: Get dhcp_end value from the undercloud.conf file
   become: true
-  ini:
+  validations_read_ini:
     path: "{{ tripleo_undercloud_conf_file }}"
     section: ctlplane-subnet
     key: dhcp_end

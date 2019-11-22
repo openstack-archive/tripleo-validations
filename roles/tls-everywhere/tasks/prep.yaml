@@ -7,7 +7,7 @@
 
 - name: Verify that nameservers are set in undercloud.conf
   become: true
-  ini:
+  validations_read_ini:
     path: "{{ tripleo_undercloud_conf_file }}"
     section: DEFAULT
     key: undercloud_nameservers
@@ -56,7 +56,7 @@
 
     - name: Get domain as set in undercloud.conf
       become: true
-      ini:
+      validations_read_ini:
         path: "{{ tripleo_undercloud_conf_file }}"
         section: DEFAULT
         key: overcloud_domain_name
@@ -92,7 +92,7 @@
 
 - name: Get enable_novajoin flag from undercloud.conf
   become: true
-  ini:
+  validations_read_ini:
     path: "{{ tripleo_undercloud_conf_file }}"
     section: DEFAULT
     key: enable_novajoin

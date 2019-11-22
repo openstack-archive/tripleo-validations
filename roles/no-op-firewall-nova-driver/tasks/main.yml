@@ -1,7 +1,7 @@
 ---
 - name: Read the `firewall_driver` value
   become: true
-  ini:
+  validations_read_ini:
     path: "{{ nova_conf_path }}"
     section: DEFAULT
     key: firewall_driver

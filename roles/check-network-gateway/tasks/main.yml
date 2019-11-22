@@ -6,7 +6,7 @@
 
 - name: Get the local_subnet name from the undercloud_conf file
   become: True
-  ini:
+  validations_read_ini:
     path: "{{ tripleo_undercloud_conf_file }}"
     section: DEFAULT
     key: local_subnet
@@ -15,7 +15,7 @@
 
 - name: Get gateway value from the undercloud.conf file
   become: true
-  ini:
+  validations_read_ini:
     path: "{{ tripleo_undercloud_conf_file }}"
     section: "{% if local_subnet.value %}{{ local_subnet.value }}{% else %}ctlplane-subnet{% endif %}"
     key: gateway
@@ -24,7 +24,7 @@
 
 - name: Get local_ip value from the undercloud.conf file
   become: true
-  ini:
+  validations_read_ini:
     path: "{{ tripleo_undercloud_conf_file }}"
     section: DEFAULT
     key: local_ip

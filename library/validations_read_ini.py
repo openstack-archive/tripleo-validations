@@ -16,7 +16,7 @@
 
 # Ansible module to read a value from an Ini file.
 # Usage:
-#     - ini: path=/path/to/file.ini section=default key=something
+#     - validations_read_ini: path=/path/to/file.ini section=default key=something
 #       register: my_ini
 #
 # This will read the `path/to/file.ini` file and read the `Hello!` value under:
@@ -89,7 +89,7 @@ def get_result(path, section, key, default=None):
 
 DOCUMENTATION = '''
 ---
-module: ini
+module: validations_read_ini
 short_description: Get data from an ini file
 description:
     - Get data from an ini file
@@ -125,7 +125,7 @@ EXAMPLES = '''
 - hosts: webservers
   tasks:
     - name: Lookup bar value
-      ini: path=config.ini section=foo key=bar ignore_missing_file=True
+      validations_read_ini: path=config.ini section=foo key=bar ignore_missing_file=True
 '''
 
 

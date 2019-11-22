@@ -11,7 +11,7 @@
     name: "tripleo_undercloud_conf_file"
 
 - name: Check if telemetry services are enabled
-  ini:
+  validations_read_ini:
     path: "{{ tripleo_undercloud_conf_file }}"
     section: DEFAULT
     key: enable_telemetry
@@ -24,7 +24,7 @@
 
 - name: Get event ttl from panko configuration file
   become: true
-  ini:
+  validations_read_ini:
     path: "{{ panko_config_file }}"
     section: database
     key: "{{ event_ttl_check }}"

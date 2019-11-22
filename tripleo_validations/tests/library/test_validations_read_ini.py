@@ -13,17 +13,17 @@
 # under the License.
 
 """
-test_ini
+test_validations_read_ini
 ----------------------------------
 
-Tests for `ini` module.
+Tests for `validations_read_ini` module.
 """
 
 
 import os
 import tempfile
 
-import library.ini as validation
+import library.validations_read_ini as validation
 from tripleo_validations.tests import base
 
 
@@ -45,24 +45,24 @@ password=1234
 '''
 
 
-class TestIni(base.TestCase):
+class TestValidationsReadIni(base.TestCase):
 
     def test_check_file_invalid_path(self):
-        '''Test ini when path is invalid'''
+        '''Test validations_read_ini when path is invalid'''
 
         msg = validation.check_file('non/existing/path', False)
         self.assertEqual("Could not open the ini file: 'non/existing/path'",
                          msg)
 
     def test_check_file_ignore_missing(self):
-        '''Test ini when ignoring missing files'''
+        '''Test validations_read_ini when ignoring missing files'''
 
         msg = validation.check_file('non/existing/path', True)
         self.assertEqual("Could not open the ini file: 'non/existing/path'",
                          msg)
 
     def test_check_file_valid_path(self):
-        '''Test ini when path is valid'''
+        '''Test validations_read_ini when path is valid'''
 
         tmpfile = self.create_tmp_ini()
         tmp_name = os.path.relpath(tmpfile.name)
@@ -72,7 +72,7 @@ class TestIni(base.TestCase):
         self.assertEqual('', msg)
 
     def test_get_result_invalid_format(self):
-        '''Test ini when file format is valid'''
+        '''Test validations_read_ini when file format is valid'''
 
         tmpfile = self.create_tmp_ini()
         tmp_name = os.path.relpath(tmpfile.name)
@@ -87,7 +87,7 @@ class TestIni(base.TestCase):
         self.assertIsNone(value)
 
     def test_get_result_key_not_found(self):
-        '''Test ini when key is not found'''
+        '''Test validations_read_ini when key is not found'''
 
         tmpfile = self.create_tmp_ini()
         tmp_name = os.path.relpath(tmpfile.name)
@@ -102,7 +102,7 @@ class TestIni(base.TestCase):
         self.assertIsNone(value)
 
     def test_get_result_key_not_found_with_default(self):
-        '''Test ini when key is not found but has a default'''
+        '''Test validations_read_ini when key is not found but has a default'''
 
         tmpfile = self.create_tmp_ini()
         tmp_name = os.path.relpath(tmpfile.name)
@@ -119,7 +119,7 @@ class TestIni(base.TestCase):
         self.assertEqual(value, 'foo')
 
     def test_get_result_ok(self):
-        '''Test ini when key is not found'''
+        '''Test validations_read_ini when key is not found'''
 
         tmpfile = self.create_tmp_ini()
         tmp_name = os.path.relpath(tmpfile.name)

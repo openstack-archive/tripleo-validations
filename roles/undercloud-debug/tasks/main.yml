@@ -1,7 +1,7 @@
 ---
 - name: Check the services for debug flag
   become: True
-  ini:
+  validations_read_ini:
     path: "{{ item }}"
     section: DEFAULT
     key: debug

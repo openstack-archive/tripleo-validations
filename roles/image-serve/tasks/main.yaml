@@ -6,7 +6,7 @@
 
 - name: Get local_ip value from the undercloud.conf file
   become: true
-  ini:
+  validations_read_ini:
     path: "{{ tripleo_undercloud_conf_file }}"
     section: DEFAULT
     key: local_ip
