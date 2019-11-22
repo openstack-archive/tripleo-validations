@@ -18,7 +18,7 @@ Role Variables
 Dependencies
 ------------
 
-- 'ini' custom plugin
+- 'validations_read_ini' custom plugin
 
 Example Playbook
 ----------------

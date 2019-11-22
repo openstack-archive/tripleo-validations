@@ -1,7 +1,7 @@
 ---
 - name: Get Ironic Inspector swift auth_url
   become: true
-  ini:
+  validations_read_ini:
     path: "{{ ironic_inspector_conf_file }}"
     section: swift
     key: auth_url
@@ -9,7 +9,7 @@
 
 - name: Get Ironic Inspector swift password
   become: true
-  ini:
+  validations_read_ini:
     path: "{{ ironic_inspector_conf_file }}"
     section: swift
     key: password

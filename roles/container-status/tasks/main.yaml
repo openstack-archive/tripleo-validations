@@ -16,7 +16,7 @@
         name: "tripleo_undercloud_conf_file"
 
     - name: Get container client from undercloud.conf
-      ini:
+      validations_read_ini:
         path: "{{ tripleo_undercloud_conf_file }}"
         section: DEFAULT
         key: container_cli

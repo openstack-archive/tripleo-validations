@@ -1,7 +1,7 @@
 ---
 - name: Get VIF Plugging setting values from nova.conf
   become: True
-  ini:
+  validations_read_ini:
     path: "{{ nova_config_file }}"
     section: DEFAULT
     key: "{{ item }}"
@@ -29,7 +29,7 @@
 
 - name: Get auth_url value from neutron.conf
   become: True
-  ini:
+  validations_read_ini:
     path: "{{ neutron_config_file }}"
     section: nova
     key: auth_url
@@ -46,7 +46,7 @@
 
 - name: Get Notify Nova settings values from neutron.conf
   become: True
-  ini:
+  validations_read_ini:
     path: "{{ neutron_config_file }}"
     section: DEFAULT
     key: "{{ item }}"
@@ -64,7 +64,7 @@
 
 - name: Get Tenant Name setting value from neutron.conf
   become: True
-  ini:
+  validations_read_ini:
     path: "{{ neutron_config_file }}"
     section: nova
     key: "{{ tenant_name_check }}"

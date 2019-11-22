@@ -1,7 +1,7 @@
 ---
 - name: Fetch token value
   become: true
-  ini:
+  validations_read_ini:
     path: "{{ keystone_conf_file }}"
     section: DEFAULT
     key: admin_token

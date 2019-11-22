@@ -17,7 +17,7 @@
 
 - name: Get novajoin keytab path from join.conf
   become: true
-  ini:
+  validations_read_ini:
     path: "{{ joinconf_location }}"
     section: DEFAULT
     key: keytab
@@ -27,7 +27,7 @@
 
 - name: Get novajoin server port from join.conf
   become: true
-  ini:
+  validations_read_ini:
     path: "{{ joinconf_location }}"
     section: DEFAULT
     key: join_listen_port
@@ -37,7 +37,7 @@
 
 - name: Get novajoin server host from join.conf
   become: true
-  ini:
+  validations_read_ini:
     path: "{{ joinconf_location }}"
     section: DEFAULT
     key: join_listen
