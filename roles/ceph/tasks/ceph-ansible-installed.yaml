@@ -20,3 +20,16 @@
   when:
     - ceph_ansible_installed.stdout.find('is not installed') != -1
     - fail_without_ceph_ansible|default(false)|bool
+
+- name: Get ceph-ansible repository
+  shell: "yum info ceph-ansible | awk '/From repo/ {print $4}'"
+  register: repo
+  changed_when: False
+
+- name: Fail if ceph-ansible doesn't belong to the specified repo
+  fail:
+    msg: "Make sure ceph-ansible package is installed from {{ ceph_ansible_repo }}"
+  when:
+    - fail_without_ceph_ansible|default(false)|bool
+    - (repo.stdout | length > 0 or repo.stdout != "{{ ceph_ansible_repo }}")
+
