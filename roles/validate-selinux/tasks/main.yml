@@ -1,0 +1,123 @@
+---
+# Copyright 2019 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+
+# "validate-selinux" tasks
+
+- name: "Ensure {{ validate_selinux_audit_source }} does exist"
+  become: true
+  stat:
+    path: "{{ validate_selinux_audit_source }}"
+  register: auditlog_stat
+
+- name: "Fail if {{ validate_selinux_audit_source }} does not exit"
+  when: not auditlog_stat.stat.exists
+  fail:
+    msg: "ERROR: {{ validate_selinux_audit_source }} does not exist!"
+
+- name: Load skip list from provided file
+  when:
+    - validate_selinux_filter != 'None'
+    - validate_selinux_skip_list is not defined
+  include_vars: "{{ validate_selinux_filter }}"
+
+- name: Gather subset of facts
+  setup:
+    gather_subset: "!min,distribution_major_version"
+  when:
+    - validate_selinux_filter == 'None'
+    - validate_selinux_skip_list is not defined
+    - ansible_distribution_major_version is not defined
+
+- name: Load skip list variables (undercloud or overcloud)
+  when:
+    - validate_selinux_skip_list is not defined
+  include_vars: "{{ lookup('first_found', lookhere, errors='ignore') }}"
+  vars:
+    lookhere:
+      - "selinux_skip_{{ release }}_on_{{ ansible_distribution_major_version }}.yml"
+      - "selinux_skip_{{ release }}.yml"
+
+- name: Fetch denials from auditlog
+  become: true
+  ignore_errors: true
+  changed_when: false
+  shell: |
+    set -o pipefail
+    grep denied {{ validate_selinux_audit_source }} > /tmp/denials.log
+
+- name: Get stat for denials.log
+  stat:
+    path: /tmp/denials.log
+  register: denials_log
+
+- name: Everything is fine
+  when: denials_log.stat.size == 0
+  debug:
+    msg: "No untracked SELinux AVC detected, congratulations!"
+
+- name: Next steps only if we have denials
+  when: denials_log.stat.size > 0
+  block:
+    - name: Create skip list
+      when: validate_selinux_skip_list != {}
+      template:
+        src: skip-list.j2
+        dest: "{{ validate_selinux_skip_list_dest }}"
+        mode: 0644
+
+    - name: Filter out denials
+      when: validate_selinux_skip_list != {}
+      ignore_errors: true
+      changed_when: false
+      shell: |
+        set -o pipefail
+        grep -v -f {{ validate_selinux_skip_list_dest }} /tmp/denials.log > {{ validate_selinux_filtered_denials_dest }}
+
+    - name: No skip_list
+      when: validate_selinux_skip_list == {}
+      copy:
+        remote_src: true
+        src: /tmp/denials.log
+        dest: "{{ validate_selinux_filtered_denials_dest }}"
+
+    - name: Get stat for filtered denials
+      stat:
+        path: "{{ validate_selinux_filtered_denials_dest }}"
+      register: denials_stat
+
+    - name: debug
+      debug:
+        var: denials_stat
+
+    - name: Fail if we found untracked denials
+      when:
+        - validate_selinux_strict|bool
+        - denials_stat.stat.size != 0
+      fail:
+        msg: "Untracked SELinux AVCs found, please refer to {{ validate_selinux_filtered_denials_dest }}"
+
+    - name: Output information in case we do not fail
+      when:
+        - not validate_selinux_strict|bool
+        - denials_stat.stat.size != 0
+      debug:
+        msg: "Untracked SELinux AVCs found, please refer to {{ validate_selinux_filtered_denials_dest }}"
+
+    - name: Output information if everything is fine
+      when: denials_stat.stat.size == 0
+      debug:
+        msg: "No untracked SELinux AVC detected, congratulations!"
