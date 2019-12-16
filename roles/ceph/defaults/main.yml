@@ -2,4 +2,5 @@
 fail_without_ceph_ansible: false
 fail_on_ceph_health_err: false
 osd_percentage_min: 0
+ceph_ansible_repo: "centos-ceph-nautilus"
 
