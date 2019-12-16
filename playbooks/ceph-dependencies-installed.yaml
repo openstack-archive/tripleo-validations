@@ -1,0 +1,17 @@
+---
+- hosts: overcloud
+  vars:
+    metadata:
+      name: Check if Ceph dependencies are installed
+      description: >
+        Prints a message if a ceph dependency is missed
+      groups:
+        - pre-deployment
+    fail_without_deps: true
+    tripleo_delegate_to: "{{ groups['overcloud'] | default([]) }}"
+    packages:
+     - lvm2
+  tasks:
+    - include_role:
+        name: ceph
+        tasks_from: "ceph-dependencies-installed"
