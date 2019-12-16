@@ -1,0 +1,26 @@
+---
+- name: Gather the package facts
+  package_facts:
+    manager: auto
+
+- name: Warn about missing dependencies
+  warn:
+    msg: "If planning to use Ceph, it is necessary to check {{ item[0] }} is installed!"
+  when:
+    - "'{{ item[0] }}' not in ansible_facts.packages"
+    - not fail_without_deps|default(false)|bool
+  delegate_to: "{{ item[1] }}"
+  with_nested:
+    - "{{ packages }}"
+    - "{{ tripleo_delegate_to }}"
+
+- name: Fail if a ceph dependency is missing
+  fail:
+    msg: "If planning to use Ceph, it is necessary to install {{ item[0] }} package"
+  when:
+    - "'{{ item[0] }}' not in ansible_facts.packages"
+    - fail_without_deps|default(false)|bool
+  delegate_to: "{{ item[1] }}"
+  with_nested:
+    - "{{ packages }}"
+    - "{{ tripleo_delegate_to }}"
