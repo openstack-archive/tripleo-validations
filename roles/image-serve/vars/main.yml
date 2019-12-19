@@ -1,3 +1,4 @@
+---
 metadata:
   name: Image-serve availability
   description: Verify that image-serve service is ready

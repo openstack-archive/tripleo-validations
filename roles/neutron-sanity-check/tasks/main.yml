@@ -7,24 +7,24 @@
 
 - when: "'Undercloud' in group_names"
   block:
-  - name: Get the path of tripleo undercloud config file
-    become: true
-    hiera:
-      name: "tripleo_undercloud_conf_file"
+    - name: Get the path of tripleo undercloud config file
+      become: true
+      hiera:
+        name: "tripleo_undercloud_conf_file"
 
-  - name: Get the Container CLI from the undercloud.conf file
-    become: true
-    validations_read_ini:
-      path: "{{ tripleo_undercloud_conf_file }}"
-      section: DEFAULT
-      key: container_cli
-      ignore_missing_file: true
-    register: container_cli
+    - name: Get the Container CLI from the undercloud.conf file
+      become: true
+      validations_read_ini:
+        path: "{{ tripleo_undercloud_conf_file }}"
+        section: DEFAULT
+        key: container_cli
+        ignore_missing_file: true
+      register: container_cli
 
-  - name: Set uc_container_cli and container_name for the Undercloud
-    set_fact:
-      uc_container_cli: "{{ container_cli.value|default('podman', true) }}"
-      container_name: "neutron_ovs_agent"
+    - name: Set uc_container_cli and container_name for the Undercloud
+      set_fact:
+        uc_container_cli: "{{ container_cli.value|default('podman', true) }}"
+        container_name: "neutron_ovs_agent"
 
 - name: Run neutron-sanity-check
   command: >
@@ -35,7 +35,7 @@
   become: true
   register: nsc_return
   ignore_errors: true
-  changed_when: False
+  changed_when: false
 
 - name: Detect errors
   set_fact:

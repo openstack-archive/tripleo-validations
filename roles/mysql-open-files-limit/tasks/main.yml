@@ -9,7 +9,7 @@
     "{{ container_cli|default('podman', true) }}" exec -u root
     $("{{ container_cli|default('podman', true) }}" ps -q --filter "name=mysql|galera-bundle" | head -1)
     /bin/bash -c 'ulimit -n'
-  changed_when: False
+  changed_when: false
   register: mysqld_open_files_limit
 
 - name: Test the open-files-limit value

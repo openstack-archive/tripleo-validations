@@ -6,4 +6,4 @@ metadata:
     keystone database can grow very large.  This validation checks that
     the keystone token_flush crontab has been set up.
   groups:
-  - pre-introspection
+    - pre-introspection

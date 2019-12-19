@@ -5,4 +5,4 @@ metadata:
     This validation checks that keystone admin token is disabled on both
     undercloud and overcloud controller after deployment.
   groups:
-  - post-deployment
+    - post-deployment

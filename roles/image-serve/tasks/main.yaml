@@ -10,7 +10,7 @@
     path: "{{ tripleo_undercloud_conf_file }}"
     section: DEFAULT
     key: local_ip
-    ignore_missing_file: True
+    ignore_missing_file: true
   register: local_ip
 
 - name: Set container registry host

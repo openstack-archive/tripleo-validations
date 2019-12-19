@@ -1,6 +1,6 @@
 ---
 - hosts: undercloud
-  gather_facts: yes
+  gather_facts: true
   vars:
     metadata:
       name: Check if latest version of packages is installed

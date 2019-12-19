@@ -30,7 +30,7 @@
             name: faulty
             description: really faulty repository
             baseurl: http://this.repository.do-not.exists/like-not-at-all
-            enabled: yes
+            enabled: true
 
         - name: execute role
           include_role:
@@ -56,7 +56,7 @@
             name: faulty-bis
             description: faulty repository with working DNS
             baseurl: http://download.fedoraproject.org/pub/fedora/blah
-            enabled: yes
+            enabled: true
 
         - name: execute role
           include_role:

@@ -8,7 +8,7 @@
         and that all certs being tracked by certmonger are in the
         MONITORING state.
       groups:
-      - post-deployment
+        - post-deployment
   tasks:
     - include_role:
         name: tls-everywhere

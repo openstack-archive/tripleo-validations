@@ -17,7 +17,7 @@
 
 - name: Converge
   hosts: all
-  gather_facts: no
+  gather_facts: false
 
   vars:
     services_conf_files:
@@ -29,13 +29,13 @@
         dest: /tmp/debug_true_1.conf
         content: |
           [DEFAULT]
-          debug: True
+          debug: true
 
     - name: Checking good value
       include_role:
         name: undercloud-debug
       vars:
-        debug_check: False
+        debug_check: false
 
     - name: Should fail due to bad value
       block:

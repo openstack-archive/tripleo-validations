@@ -3,7 +3,7 @@
   become: true
   hiera:
     name: "tripleo_undercloud_conf_file"
-  check_mode: no
+  check_mode: false
 
 - name: Verify that nameservers are set in undercloud.conf
   become: true
@@ -11,9 +11,9 @@
     path: "{{ tripleo_undercloud_conf_file }}"
     section: DEFAULT
     key: undercloud_nameservers
-    ignore_missing_file: False
+    ignore_missing_file: false
   register: undercloud_nameservers
-  check_mode: no
+  check_mode: false
 
 - name: Check that nameservers point to IdM/FreeIPA
   set_fact:
@@ -52,7 +52,7 @@
       shell: host {{ undercloud_conf_dns_query }} | awk '{print $5}'
       register: host_from_ip_reg
       changed_when: false
-      check_mode: no
+      check_mode: false
 
     - name: Get domain as set in undercloud.conf
       become: true
@@ -60,9 +60,9 @@
         path: "{{ tripleo_undercloud_conf_file }}"
         section: DEFAULT
         key: overcloud_domain_name
-        ignore_missing_file: False
+        ignore_missing_file: false
       register: undercloud_overcloud_domain
-      check_mode: no
+      check_mode: false
 
     - name: Set facts undercloud.conf domain is not configured correctly
       set_fact:
@@ -96,9 +96,9 @@
     path: "{{ tripleo_undercloud_conf_file }}"
     section: DEFAULT
     key: enable_novajoin
-    ignore_missing_file: False
+    ignore_missing_file: false
   register: undercloud_enable_novajoin
-  check_mode: no
+  check_mode: false
 
 - name: Set facts undercloud.conf enable novajoin is disabled
   set_fact:

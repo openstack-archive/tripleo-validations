@@ -4,7 +4,7 @@
   # NOTE: `ulimit` is a shell builtin so we have to invoke it like this:
   command: sh -c "ulimit -n"
   register: nofilesval
-  changed_when: False
+  changed_when: false
 
 - name: Check nofiles limit
   fail:
@@ -18,7 +18,7 @@
   # NOTE: `ulimit` is a shell builtin so we have to invoke it like this:
   command: sh -c "ulimit -u"
   register: nprocval
-  changed_when: False
+  changed_when: false
 
 - name: Check nproc limit
   fail:

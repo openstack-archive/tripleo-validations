@@ -7,7 +7,7 @@
         This validation checks the flavors assigned to roles exist and have the
         correct capabilities set.
       groups:
-      - pre-deployment
-      - pre-upgrade
+        - pre-deployment
+        - pre-upgrade
   roles:
     - collect-flavors-and-verify-profiles

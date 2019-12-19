@@ -4,7 +4,7 @@
   become: true
   hiera:
     name: "certmonger_user_enabled"
-  check_mode: no
+  check_mode: false
 
 - name: Set facts for certmonger user service not enabled
   set_fact:
@@ -36,7 +36,7 @@
   become: true
   changed_when: false
   register: all_certnames
-  check_mode: no
+  check_mode: false
 
 # Get status of all certificates and trim the leading whitespaces
 - name: Get status of all certificates
@@ -47,7 +47,7 @@
   loop_control:
     loop_var: certname
   register: all_cert_status
-  check_mode: no
+  check_mode: false
 
 - name: Gather certificates that are not in MONITORING status
   set_fact:

@@ -18,7 +18,7 @@
     set -o pipefail
     {{ container_cli.value|default('podman', true) }} exec heat_api_cron crontab -l -u heat |grep -v '^#'
   register: cron_result
-  changed_when: False
+  changed_when: false
 
 - name: Check heat crontab
   fail:

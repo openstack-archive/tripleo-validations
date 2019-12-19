@@ -9,5 +9,5 @@ min_node_ram_testing: 4096      # Minimum ram per node for testing
 min_node_disk_testing: 40       # Minimum disk per node for testing
 min_node_ram_prod: 16384        # Minimum ram per node for production
 min_node_disk_prod: 42          # Minimum disk per node for production
-resource_reqs_testing: False
-resource_reqs_prod: False
+resource_reqs_testing: false
+resource_reqs_prod: false

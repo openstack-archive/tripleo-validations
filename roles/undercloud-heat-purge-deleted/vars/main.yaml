@@ -6,5 +6,5 @@ metadata:
     heat database can grow very large.  This validation checks that
     the purge_deleted crontab has been set up.
   groups:
-  - pre-upgrade
-  - pre-deployment
+    - pre-upgrade
+    - pre-deployment

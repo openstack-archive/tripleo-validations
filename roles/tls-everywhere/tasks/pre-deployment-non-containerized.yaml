@@ -20,9 +20,9 @@
     path: "{{ joinconf_location }}"
     section: DEFAULT
     key: keytab
-    ignore_missing_file: True
+    ignore_missing_file: true
   register: novajoin_keytab_path
-  check_mode: no
+  check_mode: false
 
 - name: Get novajoin server port from join.conf
   become: true
@@ -30,9 +30,9 @@
     path: "{{ joinconf_location }}"
     section: DEFAULT
     key: join_listen_port
-    ignore_missing_file: True
+    ignore_missing_file: true
   register: novajoin_server_port
-  check_mode: no
+  check_mode: false
 
 - name: Get novajoin server host from join.conf
   become: true
@@ -40,9 +40,9 @@
     path: "{{ joinconf_location }}"
     section: DEFAULT
     key: join_listen
-    ignore_missing_file: True
+    ignore_missing_file: true
   register: novajoin_server_host
-  check_mode: no
+  check_mode: false
 
 ### verify that the keytab and principal are usable ###
 # TODO(alee): We need to move this to a subfile so we can run
@@ -191,4 +191,3 @@
         report_status: "{{ service_running_status }}"
         report_reason: "{{ service_running_reason }}"
         report_recommendations: "{{ service_running_recommendations }}"
-

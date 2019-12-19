@@ -1,11 +1,11 @@
 ---
 - name: List repositories
-  become: True
+  become: true
   shell: |
     {{ ansible_pkg_mgr }} repolist enabled -v 2>&1 || exit 0
   args:
-    warn: no
-  changed_when: False
+    warn: false
+  changed_when: false
   register: repositories
 
 - name: Fail if we detect error in repolist output
@@ -16,7 +16,7 @@
     repositories.stdout is regex('(cannot|could not|failure)', ignorecase=True)
 
 - name: Find repository IDs
-  changed_when: False
+  changed_when: false
   shell: 'echo "{{ repositories.stdout }}" | grep Repo-id | sed "s/Repo-id.*://" | tr -d " "'
   register: repository_ids
 
@@ -25,5 +25,5 @@
     msg: Found unwanted repository {{ item.0 }} enabled
   when: item.0 == item.1
   with_nested:
-    - [ 'epel/x86_64' ]
+    - ['epel/x86_64']
     - "{{ repository_ids.stdout_lines }}"

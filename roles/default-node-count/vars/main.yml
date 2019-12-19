@@ -5,4 +5,4 @@ metadata:
     This validation checks that the nodes and hypervisor statistics
     add up.
   groups:
-  - pre-deployment
+    - pre-deployment

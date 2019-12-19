@@ -4,64 +4,65 @@
   shell: hiera -c /etc/puppet/hiera.yaml enabled_services | egrep -sq ceph_mon
   ignore_errors: true
   register: ceph_mon_enabled
-  changed_when: False
+  changed_when: false
 
-- when:
-    - ceph_mon_enabled is succeeded
+- when: "ceph_mon_enabled is succeeded"
   block:
-  - name: Set container_cli fact from the inventory
-    set_fact:
-      container_cli: "{{ hostvars[inventory_hostname].container_cli|default('podman') }}"
-
-  - name: Set container filter format
-    set_fact:
-      container_filter_format: !unsafe "--format '{{ .Names }}'"
-
-  - name: Set ceph_mon_container name
-    become: true
-    shell: "{{ container_cli }} ps {{ container_filter_format }} | grep ceph-mon"
-    register: ceph_mon_container
-    changed_when: False
-
-  - name: Set ceph cluster name
-    become: true
-    shell: find /etc/ceph -name '*.conf' -prune -print -quit | xargs basename -s '.conf'
-    register: ceph_cluster_name
-    changed_when: False
-
-  - name: Get ceph health
-    become: true
-    shell: "{{ container_cli }} exec {{ ceph_mon_container.stdout }} ceph --cluster {{ ceph_cluster_name.stdout }} health | awk '{print $1}'"
-    register: ceph_health
-
-  - name: Check ceph health
-    warn:
-      msg: Ceph is in {{ ceph_health.stdout }} state.
-    when:
-      - ceph_health.stdout != 'HEALTH_OK'
-      - not fail_on_ceph_health_err|default(true)|bool
-
-  - name: Fail if ceph health is HEALTH_ERR
-    fail:
-      msg: Ceph is in {{ ceph_health.stdout }} state.
-    when:
-      - ceph_health.stdout == 'HEALTH_ERR'
-      - fail_on_ceph_health_err|default(true)|bool
-
-  - when:
-      - osd_percentage_min|default(0) > 0
-    block:
-    - name: set jq osd percentage filter
+    - name: Set container_cli fact from the inventory
       set_fact:
-        jq_osd_percentage_filter: '( (.num_in_osds) / (.num_osds) ) * 100'
+        container_cli: "{{ hostvars[inventory_hostname].container_cli|default('podman') }}"
 
-    - name: Get OSD stat percentage
+    - name: Set container filter format
+      set_fact:
+        container_filter_format: !unsafe "--format '{{ .Names }}'"
+
+    - name: Set ceph_mon_container name
       become: true
-      shell: "{{ container_cli }} exec {{ ceph_mon_container.stdout }} ceph --cluster {{ ceph_cluster_name.stdout }} osd stat -f json | jq '{{ jq_osd_percentage_filter }}'"
-      register: ceph_osd_in_percentage
+      shell: "{{ container_cli }} ps {{ container_filter_format }} | grep ceph-mon"
+      register: ceph_mon_container
+      changed_when: false
 
-    - name: Fail if there is an unacceptable percentage of in OSDs
-      fail:
-        msg: "Only {{ ceph_osd_in_percentage.stdout|float }}% of OSDs are in, but {{ osd_percentage_min|default(0) }}% are required"
+    - name: Set ceph cluster name
+      become: true
+      shell: find /etc/ceph -name '*.conf' -prune -print -quit | xargs basename -s '.conf'
+      register: ceph_cluster_name
+      changed_when: false
+
+    - name: Get ceph health
+      become: true
+      shell: "{{ container_cli }} exec {{ ceph_mon_container.stdout }} ceph --cluster {{ ceph_cluster_name.stdout }} health | awk '{print $1}'"
+      register: ceph_health
+
+    - name: Check ceph health
+      warn:
+        msg: Ceph is in {{ ceph_health.stdout }} state.
       when:
-        - ceph_osd_in_percentage.stdout|float < osd_percentage_min|default(0)
+        - ceph_health.stdout != 'HEALTH_OK'
+        - not fail_on_ceph_health_err|default(true)|bool
+
+    - name: Fail if ceph health is HEALTH_ERR
+      fail:
+        msg: Ceph is in {{ ceph_health.stdout }} state.
+      when:
+        - ceph_health.stdout == 'HEALTH_ERR'
+        - fail_on_ceph_health_err|default(true)|bool
+
+    - when:
+        - osd_percentage_min|default(0) > 0
+      block:
+        - name: set jq osd percentage filter
+          set_fact:
+            jq_osd_percentage_filter: '( (.num_in_osds) / (.num_osds) ) * 100'
+
+        - name: Get OSD stat percentage
+          become: true
+          shell: >-
+            "{{ container_cli }}" exec "{{ ceph_mon_container.stdout }}" ceph
+            --cluster "{{ ceph_cluster_name.stdout }}" osd stat -f json | jq '{{ jq_osd_percentage_filter }}'
+          register: ceph_osd_in_percentage
+
+        - name: Fail if there is an unacceptable percentage of in OSDs
+          fail:
+            msg: "Only {{ ceph_osd_in_percentage.stdout|float }}% of OSDs are in, but {{ osd_percentage_min|default(0) }}% are required"
+          when:
+            - ceph_osd_in_percentage.stdout|float < osd_percentage_min|default(0)

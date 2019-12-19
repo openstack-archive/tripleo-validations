@@ -8,8 +8,8 @@
         heat database can grow very large.  This validation checks that
         the purge_deleted crontab has been set up.
       groups:
-      - pre-upgrade
-      - pre-deployment
+        - pre-upgrade
+        - pre-deployment
     cron_check: "heat-manage purge_deleted"
   roles:
     - undercloud-heat-purge-deleted

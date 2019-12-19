@@ -127,19 +127,19 @@
     path: "/etc/ipa/default.conf"
     section: global
     key: realm
-    ignore_missing_file: False
+    ignore_missing_file: false
   register: ipa_realm
-  check_mode: no
+  check_mode: false
 
 - name: Set fact for IdM/FreeIPA host entry
   set_fact:
     host_entry: "{{ ansible_fqdn }}@{{ ipa_realm.value }}"
-  when:  ipa_conf_stat.stat.exists
+  when: ipa_conf_stat.stat.exists
 
 - name: Set fact for IdM/FreeIPA host principal
   set_fact:
     host_principal: "host/{{ host_entry }}"
-  when:  ipa_conf_stat.stat.exists
+  when: ipa_conf_stat.stat.exists
 
 # Kerberos keytab related tasks
 - name: Check for kerberos host keytab
@@ -182,7 +182,7 @@
   changed_when: false
   become: true
   when: krb5_keytab_stat.stat.exists
-  check_mode: no
+  check_mode: false
 
 - name: Set facts for host principals in /etc/krb5.keytab
   set_fact:

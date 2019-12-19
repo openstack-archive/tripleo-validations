@@ -1,10 +1,10 @@
 ---
 - name: Check pacemaker service is running
-  become: True
+  become: true
   command: "/usr/bin/systemctl show pacemaker --property ActiveState"
   register: check_service
-  changed_when: False
-  ignore_errors: True
+  changed_when: false
+  ignore_errors: true
 
 - when: "check_service.stdout == 'ActiveState=active'"
   block:
@@ -12,7 +12,7 @@
       become: true
       command: pcs status xml
       register: pcs_status
-      changed_when: False
+      changed_when: false
     - name: Check pacemaker status
       pacemaker:
         status: "{{ pcs_status.stdout }}"

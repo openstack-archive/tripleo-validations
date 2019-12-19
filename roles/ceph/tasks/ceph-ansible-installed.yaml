@@ -2,9 +2,9 @@
 - name: Check if ceph-ansible is installed
   shell: rpm -q ceph-ansible || true
   args:
-    warn: no
-  changed_when: False
-  ignore_errors: True
+    warn: false
+  changed_when: false
+  ignore_errors: true
   register: ceph_ansible_installed
 
 - name: Warn about missing ceph-ansible
@@ -24,7 +24,7 @@
 - name: Get ceph-ansible repository
   shell: "yum info ceph-ansible | awk '/From repo/ {print $4}'"
   register: repo
-  changed_when: False
+  changed_when: false
 
 - name: Fail if ceph-ansible doesn't belong to the specified repo
   fail:
@@ -32,4 +32,3 @@
   when:
     - (repo.stdout | length == 0 or repo.stdout != "{{ ceph_ansible_repo }}")
     - fail_without_ceph_ansible|default(false)|bool
-
