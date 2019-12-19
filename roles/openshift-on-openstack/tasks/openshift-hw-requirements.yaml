@@ -23,7 +23,7 @@
               domain:
                 id: default
               password: "{{ overcloud_admin_password }}"
-    return_content: yes
+    return_content: true
     status_code: 201
   register: keystone_result
   no_log: true
@@ -53,7 +53,7 @@
     headers:
       X-Auth-Token: "{{ auth_token }}"
       Accept: application/vnd.openstack.compute.v2.1+json
-    return_content: yes
+    return_content: true
     follow_redirects: all
   register: flavors_result_testing
 
@@ -64,7 +64,7 @@
     headers:
       X-Auth-Token: "{{ auth_token }}"
       Accept: application/vnd.openstack.compute.v2.1+json
-    return_content: yes
+    return_content: true
     follow_redirects: all
   register: flavors_result_prod
 
@@ -89,7 +89,7 @@
     headers:
       X-Auth-Token: "{{ auth_token }}"
       Accept: application/vnd.openstack.compute.v2.1+json
-    return_content: yes
+    return_content: true
     follow_redirects: all
   register: hypervisors_result
 
@@ -116,7 +116,7 @@
     method: GET
     headers:
       X-Auth-Token: "{{ auth_token }}"
-    return_content: yes
+    return_content: true
     follow_redirects: all
   register: images
 

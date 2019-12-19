@@ -25,13 +25,13 @@
   shell: df -B1 {{ item.mount }} --output=avail | sed 1d
   register: volume_size
   with_items: "{{ existing_volumes }}"
-  changed_when: False
+  changed_when: false
 
 - name: Fail if any of the volumes are too small
   fail:
-     msg: >
-       Minimum free space required for {{ item.item.mount }}: {{ item.item.min_size }}G
-       - current free space: {{ (item.stdout|int / const_bytes_in_gb|int) |round(1) }}G
+    msg: >
+      Minimum free space required for {{ item.item.mount }}: {{ item.item.min_size }}G
+      - current free space: {{ (item.stdout|int / const_bytes_in_gb|int) |round(1) }}G
   when: >
     item.stdout|int / const_bytes_in_gb|int < item.item.min_size|int
   with_items: "{{ volume_size.results }}"

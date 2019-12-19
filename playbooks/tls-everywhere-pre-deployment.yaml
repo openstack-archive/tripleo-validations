@@ -7,7 +7,7 @@
         Checks that the undercloud has novajoin set up corectly and
         that we are ready to do the overcloud deploy with tls-everywhere.
       groups:
-      - pre-deployment
+        - pre-deployment
   tasks:
     - include_role:
         name: tls-everywhere

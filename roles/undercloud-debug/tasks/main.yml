@@ -1,11 +1,11 @@
 ---
 - name: Check the services for debug flag
-  become: True
+  become: true
   validations_read_ini:
     path: "{{ item }}"
     section: DEFAULT
     key: debug
-    ignore_missing_file: True
+    ignore_missing_file: true
   register: config_result
   with_items: "{{ services_conf_files }}"
   failed_when: "debug_check|bool  == config_result.value|bool"

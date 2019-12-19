@@ -17,7 +17,7 @@
         . {{ ansible_user_dir }}/test-python/bin/activate
         {{ ansible_user_dir }}/{{ zuul.project.src_dir }}/scripts/bindep-install
       become: true
-      changed_when: False
+      changed_when: false
 
     - name: Setup test-python
       pip:

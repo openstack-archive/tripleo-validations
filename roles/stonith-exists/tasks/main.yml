@@ -1,13 +1,13 @@
 ---
 - name: Check if we are in HA cluster environment
-  become: True
+  become: true
   register: pcs_cluster_status
   command: pcs cluster status
   failed_when: false
   changed_when: false
 
 - name: Get all currently configured stonith devices
-  become: True
+  become: true
   command: "pcs stonith"
   register: stonith_devices
   changed_when: false

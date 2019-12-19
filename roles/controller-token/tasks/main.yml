@@ -5,7 +5,7 @@
     path: "{{ keystone_conf_file }}"
     section: DEFAULT
     key: admin_token
-    ignore_missing_file: True
+    ignore_missing_file: true
   register: token_result
 
 - name: Check if token value is disabled.

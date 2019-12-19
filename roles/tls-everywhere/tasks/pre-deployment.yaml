@@ -6,7 +6,7 @@
 - name: Get the path of tripleo undercloud config file
   become: true
   hiera: name="tripleo_undercloud_conf_file"
-  check_mode: no
+  check_mode: false
 
 - name: Get the Container CLI from the undercloud.conf file (stein+)
   become: true
@@ -27,25 +27,25 @@
     - not podman_install|bool
     - not docker_install|bool
   block:
-  - name: Determine if Docker is enabled and has containers running
-    command: docker ps -q
-    register: docker_ps
-    become: true
-    ignore_errors: true
+    - name: Determine if Docker is enabled and has containers running
+      command: docker ps -q
+      register: docker_ps
+      become: true
+      ignore_errors: true
 
-  - name: Set container facts
-    set_fact:
-      docker_install: true
-    when: not docker_ps.stdout|length == 0
+    - name: Set container facts
+      set_fact:
+        docker_install: true
+      when: not docker_ps.stdout|length == 0
 
-  - name: Set container facts
-    set_fact:
-      docker_install: false
-    when: docker_ps.stdout|length == 0
+    - name: Set container facts
+      set_fact:
+        docker_install: false
+      when: docker_ps.stdout|length == 0
 
-  - name: Set container facts
-    set_fact:
-      podman_install: false
+    - name: Set container facts
+      set_fact:
+        podman_install: false
 
 - name: Set podman command prefix
   set_fact:

@@ -2,7 +2,7 @@
 - name: gather docker facts
   docker_facts:
     container_filter: status=running
-  become: yes
+  become: true
 
 - name: compare running containers to list
   set_fact:
@@ -25,6 +25,6 @@
     state: started         # Port should be open
     delay: 0               # No wait before first check (sec)
     timeout: 3             # Stop checking after timeout (sec)
-  ignore_errors: yes
+  ignore_errors: true
   loop: "{{ open_ports }}"
   when: ctlplane_ip is defined

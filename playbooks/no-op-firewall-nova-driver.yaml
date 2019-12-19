@@ -7,7 +7,7 @@
         When using Neutron, the `firewall_driver` option in Nova must be set to
         `NoopFirewallDriver`.
       groups:
-      - post-deployment
+        - post-deployment
     nova_conf_path: "/var/lib/config-data/puppet-generated/nova_libvirt/etc/nova/nova.conf"
   roles:
     - no-op-firewall-nova-driver

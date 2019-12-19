@@ -2,7 +2,7 @@
 - name: Get the healthcheck services list enabled on node
   shell: >
     systemctl list-unit-files | grep "^tripleo.*healthcheck.*enabled" | awk -F'.' '{print $1}'
-  changed_when: False
+  changed_when: false
   register: healthcheck_services_list
   when: inflight_healthcheck_services | length < 1
 
@@ -23,7 +23,7 @@
   until:
     - systemd_healthcheck_state.status.ExecMainPID != '0'
     - systemd_healthcheck_state.status.ActiveState in ['inactive', 'failed']
-  ignore_errors: True
+  ignore_errors: true
   register: systemd_healthcheck_state
   with_items: "{{ hc_services }}"
 

@@ -7,7 +7,7 @@
     path: "{{ tripleo_undercloud_conf_file }}"
     section: DEFAULT
     key: local_interface
-    ignore_missing_file: True
+    ignore_missing_file: true
   register: local_interface
 
 - name: Look for DHCP responses

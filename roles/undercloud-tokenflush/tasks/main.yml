@@ -18,7 +18,7 @@
     set -o pipefail
     {{ container_cli.value|default('podman', true) }} exec keystone_cron crontab -l -u keystone |grep -v '^#'
   register: cron_result
-  changed_when: False
+  changed_when: false
 
 - name: Check keystone crontab
   fail:

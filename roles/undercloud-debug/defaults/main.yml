@@ -1,6 +1,6 @@
 ---
 
-debug_check: True
+debug_check: true
 services_conf_files:
   - /var/lib/config-data/puppet-generated/nova/etc/nova/nova.conf
   - /var/lib/config-data/puppet-generated/neutron/etc/neutron/neutron.conf

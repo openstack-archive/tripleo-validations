@@ -16,4 +16,4 @@
       args:
         chdir: "{{ ansible_user_dir }}/{{ zuul.project.src_dir }}/roles/{{ tripleo_validations_role_name }}"
         executable: /bin/bash
-      changed_when: False
+      changed_when: false

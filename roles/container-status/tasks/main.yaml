@@ -8,29 +8,29 @@
 
 - when: "'Undercloud' in group_names"
   block:
-  - name: Set container_cli fact from undercloud.conf
-    block:
-    - name: Get the path of tripleo undercloud config file
-      become: true
-      hiera:
-        name: "tripleo_undercloud_conf_file"
+    - name: Set container_cli fact from undercloud.conf
+      block:
+        - name: Get the path of tripleo undercloud config file
+          become: true
+          hiera:
+            name: "tripleo_undercloud_conf_file"
 
-    - name: Get container client from undercloud.conf
-      validations_read_ini:
-        path: "{{ tripleo_undercloud_conf_file }}"
-        section: DEFAULT
-        key: container_cli
-        ignore_missing_file: true
-      register: container_cli
+        - name: Get container client from undercloud.conf
+          validations_read_ini:
+            path: "{{ tripleo_undercloud_conf_file }}"
+            section: DEFAULT
+            key: container_cli
+            ignore_missing_file: true
+          register: container_cli
 
-    - name: Set uc_container_cli for the Undercloud
-      set_fact:
-        uc_container_cli: "{{ container_cli.value|default('podman', true) }}"
-      when: uc_container_cli is not defined
+        - name: Set uc_container_cli for the Undercloud
+          set_fact:
+            uc_container_cli: "{{ container_cli.value|default('podman', true) }}"
+          when: uc_container_cli is not defined
 
 - name: Get failed containers for podman
   changed_when: false
-  become: True
+  become: true
   command: >
     {% if oc_container_cli is defined %}{{ oc_container_cli }}{% else %}{{ uc_container_cli }}{% endif %}
     {% raw %}

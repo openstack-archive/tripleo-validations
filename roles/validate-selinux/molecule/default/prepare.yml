@@ -17,7 +17,7 @@
 
 - name: Prepare
   hosts: all
-  gather_facts: no
+  gather_facts: false
 
   tasks:
     - name: Populate fake clean auditlog
@@ -26,6 +26,7 @@
         owner: root
         mode: 0600
         group: root
+        # yamllint disable rule:line-length
         content: |
           type=SERVICE_START msg=audit(1575877870.934:286): pid=1 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:init_t:s0 msg='unit=sssd-kcm comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'UID="root" AUID="unset"
           type=SERVICE_STOP msg=audit(1575878320.981:287): pid=1 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:init_t:s0 msg='unit=sssd-kcm comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'UID="root" AUID="unset"
@@ -38,12 +39,14 @@
           type=SERVICE_START msg=audit(1575878869.915:306): pid=1 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:init_t:s0 msg='unit=fprintd comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'UID="root" AUID="unset"
           type=SERVICE_STOP msg=audit(1575878900.615:312): pid=1 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:init_t:s0 msg='unit=fprintd comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'UID="root" AUID="unset"
 
+    # yamllint enable rule:line-length
     - name: Populate unclean auditlog
       copy:
         dest: /var/log/audit-unclean.log
         owner: root
         mode: 0600
         group: root
+        # yamllint disable rule:line-length
         content: |
           type=AVC msg=audit(1575534183.234:4933): avc:  denied  { write } for  pid=11266 comm="iptables" path="pipe:[231496]" dev="pipefs" ino=231496 scontext=system_u:system_r:iptables_t:s0 tcontext=system_u:system_r:certmonger_t:s0 tclass=fifo_file permissive=1
           type=AVC msg=audit(1575534183.342:4934): avc:  denied  { write } for  pid=11284 comm="iptables" path="pipe:[231496]" dev="pipefs" ino=231496 scontext=system_u:system_r:iptables_t:s0 tcontext=system_u:system_r:certmonger_t:s0 tclass=fifo_file permissive=1

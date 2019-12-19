@@ -17,7 +17,7 @@
 
 - name: Converge
   hosts: all
-  gather_facts: no
+  gather_facts: false
 
   tasks:
     - name: detect wrong port
@@ -39,7 +39,7 @@
       block:
         - name: run validation for 404
           include_role:
-              name: image-serve
+            name: image-serve
       rescue:
         - name: Clear host errors
           meta: clear_host_errors

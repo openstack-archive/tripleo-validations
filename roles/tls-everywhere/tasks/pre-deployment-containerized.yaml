@@ -3,7 +3,7 @@
 - name: Verify that join.conf exists (containzerized)
   command: "{{ command_prefix }} exec novajoin_server test -e /etc/novajoin/join.conf"
   register: containerized_join_conf_st
-  changed_when: False
+  changed_when: false
   become: true
 
 - name: Fail if join.conf is not present (containerized)
@@ -21,9 +21,9 @@
     path: "{{ joinconf_location }}"
     section: DEFAULT
     key: keytab
-    ignore_missing_file: True
+    ignore_missing_file: true
   register: novajoin_keytab_path
-  check_mode: no
+  check_mode: false
 
 - name: Get novajoin server port from join.conf
   become: true
@@ -31,9 +31,9 @@
     path: "{{ joinconf_location }}"
     section: DEFAULT
     key: join_listen_port
-    ignore_missing_file: True
+    ignore_missing_file: true
   register: novajoin_server_port
-  check_mode: no
+  check_mode: false
 
 - name: Get novajoin server host from join.conf
   become: true
@@ -41,9 +41,9 @@
     path: "{{ joinconf_location }}"
     section: DEFAULT
     key: join_listen
-    ignore_missing_file: True
+    ignore_missing_file: true
   register: novajoin_server_host
-  check_mode: no
+  check_mode: false
 
 ### verify that the keytab and principal are usable ###
 # TODO(alee): We need to move this to a subfile so we can run
@@ -91,7 +91,7 @@
       command: "{{ command_prefix }} exec novajoin_server kdestroy -c {{ item }}"
       with_items: "{{ temp_krb_caches }}"
       ignore_errors: false
-      changed_when: False
+      changed_when: false
       become: true
       when:
         - containerized_novajoin_krb5_keytab_stat.rc == 0

@@ -1,6 +1,6 @@
 ---
 - hosts: undercloud
-  gather_facts: yes
+  gather_facts: true
   vars:
     metadata:
       name: Verify the undercloud fits the RAM requirements

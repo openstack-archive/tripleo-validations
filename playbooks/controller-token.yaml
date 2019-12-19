@@ -7,7 +7,7 @@
         This validation checks that keystone admin token is disabled on both
         undercloud and overcloud controller after deployment.
       groups:
-      - post-deployment
+        - post-deployment
     keystone_conf_file: "/var/lib/config-data/puppet-generated/keystone/etc/keystone/keystone.conf"
   roles:
     - controller-token

@@ -6,7 +6,7 @@
 
 - name: Ping all overcloud nodes
   icmp_ping:
-      host: "{{ item }}"
+    host: "{{ item }}"
   with_items: "{{ oc_ips.results | map(attribute='ansible_facts.ansible_host') | list }}"
   ignore_errors: true
   register: ping_results

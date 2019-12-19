@@ -17,7 +17,7 @@
 
 - name: Converge
   hosts: all
-  gather_facts: no
+  gather_facts: false
 
   vars:
     nova_conf_path: "/nova.conf"
@@ -48,7 +48,7 @@
             section: DEFAULT
             option: firewall_driver
             value: CHANGEME
-            backup: yes
+            backup: true
 
         - include_role:
             name: no-op-firewall-nova-driver

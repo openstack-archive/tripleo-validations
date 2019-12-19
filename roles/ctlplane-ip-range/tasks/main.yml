@@ -10,7 +10,7 @@
     path: "{{ tripleo_undercloud_conf_file }}"
     section: ctlplane-subnet
     key: dhcp_start
-    ignore_missing_file: True
+    ignore_missing_file: true
     default: "192.0.2.5"
   register: dhcp_start
 
@@ -20,7 +20,7 @@
     path: "{{ tripleo_undercloud_conf_file }}"
     section: ctlplane-subnet
     key: dhcp_end
-    ignore_missing_file: True
+    ignore_missing_file: true
     default: "192.0.2.24"
   register: dhcp_end
 

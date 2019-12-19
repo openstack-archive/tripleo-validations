@@ -5,4 +5,4 @@ metadata:
     When using Neutron, the `firewall_driver` option in Nova must be set to
     `NoopFirewallDriver`.
   groups:
-  - post-deployment
+    - post-deployment

@@ -2,7 +2,7 @@
 - name: List the available drives
   register: drive_list
   command: "ls /sys/class/block/"
-  changed_when: False
+  changed_when: false
 
 - name: Detect whether the drive uses Advanced Format
   advanced_format: drive={{ item }}

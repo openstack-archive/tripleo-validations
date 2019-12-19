@@ -1,6 +1,6 @@
 ---
 - name: Get VIF Plugging setting values from nova.conf
-  become: True
+  become: true
   validations_read_ini:
     path: "{{ nova_config_file }}"
     section: DEFAULT
@@ -21,14 +21,14 @@
   with_items: "{{ nova_config_result.results }}"
 
 - name: Get auth_url value from hiera
-  become: True
+  become: true
   command: hiera -c /etc/puppet/hiera.yaml neutron::server::notifications::auth_url
-  ignore_errors: True
-  changed_when: False
+  ignore_errors: true
+  changed_when: false
   register: auth_url
 
 - name: Get auth_url value from neutron.conf
-  become: True
+  become: true
   validations_read_ini:
     path: "{{ neutron_config_file }}"
     section: nova
@@ -45,7 +45,7 @@
   failed_when: "neutron_auth_url_result.value != auth_url.stdout"
 
 - name: Get Notify Nova settings values from neutron.conf
-  become: True
+  become: true
   validations_read_ini:
     path: "{{ neutron_config_file }}"
     section: DEFAULT
@@ -63,7 +63,7 @@
   with_items: "{{ neutron_notify_nova_result.results }}"
 
 - name: Get Tenant Name setting value from neutron.conf
-  become: True
+  become: true
   validations_read_ini:
     path: "{{ neutron_config_file }}"
     section: nova

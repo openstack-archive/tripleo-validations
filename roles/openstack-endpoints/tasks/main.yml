@@ -1,7 +1,7 @@
 ---
 - name: Set fact to identify if the overcloud was deployed
   set_fact:
-      overcloud_deployed: "{{ groups['overcloud'] is defined }}"
+    overcloud_deployed: "{{ groups['overcloud'] is defined }}"
 
 # Check that the Horizon endpoint exists
 - name: Fail if the HorizonPublic endpoint is not defined
@@ -30,7 +30,7 @@
 
 # Check that we can obtain an auth token from horizon
 - name: Check Keystone
-  no_log: True
+  no_log: true
   uri:
     url: "{{ overcloud_keystone_url | urlsplit('scheme') }}://{{ overcloud_keystone_url | urlsplit('netloc') }}/v3/auth/tokens"
     method: POST
@@ -46,7 +46,7 @@
               domain:
                 name: Default
               password: "{{ overcloud_admin_password }}"
-    return_content: yes
+    return_content: true
     status_code: 201
   register: auth_token
   when: overcloud_keystone_url|default('')

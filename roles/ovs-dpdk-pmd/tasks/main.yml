@@ -1,12 +1,12 @@
 ---
 - name: Get OVS DPDK PMD cores mask value
   become_method: sudo
-  become: True
+  become: true
   register: pmd_cpu_mask
   command: ovs-vsctl --no-wait get Open_vSwitch . other_config:pmd-cpu-mask
-  changed_when: False
+  changed_when: false
 
 - name: Run OVS DPDK PMD cores check
-  become: True
+  become: true
   ovs_dpdk_pmd_cpus_check:
     pmd_cpu_mask: "{{ pmd_cpu_mask.stdout }}"
