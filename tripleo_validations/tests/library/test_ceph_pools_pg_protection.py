@@ -59,16 +59,21 @@ class TestCephPoolsPgProtection(base.TestCase):
     def test_simulate_pool_creation_not_enough_osds(self):
         '''Test creating 3 pools with differing PGs with 1 OSD'''
         num_osds = 1
-        error = "The following Ceph pools would be created (but no others):\n"
-        error += "{'images': {'pg_num': 128, 'size': 3}}\n"
-        error += "Pool creation would then fail with the following from Ceph:\n"
-        error += "Cannot add pool: vms pg_num 256 size 3 would mean 384 total pgs, "
-        error += "which exceeds max 200 (mon_max_pg_per_osd 200 * num_in_osds 1)\n"
-        error += "Please use https://ceph.io/pgcalc and then update the "
-        error += "CephPools parameter"
         pools = [{'name': 'images', 'pg_num': 128, 'size': 3},
                  {'name': 'vms', 'pg_num': 256, 'size': 3},
                  {'name': 'volumes', 'pg_num': 512, 'size': 3}]
         sim = validation.simulate_pool_creation(num_osds, pools)
         self.assertEqual(sim['failed'], True)
-        self.assertEqual(sim['msg'], error)
+
+        error_head = "The following Ceph pools would be created (but no others):\n"
+        order0 = "{'images': {'size': 3}, 'pg_num': 128}\n"
+        order1 = "{'images': {'pg_num': 128, 'size': 3}}\n"
+        error_tail = "Pool creation would then fail with the following from Ceph:\n"
+        error_tail += "Cannot add pool: vms pg_num 256 size 3 would mean 384 total pgs, "
+        error_tail += "which exceeds max 200 (mon_max_pg_per_osd 200 * num_in_osds 1)\n"
+        error_tail += "Please use https://ceph.io/pgcalc and then update the "
+        error_tail += "CephPools parameter"
+
+        self.assertTrue(
+            (sim['msg'] == error_head + order0 + error_tail)
+            or (sim['msg'] == error_head + order1 + error_tail))
