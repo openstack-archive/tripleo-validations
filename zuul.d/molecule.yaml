@@ -23,6 +23,7 @@
       - tripleo-validations-centos-7-molecule-stonith-exists
       - tripleo-validations-centos-7-molecule-check-latest-packages-version
       - tripleo-validations-centos-7-molecule-validate-selinux
+      - tripleo-validations-centos-7-molecule-ceph
       queue: integrated
     gate:
       jobs:
@@ -47,6 +48,7 @@
       - tripleo-validations-centos-7-molecule-stonith-exists
       - tripleo-validations-centos-7-molecule-check-latest-packages-version
       - tripleo-validations-centos-7-molecule-validate-selinux
+      - tripleo-validations-centos-7-molecule-ceph
       queue: integrated
     name: tripleo-validations-molecule-jobs
 - job:
@@ -197,3 +199,10 @@
     parent: tripleo-validations-centos-7-base
     vars:
       tripleo_validations_role_name: validate-selinux
+- job:
+    files:
+    - ^roles/ceph/.*
+    name: tripleo-validations-centos-7-molecule-ceph
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: ceph

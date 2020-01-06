@@ -1,0 +1,70 @@
+---
+# Copyright 2019 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+
+- name: Converge
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Ensure we do not fail with default behavior
+      include_role:
+        name: ceph
+        tasks_from: ceph-ansible-installed
+
+    - name: Ensure we fail if ceph-ansible is absent
+      block:
+        - name: Run validation
+          include_role:
+            name: ceph
+            tasks_from: ceph-ansible-installed
+          vars:
+            fail_without_ceph_ansible: true
+      rescue:
+        - name: Clear host errors
+          meta: clear_host_errors
+
+        - name: Test output
+          debug:
+            msg: |
+              Properly detected missing package
+
+    - name: install ceph-ansible
+      package:
+        name: ceph-ansible
+        state: present
+
+    - name: Re-run the validation with ceph-ansible installed
+      include_role:
+        name: ceph
+        tasks_from: ceph-ansible-installed
+
+    - name: Re-run the validation with ceph-ansible installed and fail due to wrong repo
+      block:
+        - name: Enforce failure in case of wrong repo
+          include_role:
+            name: ceph
+            tasks_from: ceph-ansible-installed
+          vars:
+            fail_without_ceph_ansible: true
+      rescue:
+        - name: Clear host errors
+          meta: clear_host_errors
+
+        - name: Test output
+          debug:
+            msg: |
+              Properly detected wrong repository
