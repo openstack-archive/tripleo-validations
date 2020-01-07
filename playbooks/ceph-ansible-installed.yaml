@@ -8,6 +8,7 @@
       groups:
         - pre-deployment
     fail_without_ceph_ansible: false
+    ceph_ansible_repo: "centos-ceph-nautilus"
   tasks:
     - include_role:
         name: ceph
