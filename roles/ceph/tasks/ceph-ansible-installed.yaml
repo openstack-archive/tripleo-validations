@@ -30,6 +30,6 @@
   fail:
     msg: "Make sure ceph-ansible package is installed from {{ ceph_ansible_repo }}"
   when:
+    - (repo.stdout | length == 0 or repo.stdout != "{{ ceph_ansible_repo }}")
     - fail_without_ceph_ansible|default(false)|bool
-    - (repo.stdout | length > 0 or repo.stdout != "{{ ceph_ansible_repo }}")
 
