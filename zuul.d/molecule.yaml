@@ -1,7 +1,6 @@
 ---
 - project-template:
     check:
-      queue: integrated
       jobs:
       - tripleo-validations-centos-7-molecule-controller-token
       - tripleo-validations-centos-7-molecule-controller-ulimits
@@ -23,8 +22,9 @@
       - tripleo-validations-centos-7-molecule-rabbitmq-limits
       - tripleo-validations-centos-7-molecule-stonith-exists
       - tripleo-validations-centos-7-molecule-check-latest-packages-version
+      - tripleo-validations-centos-7-molecule-validate-selinux
+      queue: integrated
     gate:
-      queue: integrated
       jobs:
       - tripleo-validations-centos-7-molecule-controller-token
       - tripleo-validations-centos-7-molecule-controller-ulimits
@@ -46,6 +46,8 @@
       - tripleo-validations-centos-7-molecule-rabbitmq-limits
       - tripleo-validations-centos-7-molecule-stonith-exists
       - tripleo-validations-centos-7-molecule-check-latest-packages-version
+      - tripleo-validations-centos-7-molecule-validate-selinux
+      queue: integrated
     name: tripleo-validations-molecule-jobs
 - job:
     files:
@@ -122,9 +124,9 @@
     - ^roles/xfs-check-ftype/.*
     name: tripleo-validations-centos-7-molecule-xfs-check-ftype
     parent: tripleo-validations-centos-7-base
-    voting: false
     vars:
       tripleo_validations_role_name: xfs-check-ftype
+    voting: false
 - job:
     files:
     - ^roles/no-op-firewall-nova-driver/.*
@@ -188,3 +190,10 @@
     parent: tripleo-validations-centos-7-base
     vars:
       tripleo_validations_role_name: check-latest-packages-version
+- job:
+    files:
+    - ^roles/validate-selinux/.*
+    name: tripleo-validations-centos-7-molecule-validate-selinux
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: validate-selinux

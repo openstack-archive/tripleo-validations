@@ -1,0 +1,21 @@
+---
+- hosts: all
+  vars:
+    metadata:
+      name: validate-selinux
+      description: >-
+        Ensures we don't have any SELinux denials on the system
+      groups:
+        - pre-deployment
+        - post-deployment
+        - pre-upgrade
+        - post-upgrade
+    validate_selinux_working_dir: /var/log/validations
+    validate_selinux_audit_source: /var/log/audit/audit.log
+    validate_selinux_skip_list_dest: "{{ validate_selinux_working_dir }}/denials-skip-list.txt"
+    validate_selinux_filtered_denials_dest: "{{ validate_selinux_working_dir }}/denials-filtered.log"
+    validate_selinux_strict: false
+    validate_selinux_filter: "None"
+    validate_selinux_skip_list: {}
+  roles:
+    - validate-selinux
