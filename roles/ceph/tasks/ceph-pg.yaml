@@ -1,0 +1,145 @@
+---
+- name: Lookup ANSIBLE_HASH_BEHAVIOUR
+  set_fact:
+    hash_behavior: "{{ lookup('config', 'DEFAULT_HASH_BEHAVIOUR', on_missing='skip')|default('replace') }}"
+
+- name: Fail unless ANSIBLE_HASH_BEHAVIOUR=merge
+  fail:
+    msg: |
+      In order to simulate Tripleo Heat Template behavior this role requires
+      that it be run with Ansible's hash_behaviour set to merge. Please
+      re-run with 'export ANSIBLE_HASH_BEHAVIOUR=merge'"
+  when:
+    - hash_behavior != 'merge'
+
+- name: Fail if number of OSDs is not specified
+  fail:
+    msg: "Please pass the expected number of OSDs, e.g. '-e num_osds=36'"
+  when: num_osds is not defined
+
+- name: Get ceph_pool_default_size
+  set_fact:
+    ceph_pool_default_size: "{{ parameter_defaults['CephPoolDefaultSize']|default(3) }}"
+
+- name: Get ceph_pool_default_pg_num
+  set_fact:
+    ceph_pool_default_pg_num: "{{ parameter_defaults['CephPoolDefaultPgNum']|default(128) }}"
+
+- name: Set ceph_pools default
+  set_fact:
+    ceph_pools:
+      - name: "{{ parameter_defaults['CinderBackupRbdPoolName']|default('backups') }}"
+        application: rbd
+      - name: "{{ parameter_defaults['CinderRbdPoolName']|default('volumes') }}"
+        application: rbd
+      - name: "{{ parameter_defaults['NovaRbdPoolName']|default('vms') }}"
+        application: rbd
+      - name: "{{ parameter_defaults['GlanceRbdPoolName']|default('images') }}"
+        application: rbd
+      - name: "{{ parameter_defaults['GnocchiRbdPoolName']|default('metrics') }}"
+        application: openstack_gnocchi
+
+- when:
+    - parameter_defaults['CephPools'] is defined
+    - (parameter_defaults['CephPools']|length) > 0
+  block:
+    - name: Get names of custom pools
+      set_fact:
+        custom_names: "{{ custom_names | default([]) + [ item.name ] }}"
+      loop: "{{ parameter_defaults['CephPools'] }}"
+
+    - name: Get names of default pools
+      set_fact:
+        default_names: "{{ default_names | default([]) + [ item.name ] }}"
+      loop: "{{ ceph_pools }}"
+
+    - name: Base updated ceph_pools list on custom list
+      set_fact:
+        new_ceph_pools: "{{ parameter_defaults['CephPools'] }}"
+
+    - name: Add default pools not in custom list to updated ceph_pools list
+      set_fact:
+        new_ceph_pools: "{{ new_ceph_pools | default([]) + [item] }}"
+      loop: "{{ ceph_pools }}"
+      when:
+        - item.name in default_names|difference(custom_names)
+
+    - name: redefine ceph_pools based on updated ceph_pools list
+      set_fact:
+        ceph_pools: "{{ new_ceph_pools }}"
+
+- name: Add CinderRbdExtraPools if provided and not in custom pool list
+  set_fact:
+    ceph_pools: "{{ ceph_pools | default([]) + [dict(name=item, application='rbd') ] }}"
+  loop: "{{ parameter_defaults.CinderRbdExtraPools.split(',')|list }}"
+  when:
+    - parameter_defaults['CinderRbdExtraPools'] is defined
+    - (parameter_defaults['CinderRbdExtraPools']|length) > 0
+    - item not in custom_names|default([])
+
+- name: Warn if deprecated Manila parameters are being used
+  warn:
+    msg: |
+      One or more of following parameters is in use but is
+      deprecated in Stein and newer; ManilaCephFSDataPoolPGNum,
+      ManilaCephFSMetadataPoolPGNum, and ManilaCephFSShareBackendName
+  when:
+    - (parameter_defaults['ManilaCephFSDataPoolPGNum'] is defined or
+       parameter_defaults['ManilaCephFSMetadataPoolPGNum'] is defined or
+       parameter_defaults['ManilaCephFSShareBackendName'] is defined)
+
+- name: Add Manila MDS pools if provided and not in custom pool list
+  set_fact:
+    ceph_pools: "{{ ceph_pools | default([]) + [item] }}"
+  loop:
+    - name: "{{ parameter_defaults['ManilaCephFSDataPoolName']|default('manila_data') }}"
+      application: cephfs
+      pg_num: "{{ parameter_defaults['ManilaCephFSDataPoolPGNum']|default(128) }}"
+      pgp_num: "{{ parameter_defaults['ManilaCephFSDataPoolPGNum']|default(128) }}"
+    - name: "{{ parameter_defaults['ManilaCephFSMetadataPoolName']|default('manila_metadata') }}"
+      application: cephfs
+      pg_num: "{{ parameter_defaults['ManilaCephFSMetadataPoolPGNum']|default(128) }}"
+      pgp_num: "{{ parameter_defaults['ManilaCephFSMetadataPoolPGNum']|default(128) }}"
+  when:
+    - resource_registry['OS::TripleO::Services::ManilaBackendCephFs'] is defined
+    - resource_registry['OS::TripleO::Services::ManilaBackendCephFs'] != 'OS::Heat::None'
+    - item.name not in custom_names|default([])
+
+- name: Add RGW pools if requested unless in custom pool list (only for default zone)
+  set_fact:
+    ceph_pools: "{{ ceph_pools | default([]) + [dict(name=item, application='rgw') ] }}"
+  loop:
+    - .rgw.root
+    - default.rgw.control
+    - default.rgw.meta
+    - default.rgw.log
+    - default.rgw.buckets.index
+    - default.rgw.buckets.data
+  when:
+    - resource_registry['OS::TripleO::Services::CephRgw'] is defined
+    - resource_registry['OS::TripleO::Services::CephRgw'] != 'OS::Heat::None'
+    - item not in custom_names|default([])
+
+- name: Warn if an application is not set for each pool
+  warn:
+    msg: "The pool {{ item.name }} should have an application set, e.g. {'name': {{ item.name }}, 'application': rbd}"
+  when: item.application is not defined
+  loop: "{{ ceph_pools }}"
+
+- name: Simulate OpenStack pool creation in proposed Ceph Cluster
+  ceph_pools_pg_protection:
+    num_osds: "{{ num_osds }}"
+    ceph_pool_default_size: "{{ ceph_pool_default_size }}"
+    ceph_pool_default_pg_num: "{{ ceph_pool_default_pg_num }}"
+    ceph_pools: "{{ ceph_pools }}"
+  register: pool_creation_simulation
+
+- name: Fail if CephPools parameter is not configured correctly
+  fail:
+    msg: '{{ pool_creation_simulation["message"] }}'
+  when: not pool_creation_simulation["valid_input"]
+
+- name: Succeed if CephPools parameter will satisfy PG overdoce protection
+  debug:
+    msg: '{{ pool_creation_simulation["message"] }}'
+  when: pool_creation_simulation["valid_input"]
