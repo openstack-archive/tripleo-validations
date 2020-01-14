@@ -16,6 +16,7 @@
         the deployment will fail.
       groups:
         - pre-deployment
+        - post-ceph
   tasks:
     - include_role:
         name: ceph

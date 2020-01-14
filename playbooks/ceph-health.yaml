@@ -9,6 +9,7 @@
 
       groups:
         - post-deployment
+        - post-ceph
     osd_percentage_min: 0
   tasks:
     - include_role:
