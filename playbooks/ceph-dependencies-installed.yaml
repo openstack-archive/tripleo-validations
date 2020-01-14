@@ -7,6 +7,7 @@
         Prints a message if a ceph dependency is missed
       groups:
         - pre-deployment
+        - pre-ceph
     fail_without_deps: true
     tripleo_delegate_to: "{{ groups['overcloud'] | default([]) }}"
     packages:

@@ -32,3 +32,11 @@ post-upgrade:
   - description: >-
       Validations which try to validate your OpenStack deployment after you
       upgrade it.
+pre-ceph:
+  - description: >-
+      Validations to run on undercloud before deploying OpenStack
+      with Ceph.
+post-ceph:
+  - description: >-
+      Validations to run on overcloud after deploying OpenStack
+      with Ceph.
