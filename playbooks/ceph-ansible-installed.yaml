@@ -7,6 +7,7 @@
         Prints a message if ceph-ansible isn't installed
       groups:
         - pre-deployment
+        - pre-ceph
     fail_without_ceph_ansible: false
     ceph_ansible_repo: "centos-ceph-nautilus"
   tasks:
