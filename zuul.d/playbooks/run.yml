@@ -11,7 +11,7 @@
         pytest --color=no \
                --html={{ ansible_user_dir }}/zuul-output/logs/reports.html \
                --self-contained-html \
-               --ansible-args='{{ tripleo_job_ansible_args | default("-v") }}' \
+               --ansible-args='{{ tripleo_job_ansible_args | default("") }}' \
                {{ ansible_user_dir }}/{{ zuul.project.src_dir }}/tests/test_molecule.py
       args:
         chdir: "{{ ansible_user_dir }}/{{ zuul.project.src_dir }}/roles/{{ tripleo_validations_role_name }}"
