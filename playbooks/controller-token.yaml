@@ -10,4 +10,4 @@
         - post-deployment
     keystone_conf_file: "/var/lib/config-data/puppet-generated/keystone/etc/keystone/keystone.conf"
   roles:
-    - controller-token
+    - controller_token

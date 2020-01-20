@@ -11,4 +11,4 @@
         - pre-introspection
     cron_check: "keystone-manage token_flush"
   roles:
-    - undercloud-tokenflush
+    - undercloud_tokenflush

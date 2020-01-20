@@ -1,0 +1,58 @@
+---
+# Copyright 2019 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+
+- name: Converge
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: detect wrong port
+      block:
+        - name: run validation for wrong port
+          include_role:
+            name: image_serve
+          vars:
+            container_registry_port: 9999
+      rescue:
+        - name: Clear host errors
+          meta: clear_host_errors
+
+        - name: Status message
+          debug:
+            msg: "Detected faulty port!"
+
+    - name: Ensure we detect faulty tree
+      block:
+        - name: run validation for 404
+          include_role:
+            name: image_serve
+      rescue:
+        - name: Clear host errors
+          meta: clear_host_errors
+
+        - name: Status message
+          debug:
+            msg: "Detected faulty image serve tree!"
+
+        - name: End play
+          meta: end_play
+
+    - name: Fail the test
+      fail:
+        msg: |
+          The image_serve role should have detected httpd wasn't running or
+          index.json is absent.

@@ -11,4 +11,4 @@
         - post-deployment
     min_open_files_limit: 16384
   roles:
-    - mysql-open-files-limit
+    - mysql_open_files_limit

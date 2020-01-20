@@ -12,4 +12,4 @@
         - pre-deployment
     debug_check: "True"
   roles:
-    - undercloud-debug
+    - undercloud_debug

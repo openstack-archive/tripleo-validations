@@ -9,4 +9,4 @@
       groups:
         - no-op
   roles:
-    - no-op
+    - no_op

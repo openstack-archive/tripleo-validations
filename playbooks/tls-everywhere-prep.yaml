@@ -10,5 +10,5 @@
         - prep
   tasks:
     - include_role:
-        name: tls-everywhere
+        name: tls_everywhere
         tasks_from: prep.yaml

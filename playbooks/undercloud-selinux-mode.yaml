@@ -10,4 +10,4 @@
         - prep
         - pre-introspection
   roles:
-    - undercloud-selinux-mode
+    - undercloud_selinux_mode

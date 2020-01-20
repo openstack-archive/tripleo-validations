@@ -10,4 +10,4 @@
         - post-deployment
         - post-upgrade
   roles:
-    - container-status
+    - container_status

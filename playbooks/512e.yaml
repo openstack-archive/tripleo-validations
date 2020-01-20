@@ -10,4 +10,4 @@
         - prep
         - pre-deployment
   roles:
-    - advanced-format-512e-support
+    - advanced_format_512e_support

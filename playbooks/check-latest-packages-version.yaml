@@ -10,4 +10,4 @@
       groups:
         - pre-upgrade
   roles:
-    - check-latest-packages-version
+    - check_latest_packages_version

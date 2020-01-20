@@ -19,4 +19,4 @@
       groups:
         - pre-upgrade
   roles:
-    - nova-status
+    - nova_status

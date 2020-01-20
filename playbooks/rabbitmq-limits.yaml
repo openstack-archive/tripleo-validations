@@ -9,4 +9,4 @@
         - post-deployment
     min_fd_limit: 16384
   roles:
-    - rabbitmq-limits
+    - rabbitmq_limits

@@ -10,4 +10,4 @@
         - pre-deployment
         - pre-upgrade
   roles:
-    - collect-flavors-and-verify-profiles
+    - collect_flavors_and_verify_profiles

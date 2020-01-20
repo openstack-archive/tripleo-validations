@@ -9,4 +9,4 @@
       groups:
         - pre-upgrade
   roles:
-    - xfs-check-ftype
+    - xfs_check_ftype

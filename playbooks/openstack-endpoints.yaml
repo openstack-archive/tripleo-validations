@@ -12,4 +12,4 @@
         - pre-upgrade
         - post-upgrade
   roles:
-    - openstack-endpoints
+    - openstack_endpoints

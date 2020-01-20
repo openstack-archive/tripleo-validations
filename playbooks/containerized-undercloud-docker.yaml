@@ -100,4 +100,4 @@
       - zaqar
       - zaqar_websocket
   roles:
-    - containerized-undercloud-docker
+    - containerized_undercloud_docker

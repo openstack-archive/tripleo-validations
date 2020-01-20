@@ -10,4 +10,4 @@
         - post-deployment
         - post-upgrade
   roles:
-    - image-serve
+    - image_serve

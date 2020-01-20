@@ -12,4 +12,4 @@
         - pre-deployment
     max_process_count: 8
   roles:
-    - undercloud-process-count
+    - undercloud_process_count

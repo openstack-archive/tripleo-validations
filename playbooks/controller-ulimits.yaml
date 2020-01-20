@@ -10,4 +10,4 @@
     nofiles_min: 1024
     nproc_min: 2048
   roles:
-    - controller-ulimits
+    - controller_ulimits
