@@ -378,6 +378,14 @@ When running it, it should output something like this::
     undercloud                 : ok=2    changed=0    unreachable=0    failed=0
 
 
+If you run into an issue where the validation isn't found, it may be because the
+run-validations.sh script is searching for it in the path where the packaging
+installs validations.  For development, export an environment variable named
+VALIDATIONS_BASEDIR with the value of base bath of your git repo.::
+
+    cd /path/to/git/repo
+    export VALIDATIONS_BASEDIR=$(pwd)
+
 
 Writing the full validation code is quite easy in this case because Ansible has
 done all the hard work for us already. We can use the ``ansible_memtotal_mb``
