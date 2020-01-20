@@ -27,5 +27,5 @@
     resource_reqs_prod: false
   tasks:
     - include_role:
-        name: openshift-on-openstack
+        name: openshift_on_openstack
         tasks_from: openshift-hw-requirements.yaml

@@ -10,4 +10,4 @@
         - post-deployment
     nova_conf_path: "/var/lib/config-data/puppet-generated/nova_libvirt/etc/nova/nova.conf"
   roles:
-    - no-op-firewall-nova-driver
+    - no_op_firewall_nova_driver

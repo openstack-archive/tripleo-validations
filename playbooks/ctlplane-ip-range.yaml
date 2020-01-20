@@ -10,4 +10,4 @@
         - pre-introspection
     ctlplane_iprange_min_size: 20
   roles:
-    - ctlplane-ip-range
+    - ctlplane_ip_range

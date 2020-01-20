@@ -9,4 +9,4 @@
         - pre-deployment
         - pre-upgrade
   roles:
-    - ironic-boot-configuration
+    - ironic_boot_configuration

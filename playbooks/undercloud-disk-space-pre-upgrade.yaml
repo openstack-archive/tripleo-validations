@@ -17,4 +17,4 @@
       - {mount: /, min_size: 20}
 
   roles:
-    - undercloud-disk-space
+    - undercloud_disk_space

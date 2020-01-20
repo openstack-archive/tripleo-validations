@@ -9,4 +9,4 @@
         - post-upgrade
         - pre-upgrade
   roles:
-    - undercloud-service-status
+    - undercloud_service_status

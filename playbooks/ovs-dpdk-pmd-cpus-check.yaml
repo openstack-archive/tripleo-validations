@@ -11,4 +11,4 @@
       groups:
         - post-deployment
   roles:
-    - ovs-dpdk-pmd
+    - ovs_dpdk_pmd

@@ -13,4 +13,4 @@
         - post-deployment
         - post-upgrade
   roles:
-    - service-status
+    - service_status

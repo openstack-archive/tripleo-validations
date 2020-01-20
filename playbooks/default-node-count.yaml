@@ -9,4 +9,4 @@
       groups:
         - pre-deployment
   roles:
-    - default-node-count
+    - default_node_count

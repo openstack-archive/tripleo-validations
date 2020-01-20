@@ -18,4 +18,4 @@
     plan_env_path: plan-environment.yaml
     ip_pools_path: environments/ips-from-pool-all.yaml
   roles:
-    - network-environment
+    - network_environment

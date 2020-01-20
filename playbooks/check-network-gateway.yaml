@@ -9,4 +9,4 @@
       groups:
         - pre-introspection
   roles:
-    - check-network-gateway
+    - check_network_gateway

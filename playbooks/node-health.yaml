@@ -9,4 +9,4 @@
       groups:
         - pre-upgrade
   roles:
-    - node-health
+    - node_health

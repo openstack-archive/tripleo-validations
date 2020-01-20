@@ -10,8 +10,8 @@
         - pre-deployment
   tasks:
     - include_role:
-        name: tls-everywhere
+        name: tls_everywhere
         tasks_from: common.yaml
     - include_role:
-        name: tls-everywhere
+        name: tls_everywhere
         tasks_from: pre-deployment.yaml

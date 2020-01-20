@@ -12,4 +12,4 @@
         - pre-deployment
     cron_check: "heat-manage purge_deleted"
   roles:
-    - undercloud-heat-purge-deleted
+    - undercloud_heat_purge_deleted

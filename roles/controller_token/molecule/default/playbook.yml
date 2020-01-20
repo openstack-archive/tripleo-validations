@@ -1,0 +1,53 @@
+---
+# Copyright 2019 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+
+- name: Converge
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: pass validation
+      include_role:
+        name: controller_token
+
+    - name: fail validation
+      block:
+        - name: provide configuration file
+          copy:
+            dest: /keystone.conf
+            content: |
+              [DEFAULT]
+              admin_token = CHANGEME
+
+        - include_role:
+            name: controller_token
+          vars:
+            keystone_conf_file: /keystone.conf
+      rescue:
+        - name: Clear host errors
+          meta: clear_host_errors
+
+        - debug:
+            msg: The validation works! End the playbook run
+
+        - name: End play
+          meta: end_play
+
+    - name: Fail the test
+      fail:
+        msg: |
+          Controller-token validation failed finding bad configuration!

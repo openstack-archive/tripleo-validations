@@ -26,4 +26,4 @@
     notify_nova_on_port_status_check: "notify_nova_on_port_status_changes"
     tenant_name_check: "tenant_name"
   roles:
-    - nova-event-callback
+    - nova_event_callback

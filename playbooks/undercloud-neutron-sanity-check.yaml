@@ -26,4 +26,4 @@
       - /etc/neutron/l3_agent.ini
 
   roles:
-    - neutron-sanity-check
+    - neutron_sanity_check

@@ -12,4 +12,4 @@
       groups:
         - post-deployment
   roles:
-    - pacemaker-status
+    - pacemaker_status

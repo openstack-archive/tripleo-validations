@@ -10,4 +10,4 @@
         - pre-upgrade
         - post-upgrade
   roles:
-    - stack-health
+    - stack_health

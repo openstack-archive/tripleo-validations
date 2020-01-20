@@ -13,4 +13,4 @@
         - pre-introspection
     min_undercloud_cpu_count: 8
   roles:
-    - undercloud-cpu
+    - undercloud_cpu

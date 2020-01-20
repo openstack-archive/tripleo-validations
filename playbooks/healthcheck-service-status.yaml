@@ -11,4 +11,4 @@
     delay_number: 1
     inflight_healthcheck_services: []
   roles:
-    - healthcheck-service-status
+    - healthcheck_service_status
