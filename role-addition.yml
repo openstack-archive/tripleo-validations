@@ -26,13 +26,17 @@
       when:
         - role_name is undefined
 
+    - name: Normalize the role name
+      set_fact:
+        _role_name: "{{ role_name | replace('-', '_' ) }}"
+
     - name: Create role
       command: >-
         ansible-galaxy init
         --role-skeleton=_skeleton_role_
-        --init-path=roles {{ role_name }}
+        --init-path=tripleo_validations/roles/{{ _role_name }}
       args:
-        creates: "roles/{{ role_name }}"
+        creates: "tripleo_validations/roles/{{ _role_name }}"
 
     - name: Read zuul molecule file
       slurp:
@@ -45,7 +49,7 @@
           ---
           {% set items = molecule_yaml['content'] | b64decode | from_yaml %}
           {% set job_index = [] %}
-          {% set new_job_name = "tripleo-validations-centos-7-molecule-" ~ role_name %}
+          {% set new_job_name = "tripleo-validations-centos-7-molecule-" ~ _role_name %}
           {% for item in items %}
           {%   if 'project-template' in item %}
           {%     if item['project-template']['name'] == "tripleo-validations-molecule-jobs" %}
@@ -67,12 +71,12 @@
                   "name": new_job_name,
                   "parent": "tripleo-validations-centos-7-base",
                   "files": [
-                    "^roles/" ~ role_name ~ "/.*"
+                    "^tripleo_validations/roles/" ~ _role_name ~ "/.*"
                   ],
                   "vars": {
-                    "tripleo_validations_role_name": role_name
+                    "tripleo_role_name": _role_name
                   }
-               }
+                }
           %}
           {%   set _ = items.append({"job": new_job}) %}
           {% endif %}
@@ -100,10 +104,11 @@
     - name: Create role documentation
       copy:
         content: |
-          {{ '=' * (role_name | length) }}
-          {{ role_name }}
-          {{ '=' * (role_name | length) }}
+          {% set opening = 'Role - ' ~ _role_name %}
+          {{ '=' * (opening | length) }}
+          {{ opening }}
+          {{ '=' * (opening | length) }}
 
           .. ansibleautoplugin::
-             :role: roles/{{ role_name }}
-        dest: "doc/source/roles/role-{{ role_name }}.rst"
+            :role: tripleo_validations/roles/{{ _role_name }}
+        dest: "doc/source/roles/role-{{ _role_name }}.rst"
