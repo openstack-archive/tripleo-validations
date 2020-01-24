@@ -7,6 +7,8 @@
         Prints a message if ceph-ansible isn't installed
       groups:
         - pre-deployment
+    fail_without_ceph_ansible: false
+    ceph_ansible_repo: "centos-ceph-nautilus"
   tasks:
   - name: Check if ceph-ansible is installed
     command: yum list installed ceph-ansible
@@ -20,3 +22,17 @@
       msg: If planning to use Ceph, it is necessary to install the ceph-ansible on the undercloud
     when:
       - ceph_ansible_installed|failed
+      - ceph_ansible_installed.stdout.find('is not installed') != -1
+      - fail_without_ceph_ansible|default(false)|bool
+
+  - name: Get ceph-ansible repository
+    shell: "yum info ceph-ansible | awk '/From repo/ {print $4}'"
+    register: repo
+    changed_when: False
+
+  - name: Fail if ceph-ansible doesn't belong to the specified repo
+    fail:
+      msg: "Make sure ceph-ansible package is installed from {{ ceph_ansible_repo }}"
+    when:
+      - (repo.stdout | length == 0 or repo.stdout != "{{ ceph_ansible_repo }}")
+      - fail_without_ceph_ansible|default(false)|bool
