@@ -36,7 +36,6 @@
       - tripleo-validations-centos-7-molecule-undercloud_ram
       - tripleo-validations-centos-7-molecule-undercloud_debug
       - tripleo-validations-centos-7-molecule-undercloud_disk_space
-      - tripleo-validations-centos-7-molecule-xfs_check_ftype
       - tripleo-validations-centos-7-molecule-no_op_firewall_nova_driver
       - tripleo-validations-centos-7-molecule-nova_status
       - tripleo-validations-centos-7-molecule-image_serve
