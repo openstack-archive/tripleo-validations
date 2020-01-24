@@ -8,6 +8,7 @@
       groups:
         - pre-deployment
     fail_without_ceph_ansible: false
+    ceph_ansible_repo: "centos-ceph-nautilus"
   tasks:
   - include_tasks: tasks/deprecation.yaml
   - name: Check if ceph-ansible is installed
@@ -30,4 +31,16 @@
       msg: If planning to use Ceph, it is necessary to install the ceph-ansible package on the undercloud
     when:
       - ceph_ansible_installed.stdout.find('is not installed') != -1
+      - fail_without_ceph_ansible|default(false)|bool
+
+  - name: Get ceph-ansible repository
+    shell: "yum info ceph-ansible | awk '/From repo/ {print $4}'"
+    register: repo
+    changed_when: False
+
+  - name: Fail if ceph-ansible doesn't belong to the specified repo
+    fail:
+      msg: "Make sure ceph-ansible package is installed from {{ ceph_ansible_repo }}"
+    when:
+      - (repo.stdout | length == 0 or repo.stdout != "{{ ceph_ansible_repo }}")
       - fail_without_ceph_ansible|default(false)|bool
