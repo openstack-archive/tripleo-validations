@@ -34,9 +34,10 @@
       command: >-
         ansible-galaxy init
         --role-skeleton=_skeleton_role_
-        --init-path=tripleo_validations/roles/{{ _role_name }}
+        --init-path=roles/
+        {{ _role_name }}
       args:
-        creates: "tripleo_validations/roles/{{ _role_name }}"
+        creates: "roles/{{ _role_name }}"
 
     - name: Read zuul molecule file
       slurp:
@@ -55,9 +56,13 @@
           {%     if item['project-template']['name'] == "tripleo-validations-molecule-jobs" %}
           {%       if not (new_job_name in item['project-template']['check']['jobs']) %}
           {%         set _ = item['project-template']['check']['jobs'].append(new_job_name) %}
+          {%         set check_jobs = (item['project-template']['check']['jobs'] | sort) %}
+          {%         set _ = item['project-template']['check'].update({'jobs': check_jobs}) %}
           {%       endif %}
           {%       if not (new_job_name in item['project-template']['gate']['jobs']) %}
           {%         set _ = item['project-template']['gate']['jobs'].append(new_job_name) %}
+          {%         set gate_jobs = (item['project-template']['gate']['jobs'] | sort) %}
+          {%         set _ = item['project-template']['gate'].update({'jobs': gate_jobs}) %}
           {%       endif %}
           {%     endif %}
           {%   else %}
@@ -71,10 +76,10 @@
                   "name": new_job_name,
                   "parent": "tripleo-validations-centos-7-base",
                   "files": [
-                    "^tripleo_validations/roles/" ~ _role_name ~ "/.*"
+                    "^roles/" ~ _role_name ~ "/.*"
                   ],
                   "vars": {
-                    "tripleo_role_name": _role_name
+                    "tripleo_validations_role_name": _role_name
                   }
                 }
           %}
@@ -90,12 +95,19 @@
           - hosts: undercloud
             vars:
               metadata:
-                name: Validation's name
+                name: The Validation name goes here
                 description: >-
                   Write a description of your validations
                 groups:
-                  - group1
-                  - group2
+                  - no-op
+                  - prep
+                  - pre-introspection
+                  - post-introspection
+                  - openshift-on-openstack
+                  - pre-upgrade
+                  - post-upgrade
+                  - pre-ceph
+                  - post-ceph
               {{ role_name | replace('-', '_') }}_debug: false
             roles:
               - {{ role_name }}
@@ -110,5 +122,5 @@
           {{ '=' * (opening | length) }}
 
           .. ansibleautoplugin::
-            :role: tripleo_validations/roles/{{ _role_name }}
+            :role: roles/{{ _role_name }}
         dest: "doc/source/roles/role-{{ _role_name }}.rst"
