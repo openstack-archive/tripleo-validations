@@ -1,0 +1,13 @@
+---
+- name: Get failed services from Systemd
+  shell: >
+    systemctl list-units --failed --plain --no-legend --no-pager "tripleo_*"
+  register: systemd_state
+  changed_when: false
+
+- name: Fails if we find failed systemd units
+  assert:
+    that:
+      - systemd_state.stdout_lines|length == 0
+    fail_msg: "The following services failed {{ systemd_state.stdout_lines }}"
+    success_msg: "All tripleo units are working fine"

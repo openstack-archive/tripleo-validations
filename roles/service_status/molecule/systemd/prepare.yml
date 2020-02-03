@@ -15,11 +15,25 @@
 # under the License.
 
 
-- name: Converge
+- name: Prepare
   hosts: all
   gather_facts: false
 
   tasks:
-    - name: Full check with defaults
-      include_role:
-        name: service_status
+    - name: Create fake, failing unit
+      copy:
+        dest: /etc/systemd/system/tripleo_failed-unit.service
+        content: |
+          [Unit]
+          After=network.target
+
+          [Service]
+          Type=simple
+          ExecStart=/usr/bin/false
+
+    - name: Enable and start broken thing
+      ignore_errors: true
+      service:
+        name: tripleo_failed-unit
+        state: started
+        enabled: true

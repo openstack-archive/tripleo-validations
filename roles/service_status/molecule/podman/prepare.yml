@@ -15,11 +15,25 @@
 # under the License.
 
 
-- name: Converge
+- name: Prepare
   hosts: all
   gather_facts: false
 
   tasks:
-    - name: Full check with defaults
-      include_role:
-        name: service_status
+    - name: install podman
+      package:
+        name: podman
+
+    - name: Create libpod arbo
+      file:
+        path: '/var/lib/containers/{{ item }}'
+        state: directory
+      loop:
+        - storage
+        - storage/libpod
+
+    - name: Insert failed container DB
+      copy:
+        src: ./bolt_state.db
+        dest: /var/lib/containers/storage/libpod/bolt_state.db
+        setype: container_var_lib_t

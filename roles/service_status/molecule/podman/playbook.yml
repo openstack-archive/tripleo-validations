@@ -18,8 +18,29 @@
 - name: Converge
   hosts: all
   gather_facts: false
+  vars:
+    service_status_podman_opt: '--storage-driver=vfs'
 
   tasks:
-    - name: Full check with defaults
-      include_role:
-        name: service_status
+    - name: Check podman container state
+      block:
+        - name: Detect failed podman containers
+          include_role:
+            name: service_status
+            tasks_from: containers.yaml
+      rescue:
+        - name: Clear host errors
+          meta: clear_host_errors
+
+        - name: Test output
+          debug:
+            msg: |
+              Properly detected failed container
+
+        - name: End play now
+          meta: end_play
+
+    - name: Fail if we get to this point
+      fail:
+        msg: |
+          Did not detect failed container

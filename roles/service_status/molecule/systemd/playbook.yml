@@ -20,6 +20,25 @@
   gather_facts: false
 
   tasks:
-    - name: Full check with defaults
-      include_role:
-        name: service_status
+    - name: Check service
+      block:
+        - name: Run validation
+          include_role:
+            name: service_status
+            tasks_from: systemd.yaml
+      rescue:
+        - name: Clear errors
+          meta: clear_host_errors
+
+        - name: Test output
+          debug:
+            msg: |
+              Successfully detected failed unit
+
+        - name: End play
+          meta: end_play
+
+    - name: Fail if this point is reached
+      fail:
+        msg: |
+          Did not detect failed unit

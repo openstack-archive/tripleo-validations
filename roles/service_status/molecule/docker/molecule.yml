@@ -12,6 +12,12 @@ platforms:
     easy_install:
       - pip
     command: /sbin/init
+    capabilities:
+      - SYS_ADMIN
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
     environment: &env
       http_proxy: "{{ lookup('env', 'http_proxy') }}"
       https_proxy: "{{ lookup('env', 'https_proxy') }}"
@@ -20,7 +26,13 @@ platforms:
     hostname: fedora28
     image: fedora:28
     command: /sbin/init
-    pkg_extras: python*-setuptools python*-enum python*-netaddr ruby PyYAML
+    capabilities:
+      - SYS_ADMIN
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    pkg_extras: python*-setuptools python*-enum python*-netaddr ruby PyYAML python*-libselinux
     environment:
       <<: *env
 
