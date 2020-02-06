@@ -14,7 +14,7 @@
 
 from glob import glob
 import os
-
+import six
 import yaml
 
 DEFAULT_METADATA = {
@@ -113,18 +113,59 @@ Role documentation
         f.write("\n".join(entries))
 
 
+def build_groups_detail(groups):
+    entries = [
+        """
+{group}
+{adornment}
+
+{desc}
+
+.. include:: {link}
+
+"""
+        .format(group=grp.capitalize(),
+                adornment=(len(grp) * '~'),
+                link="validations-{}.rst".format(grp),
+                desc=desc[0].get('description', None),
+                )
+        for grp, desc in sorted(groups.items())]
+    with open('doc/source/validations-groups.rst', 'w') as f:
+        f.write("\n".join(entries))
+
+
+def parse_groups_file():
+    contents = {}
+    groups_file_path = os.path.abspath('groups.yaml')
+
+    if os.path.exists(groups_file_path):
+        with open(groups_file_path, "r") as grps:
+            contents = yaml.safe_load(grps)
+
+    return contents
+
+
+def get_groups():
+    # Seed it with the known groups from groups.yaml file.
+    groups = set()
+    contents = parse_groups_file()
+
+    for group_name in six.iterkeys(contents):
+        groups.add(group_name)
+
+    return groups, contents
+
+
 def setup(app):
-    # Seed it with the known groups:
-    groups = set(('no-op', 'prep', 'pre-introspection',
-                  'pre-deployment', 'post-deployment',
-                  'pre-update', 'pre-upgrade',
-                  'post-upgrade', 'openshift-on-openstack'))
+    group_name, group_info = get_groups()
+    build_groups_detail(group_info)
+
     validations = []
     for validation_path in sorted(glob('playbooks/*.yaml')):
         with open(validation_path) as f:
             loaded_validation = yaml.safe_load(f.read())[0]
             for group in get_validation_metadata(loaded_validation, 'groups'):
-                groups.add(group)
+                group_name.add(group)
             validations.append({
                 'hosts': loaded_validation['hosts'],
                 'parameters': get_validation_parameters(loaded_validation),
@@ -138,7 +179,7 @@ def setup(app):
                 'roles': get_include_role(loaded_validation)
             })
 
-    for group in groups:
+    for group in group_name:
         validations_in_group = [validation for validation
                                 in validations
                                 if group in validation['groups']]
