@@ -15,7 +15,7 @@
          {{ healthcheck_services_list.stdout_lines }}
        {%- endif -%}
 
-- name: "[Healthcheck] Get {{ item }} status"
+- name: Get healthcheck status
   systemd:
     name: "{{ item }}"
   retries: "{{ retries_number|int }}"
@@ -25,10 +25,14 @@
     - systemd_healthcheck_state.status.ActiveState in ['inactive', 'failed']
   ignore_errors: true
   register: systemd_healthcheck_state
-  with_items: "{{ hc_services }}"
+  loop: "{{ hc_services }}"
+  loop_control:
+    label: "{{ item }}"
 
 - name: Fail if systemd healthcheck services are in failed status
   fail:
     msg: "Failed systemd healthcheck service detected: {{ item.item }}"
   when: item.status.ExecMainStatus != '0'
   loop: "{{ systemd_healthcheck_state.results }}"
+  loop_control:
+    label: "{{ item.item }}"
