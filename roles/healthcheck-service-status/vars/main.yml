@@ -1,7 +1,0 @@
----
-metadata:
-  name: Healthcheck systemd services Check
-  description: >
-    Check for failed healthcheck systemd services.
-  groups:
-    - post-deployment
