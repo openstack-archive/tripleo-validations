@@ -21,7 +21,6 @@
       - /usr/share/neutron/neutron-dist.conf
       - /etc/neutron/metadata_agent.ini
       - /etc/neutron/dhcp_agent.ini
-      - /etc/neutron/fwaas_driver.ini
       - /etc/neutron/l3_agent.ini
 
   roles:
