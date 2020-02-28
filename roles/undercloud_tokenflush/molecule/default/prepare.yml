@@ -39,12 +39,19 @@
             :datadir: "/etc/puppet/"
           :hierarchy:
             - "common"
+            - "service_configs"
 
     - name: populate hiera content
       copy:
         dest: /etc/puppet/common.yaml
         content: |
           tripleo_undercloud_conf_file: /undercloud.conf
+
+    - name: populate service config content
+      copy:
+        dest: /etc/puppet/service_configs.yaml
+        content: |
+          "keystone::token_provider": "uuid"
 
     - name: populate undercloud.conf
       copy:
