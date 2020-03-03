@@ -56,7 +56,7 @@ openstacksdk==0.24.0
 os-client-config==1.29.0
 os-net-config==7.1.0
 os-service-types==1.2.0
-osc-lib==1.14.0
+osc-lib==2.0.0
 oslo.concurrency==3.26.0
 oslo.config==5.2.0
 oslo.context==2.22.0
@@ -85,10 +85,10 @@ python-glanceclient==2.9.1
 python-heatclient==1.10.0
 python-ironic-inspector-client==3.1.1
 python-ironicclient==2.7.0
-python-keystoneclient==3.20.0
+python-keystoneclient==3.22.0
 python-mimeparse==1.6.0
 python-mistralclient==3.1.0
-python-novaclient==15.0.0
+python-novaclient==15.1.0
 python-subunit==1.0.0
 python-swiftclient==3.5.0
 python-zaqarclient==1.9.0
