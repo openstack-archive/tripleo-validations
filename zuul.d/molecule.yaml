@@ -2,38 +2,72 @@
 - project-template:
     check:
       jobs:
+      - tripleo-validations-centos-7-molecule-advanced_format_512e_support
+      - tripleo-validations-centos-7-molecule-ceilometerdb_size
+      - tripleo-validations-centos-7-molecule-ceph
+      - tripleo-validations-centos-7-molecule-check_latest_packages_version
+      - tripleo-validations-centos-7-molecule-check_network_gateway
+      - tripleo-validations-centos-7-molecule-check_network_gateway
+      - tripleo-validations-centos-7-molecule-collect_flavors_and_verify_profiles
+      - tripleo-validations-centos-7-molecule-container_status
       - tripleo-validations-centos-7-molecule-controller_token
       - tripleo-validations-centos-7-molecule-controller_ulimits
       - tripleo-validations-centos-7-molecule-ctlplane_ip_range
+      - tripleo-validations-centos-7-molecule-dhcp_validations
       - tripleo-validations-centos-7-molecule-dns
       - tripleo-validations-centos-7-molecule-haproxy
+      - tripleo-validations-centos-7-molecule-healthcheck_service_status
+      - tripleo-validations-centos-7-molecule-image_serve
+      - tripleo-validations-centos-7-molecule-image_serve
+      - tripleo-validations-centos-7-molecule-ironic_boot_configuration
+      - tripleo-validations-centos-7-molecule-mysql_open_files_limit
+      - tripleo-validations-centos-7-molecule-network_environment
+      - tripleo-validations-centos-7-molecule-neutron_sanity_check
+      - tripleo-validations-centos-7-molecule-no_op_firewall_nova_driver
+      - tripleo-validations-centos-7-molecule-node_disks
+      - tripleo-validations-centos-7-molecule-node_health
+      - tripleo-validations-centos-7-molecule-nova_event_callback
+      - tripleo-validations-centos-7-molecule-nova_status
+      - tripleo-validations-centos-7-molecule-nova_status
+      - tripleo-validations-centos-7-molecule-ntp
+      - tripleo-validations-centos-7-molecule-openshift_on_openstack
+      - tripleo-validations-centos-7-molecule-openstack_endpoints
+      - tripleo-validations-centos-7-molecule-ovs_dpdk_pmd
+      - tripleo-validations-centos-7-molecule-pacemaker_status
+      - tripleo-validations-centos-7-molecule-rabbitmq_limits
       - tripleo-validations-centos-7-molecule-repos
+      - tripleo-validations-centos-7-molecule-service_status
+      - tripleo-validations-centos-7-molecule-stack_health
+      - tripleo-validations-centos-7-molecule-stonith_exists
+      - tripleo-validations-centos-7-molecule-switch_vlans
+      - tripleo-validations-centos-7-molecule-tls_everywhere
       - tripleo-validations-centos-7-molecule-undercloud_cpu
-      - tripleo-validations-centos-7-molecule-undercloud_ram
       - tripleo-validations-centos-7-molecule-undercloud_debug
       - tripleo-validations-centos-7-molecule-undercloud_disk_space
-      - tripleo-validations-centos-7-molecule-xfs_check_ftype
-      - tripleo-validations-centos-7-molecule-no_op_firewall_nova_driver
-      - tripleo-validations-centos-7-molecule-nova_status
-      - tripleo-validations-centos-7-molecule-image_serve
-      - tripleo-validations-centos-7-molecule-check_network_gateway
       - tripleo-validations-centos-7-molecule-undercloud_heat_purge_deleted
+      - tripleo-validations-centos-7-molecule-undercloud_process_count
+      - tripleo-validations-centos-7-molecule-undercloud_ram
+      - tripleo-validations-centos-7-molecule-undercloud_selinux_mode
       - tripleo-validations-centos-7-molecule-undercloud_tokenflush
-      - tripleo-validations-centos-7-molecule-rabbitmq_limits
-      - tripleo-validations-centos-7-molecule-stonith_exists
-      - tripleo-validations-centos-7-molecule-check_latest_packages_version
       - tripleo-validations-centos-7-molecule-validate_selinux
-      - tripleo-validations-centos-7-molecule-ceph
+      - tripleo-validations-centos-7-molecule-xfs_check_ftype
+      - tripleo-validations-centos-7-molecule-xfs_check_ftype
     gate:
       jobs:
+      - tripleo-validations-centos-7-molecule-ceph
+      - tripleo-validations-centos-7-molecule-check_latest_packages_version
+      - tripleo-validations-centos-7-molecule-check_network_gateway
       - tripleo-validations-centos-7-molecule-controller_token
       - tripleo-validations-centos-7-molecule-controller_ulimits
       - tripleo-validations-centos-7-molecule-ctlplane_ip_range
       - tripleo-validations-centos-7-molecule-dns
       - tripleo-validations-centos-7-molecule-haproxy
+      - tripleo-validations-centos-7-molecule-image_serve
+      - tripleo-validations-centos-7-molecule-nova_status
+      - tripleo-validations-centos-7-molecule-rabbitmq_limits
       - tripleo-validations-centos-7-molecule-repos
+      - tripleo-validations-centos-7-molecule-stonith_exists
       - tripleo-validations-centos-7-molecule-undercloud_cpu
-      - tripleo-validations-centos-7-molecule-undercloud_ram
       - tripleo-validations-centos-7-molecule-undercloud_debug
       - tripleo-validations-centos-7-molecule-undercloud_disk_space
       - tripleo-validations-centos-7-molecule-no_op_firewall_nova_driver
@@ -41,13 +75,202 @@
       - tripleo-validations-centos-7-molecule-image_serve
       - tripleo-validations-centos-7-molecule-check_network_gateway
       - tripleo-validations-centos-7-molecule-undercloud_heat_purge_deleted
+      - tripleo-validations-centos-7-molecule-undercloud_ram
       - tripleo-validations-centos-7-molecule-undercloud_tokenflush
-      - tripleo-validations-centos-7-molecule-rabbitmq_limits
-      - tripleo-validations-centos-7-molecule-stonith_exists
-      - tripleo-validations-centos-7-molecule-check_latest_packages_version
       - tripleo-validations-centos-7-molecule-validate_selinux
-      - tripleo-validations-centos-7-molecule-ceph
     name: tripleo-validations-molecule-jobs
+- job:
+    files:
+    - ^roles/collect_flavors_and_verify_profiles/.*
+    name: tripleo-validations-centos-7-molecule-collect_flavors_and_verify_profiles
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: collect_flavors_and_verify_profiles
+    voting: false
+- job:
+    files:
+    - ^roles/ceilometerdb_size/.*
+    name: tripleo-validations-centos-7-molecule-ceilometerdb_size
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: ceilometerdb_size
+    voting: false
+- job:
+    files:
+    - ^roles/neutron_sanity_check/.*
+    name: tripleo-validations-centos-7-molecule-neutron_sanity_check
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: neutron_sanity_check
+    voting: false
+- job:
+    files:
+    - ^roles/node_health/.*
+    name: tripleo-validations-centos-7-molecule-node_health
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: node_health
+    voting: false
+- job:
+    files:
+    - ^roles/nova_event_callback/.*
+    name: tripleo-validations-centos-7-molecule-nova_event_callback
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: nova_event_callback
+    voting: false
+- job:
+    files:
+    - ^roles/ovs_dpdk_pmd/.*
+    name: tripleo-validations-centos-7-molecule-ovs_dpdk_pmd
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: ovs_dpdk_pmd
+    voting: false
+- job:
+    files:
+    - ^roles/pacemaker_status/.*
+    name: tripleo-validations-centos-7-molecule-pacemaker_status
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: pacemaker_status
+    voting: false
+- job:
+    files:
+    - ^roles/stack_health/.*
+    name: tripleo-validations-centos-7-molecule-stack_health
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: stack_health
+    voting: false
+- job:
+    files:
+    - ^roles/switch_vlans/.*
+    name: tripleo-validations-centos-7-molecule-switch_vlans
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: switch_vlans
+    voting: false
+- job:
+    files:
+    - ^roles/tls_everywhere/.*
+    name: tripleo-validations-centos-7-molecule-tls_everywhere
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: tls_everywhere
+    voting: false
+- job:
+    files:
+    - ^roles/undercloud_process_count/.*
+    name: tripleo-validations-centos-7-molecule-undercloud_process_count
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: undercloud_process_count
+    voting: false
+- job:
+    files:
+    - ^roles/undercloud_selinux_mode/.*
+    name: tripleo-validations-centos-7-molecule-undercloud_selinux_mode
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: undercloud_selinux_mode
+    voting: false
+- job:
+    files:
+    - ^roles/openstack_endpoints/.*
+    name: tripleo-validations-centos-7-molecule-openstack_endpoints
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: openstack_endpoints
+    voting: false
+- job:
+    files:
+    - ^roles/ntp/.*
+    name: tripleo-validations-centos-7-molecule-ntp
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: ntp
+    voting: false
+- job:
+    files:
+    - ^roles/service_status/.*
+    name: tripleo-validations-centos-7-molecule-service_status
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: service_status
+    voting: false
+- job:
+    files:
+    - ^roles/openshift_on_openstack/.*
+    name: tripleo-validations-centos-7-molecule-openshift_on_openstack
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: openshift_on_openstack
+    voting: false
+- job:
+    files:
+    - ^roles/node_disks/.*
+    name: tripleo-validations-centos-7-molecule-node_disks
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: node_disks
+    voting: false
+- job:
+    files:
+    - ^roles/container_status/.*
+    name: tripleo-validations-centos-7-molecule-container_status
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: container_status
+    voting: false
+- job:
+    files:
+    - ^roles/healthcheck_service_status/.*
+    name: tripleo-validations-centos-7-molecule-healthcheck_service_status
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: healthcheck_service_status
+    voting: false
+- job:
+    files:
+    - ^roles/ironic_boot_configuration/.*
+    name: tripleo-validations-centos-7-molecule-ironic_boot_configuration
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: ironic_boot_configuration
+    voting: false
+- job:
+    files:
+    - ^roles/mysql_open_files_limit/.*
+    name: tripleo-validations-centos-7-molecule-mysql_open_files_limit
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: mysql_open_files_limit
+    voting: false
+- job:
+    files:
+    - ^roles/network_environment/.*
+    name: tripleo-validations-centos-7-molecule-network_environment
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: network_environment
+    voting: false
+- job:
+    files:
+    - ^roles/advanced_format_512e_support/.*
+    name: tripleo-validations-centos-7-molecule-advanced_format_512e_support
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: advanced_format_512e_support
+    voting: false
+- job:
+    files:
+    - ^roles/dhcp_validations/.*
+    name: tripleo-validations-centos-7-molecule-dhcp_validations
+    parent: tripleo-validations-centos-7-base
+    vars:
+      tripleo_validations_role_name: dhcp_validations
+    voting: false
 - job:
     files:
     - ^roles/controller_token/.*
