@@ -247,7 +247,7 @@ class AnsibleAutoPluginDirective(Directive):
                 molecule_playbook_path = os.path.join(
                     molecule_path,
                     test,
-                    'playbook.yml'
+                    'converge.yml'
                 )
                 with open(molecule_playbook_path) as f:
                     molecule_playbook = yaml.safe_load(f.read())

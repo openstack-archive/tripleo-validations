@@ -26,7 +26,6 @@
       jobs:
       - tripleo-validations-centos-8-molecule-ceph
       - tripleo-validations-centos-8-molecule-check_latest_packages_version
-      - tripleo-validations-centos-8-molecule-check_network_gateway
       - tripleo-validations-centos-8-molecule-controller_token
       - tripleo-validations-centos-8-molecule-controller_ulimits
       - tripleo-validations-centos-8-molecule-ctlplane_ip_range
@@ -47,6 +46,7 @@
       - tripleo-validations-centos-8-molecule-undercloud_ram
       - tripleo-validations-centos-8-molecule-undercloud_tokenflush
       - tripleo-validations-centos-8-molecule-validate_selinux
+      # - tripleo-validations-centos-8-molecule-check_network_gateway
     name: tripleo-validations-molecule-jobs
 - job:
     files:
@@ -346,6 +346,7 @@
     parent: tripleo-validations-centos-8-base
     vars:
       tripleo_validations_role_name: check_network_gateway
+    voting: false
 - job:
     files:
     - ^roles/undercloud_heat_purge_deleted/.*
