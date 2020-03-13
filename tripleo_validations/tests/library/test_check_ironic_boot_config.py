@@ -13,11 +13,10 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from unittest import mock
 
 import library.check_ironic_boot_config as validation
 from tripleo_validations.tests import base
-
-import mock
 
 UUIDs = [
     '13c319a4-7704-4b44-bb2e-501951879f96',

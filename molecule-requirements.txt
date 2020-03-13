@@ -6,6 +6,5 @@ pytest
 pytest-cov
 pytest-html
 pytest-xdist
-mock
 molecule>=2.22rc1,<3
 selinux  # MIT
