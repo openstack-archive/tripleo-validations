@@ -47,7 +47,7 @@ opts = [
         'OS_PROJECT_NAME', os.environ.get('OS_TENANT_NAME'))),
     cfg.StrOpt('cacert', default=os.environ.get('OS_CACERT')),
     cfg.ListOpt('plan',
-                default=([os.environ.get('TRIPLEO_PLAN_NAME')]
+                default=(os.environ.get('TRIPLEO_PLAN_NAME').split(',')
                          if os.environ.get('TRIPLEO_PLAN_NAME') else None),
                 help=('stack name(s) to use for generating the '
                       'inventory data. If a comma delimited list '
@@ -153,18 +153,10 @@ def main():
             host_network=configs.ssh_network,
             serial=configs.serial)
 
-    inventory_keys = list(inventory_map)
-    if len(inventory_keys) == 1:
-        inventory = inventory_map[inventory_keys[0]]
-    else:
-        inventory = invs.TripleoInventories(inventory_map)
-        inventory.merge()
+    inventory = invs.TripleoInventories(inventory_map)
     if configs.list:
         try:
-            if len(inventory_keys) == 1:
-                inventory_list = inventory.list()
-            else:
-                inventory_list = inventory.inventory
+            inventory_list = inventory.list()
             print(json.dumps(inventory_list))
         except Exception as e:
             print("ERROR: Error creating inventory: {}".format(e),
