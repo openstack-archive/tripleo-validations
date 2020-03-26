@@ -38,7 +38,7 @@ jmespath==0.9.3
 jsonpatch==1.21
 jsonpointer==2.0
 jsonschema==2.6.0
-keystoneauth1==3.12.0
+keystoneauth1==3.16.0
 linecache2==1.0.0
 MarkupSafe==1.0
 mccabe==0.2.1
@@ -50,10 +50,10 @@ munch==2.2.0
 netaddr==0.7.18
 netifaces==0.10.6
 openstackdocstheme==1.20.0
-openstacksdk==0.24.0
+openstacksdk==0.36.0
 os-client-config==1.29.0
 os-net-config==7.1.0
-os-service-types==1.2.0
+os-service-types==1.7.0
 osc-lib==2.0.0
 oslo.concurrency==3.26.0
 oslo.config==5.2.0
