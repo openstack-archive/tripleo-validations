@@ -22,9 +22,9 @@ platforms:
       http_proxy: "{{ lookup('env', 'http_proxy') }}"
       https_proxy: "{{ lookup('env', 'https_proxy') }}"
 
-  - name: fedora28
-    hostname: fedora28
-    image: fedora:28
+  - name: centos8
+    hostname: centos8
+    image: centos:8
     command: /sbin/init
     capabilities:
       - SYS_ADMIN
@@ -32,7 +32,7 @@ platforms:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    pkg_extras: python*-setuptools python*-enum python*-netaddr ruby PyYAML python*-libselinux
+    pkg_extras: python*-setuptools python*-enum34 python*-netaddr ruby python*-PyYAML python*-libselinux
     environment:
       <<: *env
 
@@ -52,10 +52,5 @@ scenario:
     - verify
     - destroy
 
-lint:
-  enabled: false
-
 verifier:
   name: testinfra
-  lint:
-    name: flake8
