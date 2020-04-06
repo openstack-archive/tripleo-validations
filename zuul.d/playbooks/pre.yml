@@ -29,4 +29,4 @@
         virtualenv: "{{ ansible_user_dir }}/test-python"
         virtualenv_site_packages: true
   roles:
-    - role: install-docker
+    - role: ensure-docker
