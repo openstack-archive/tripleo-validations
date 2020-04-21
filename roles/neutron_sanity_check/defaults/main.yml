@@ -5,5 +5,4 @@ configs:
   - /etc/neutron/metadata_agent.ini
   - /etc/neutron/dhcp_agent.ini
   - /etc/neutron/plugins/ml2/openvswitch_agent.ini
-  - /etc/neutron/fwaas_driver.ini
   - /etc/neutron/l3_agent.ini
