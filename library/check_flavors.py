@@ -134,7 +134,7 @@ def validate_roles_and_flavors(roles_info, flavors):
                                         resource_class_name_incorrect,
                                         flavor_name)
                                 else:
-                                    if val == 1:
+                                    if int(val) == 1:
                                         custom_resource_class_val = True
                         if not custom_resource_class:
                             errors.append(resource_class_missing.format(
@@ -145,7 +145,7 @@ def validate_roles_and_flavors(roles_info, flavors):
                         disk = resource_specs.get("DISK_GB", None)
                         memory = resource_specs.get("MEMORY_MB", None)
                         vcpu = resource_specs.get("VCPU", None)
-                        if any(resource != 0 for resource in [disk, memory,
+                        if any(int(resource) != 0 for resource in [disk, memory,
                                vcpu]):
                             errors.append(disable_standard_scheduling.
                                           format(flavor_name))
