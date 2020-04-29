@@ -26,6 +26,15 @@
       when:
         - role_name is undefined
 
+    - name: Ensure role name is not empty
+      fail:
+        msg: >-
+          The required variable `role_name` is empty. Check your settings.
+      when:
+        - role_name is defined
+        - role_name == ''
+
+
     - name: Normalize the role name
       set_fact:
         _role_name: "{{ role_name | replace('-', '_' ) }}"
