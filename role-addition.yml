@@ -111,6 +111,8 @@
                   - no-op
                   - prep
                   - pre-introspection
+                  - pre-deployment
+                  - post-deployment
                   - openshift-on-openstack
                   - pre-upgrade
                   - post-upgrade
