@@ -59,7 +59,7 @@
           ---
           {% set items = molecule_yaml['content'] | b64decode | from_yaml %}
           {% set job_index = [] %}
-          {% set new_job_name = "tripleo-validations-centos-7-molecule-" ~ _role_name %}
+          {% set new_job_name = "tripleo-validations-centos-8-molecule-" ~ _role_name %}
           {% for item in items %}
           {%   if 'project-template' in item %}
           {%     if item['project-template']['name'] == "tripleo-validations-molecule-jobs" %}
@@ -83,7 +83,7 @@
           {% if (job_index | length) < 1 %}
           {%   set new_job = {
                   "name": new_job_name,
-                  "parent": "tripleo-validations-centos-7-base",
+                  "parent": "tripleo-validations-centos-8-base",
                   "files": [
                     "^roles/" ~ _role_name ~ "/.*"
                   ],
