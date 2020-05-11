@@ -19,7 +19,7 @@
     - name: Set container_client fact
       set_fact:
         container_client: |-
-          {% set container_cli = 'podman' %}
+          {% set container_client = 'podman' %}
           {%   if check_docker_cli.stat.exists|bool %}
           {%     set container_client = 'docker' %}
           {%   endif %}
