@@ -426,3 +426,4 @@
     parent: tripleo-validations-centos-7-base
     vars:
       tripleo_validations_role_name: ceph
+    voting: false
