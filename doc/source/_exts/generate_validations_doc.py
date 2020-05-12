@@ -103,7 +103,6 @@ Role documentation
                 name=validation['name'],
                 desc=validation['description'],
                 groups=', '.join(validation['groups']),
-                metadata=format_dict(validation['metadata']),
                 hosts=validation['hosts'],
                 parameters=format_dict(validation['parameters']),
                 roles=validation['roles']
