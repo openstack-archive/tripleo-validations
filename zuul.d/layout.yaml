@@ -1,7 +1,7 @@
 - project:
     templates:
     - tripleo-multinode-container-minimal
-    - openstack-python3-ussuri-jobs
+    - openstack-python3-victoria-jobs
     - tripleo-validations-molecule-jobs
     - check-requirements
     - release-notes-jobs-python3
