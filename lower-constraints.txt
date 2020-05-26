@@ -37,7 +37,7 @@ Jinja2==2.10
 jmespath==0.9.3
 jsonpatch==1.21
 jsonpointer==2.0
-jsonschema==2.6.0
+jsonschema==3.2.0
 keystoneauth1==3.16.0
 linecache2==1.0.0
 MarkupSafe==1.0
