@@ -19,8 +19,6 @@
 # TODO(mandre)
 # If possible get info from ironic for hosts prior to deployment
 
-from __future__ import print_function
-
 import json
 import os
 import sys
