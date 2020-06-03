@@ -75,6 +75,6 @@ latex_documents = [
 ]
 
 # openstackdocstheme options
-repository_name = 'openstack/tripleo-validations'
-bug_project = 'tripleo'
-bug_tag = 'documentation'
+openstackdocs_repo_name = 'openstack/tripleo-validations'
+openstackdocs_bug_project = 'tripleo'
+openstackdocs_bug_tag = 'documentation'
