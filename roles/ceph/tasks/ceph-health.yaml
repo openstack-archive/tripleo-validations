@@ -65,7 +65,7 @@
       block:
         - name: set jq osd percentage filter
           set_fact:
-            jq_osd_percentage_filter: '( (.num_in_osds) / (.num_osds) ) * 100'
+            jq_osd_percentage_filter: '( (.osdmap.num_in_osds) / (.osdmap.num_osds) ) * 100'
 
         - name: Get OSD stat percentage
           become: true
