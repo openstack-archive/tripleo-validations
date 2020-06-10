@@ -54,7 +54,6 @@
       - tripleo-validations-centos-7-molecule-xfs_check_ftype
     gate:
       jobs:
-      - tripleo-validations-centos-7-molecule-ceph
       - tripleo-validations-centos-7-molecule-check_latest_packages_version
       - tripleo-validations-centos-7-molecule-check_network_gateway
       - tripleo-validations-centos-7-molecule-controller_token
