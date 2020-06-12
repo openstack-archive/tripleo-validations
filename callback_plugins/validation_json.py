@@ -151,7 +151,7 @@ class CallbackModule(CallbackBase):
             self.env['playbook_name'],
             self.current_time)
 
-        with open(log_file, 'wb') as js:
+        with open(log_file, 'w') as js:
             js.write(json.dumps(output,
                                 cls=AnsibleJSONEncoder,
                                 indent=4,
