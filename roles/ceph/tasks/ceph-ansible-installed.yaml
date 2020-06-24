@@ -23,6 +23,7 @@
 
 - name: Get ceph-ansible repository
   shell: "yum info ceph-ansible | awk '/From repo/ {print $4}'"
+  become: true
   register: repo
   changed_when: false
 
