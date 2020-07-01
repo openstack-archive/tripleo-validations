@@ -30,6 +30,16 @@ Existing validations:
    validations-openshift-on-openstack-details
    validations-pre-upgrade-details
    validations-post-upgrade-details
+   validations-pre-system-upgrade-details
+   validations-post-system-upgrade-details
+   validations-pre-undercloud-upgrade-details
+   validations-post-undercloud-upgrade-details
+   validations-pre-overcloud-prepare-details
+   validations-post-overcloud-prepare-details
+   validations-pre-overcloud-upgrade-details
+   validations-post-overcloud-upgrade-details
+   validations-pre-overcloud-converge-details
+   validations-post-overcloud-converge-details
    validations-pre-ceph-details
    validations-post-ceph-details
 

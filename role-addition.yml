@@ -118,6 +118,16 @@
                   - openshift-on-openstack
                   - pre-upgrade
                   - post-upgrade
+                  - pre-system-upgrade
+                  - post-system-upgrade
+                  - pre-undercloud-upgrade
+                  - post-undercloud-upgrade
+                  - pre-overcloud-prepare
+                  - post-overcloud-prepare
+                  - pre-overcloud-upgrade
+                  - post-overcloud-upgrade
+                  - pre-overcloud-converge
+                  - post-overcloud-converge
                   - pre-ceph
                   - post-ceph
               {{ _role_name }}_debug: false
