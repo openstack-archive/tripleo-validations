@@ -114,3 +114,4 @@ urllib3==1.22
 warlock==1.3.0
 websocket-client==0.47.0
 wrapt==1.10.11
+mock==2.0.0
