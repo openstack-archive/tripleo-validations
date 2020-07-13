@@ -13,9 +13,12 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-
-from mock import MagicMock
-from mock import patch
+try:
+    from unittest.mock import MagicMock
+    from unittest.mock import patch
+except ImportError:
+    from mock import MagicMock
+    from mock import patch
 
 import library.ovs_dpdk_pmd_cpus_check as validation
 from tripleo_validations.tests import base
