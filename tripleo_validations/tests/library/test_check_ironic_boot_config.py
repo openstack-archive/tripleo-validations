@@ -13,7 +13,10 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from unittest import mock
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 
 import library.check_ironic_boot_config as validation
 from tripleo_validations.tests import base
