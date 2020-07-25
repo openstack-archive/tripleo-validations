@@ -2,6 +2,7 @@
 - project-template:
     check:
       jobs:
+      - tripleo-validations-centos-8-molecule-system_encoding
       - tripleo-validations-centos-8-molecule-ceph
       - tripleo-validations-centos-8-molecule-check_latest_packages_version
       - tripleo-validations-centos-8-molecule-check_network_gateway
@@ -24,6 +25,7 @@
       - tripleo-validations-centos-8-molecule-validate_selinux
     gate:
       jobs:
+      - tripleo-validations-centos-8-molecule-system_encoding
       - tripleo-validations-centos-8-molecule-ceph
       - tripleo-validations-centos-8-molecule-check_latest_packages_version
       - tripleo-validations-centos-8-molecule-check_network_gateway
@@ -33,6 +35,8 @@
       - tripleo-validations-centos-8-molecule-dns
       - tripleo-validations-centos-8-molecule-haproxy
       - tripleo-validations-centos-8-molecule-image_serve
+      - tripleo-validations-centos-8-molecule-image_serve
+      - tripleo-validations-centos-8-molecule-nova_status
       - tripleo-validations-centos-8-molecule-nova_status
       - tripleo-validations-centos-8-molecule-rabbitmq_limits
       - tripleo-validations-centos-8-molecule-repos
@@ -386,3 +390,10 @@
     parent: tripleo-validations-centos-8-base
     vars:
       tripleo_validations_role_name: ceph
+- job:
+    files:
+    - ^roles/system_encoding/.*
+    name: tripleo-validations-centos-8-molecule-system_encoding
+    parent: tripleo-validations-centos-8-base
+    vars:
+      tripleo_validations_role_name: system_encoding
