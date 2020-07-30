@@ -35,8 +35,28 @@
           debug:
             msg: "Detected faulty port!"
 
+    - name: Run validation for wrong config file
+      block:
+        - name: Run validation for wrong config file
+          include_role:
+            name: image_serve
+          vars:
+            container_registry_httpd_config: /fake-image-serve.conf
+      rescue:
+        - name: Clear host errors
+          meta: clear_host_errors
+
+        - name: Status message
+          debug:
+            msg: "Detected wrong config file!"
+
     - name: Ensure we detect faulty tree
       block:
+        - name: Stopping httpd
+          systemd:
+            name: httpd
+            state: stopped
+
         - name: run validation for 404
           include_role:
             name: image_serve

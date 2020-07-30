@@ -1,33 +1,29 @@
 ---
-- name: Get the path of tripleo undercloud config file
-  become: true
-  hiera:
-    name: "tripleo_undercloud_conf_file"
+- name: Ensure we have the httpd config
+  stat:
+    path: "{{ container_registry_httpd_config }}"
+  register: registry_config
 
-- name: Get local_ip value from the undercloud.conf file
-  become: true
-  validations_read_ini:
-    path: "{{ tripleo_undercloud_conf_file }}"
-    section: DEFAULT
-    key: local_ip
-    ignore_missing_file: true
-  register: local_ip
+- name: Fail early if no httpd config is present
+  when: not registry_config.stat.exists
+  fail:
+    msg: "Unable to find vhost config {{ container_registry_httpd_config }}. Exiting now."
 
-- name: Set container registry host
-  set_fact:
-    container_registry_host: >-
-      {{ local_ip.value|default('0.0.0.0', true)|ipaddr('address') }}
+- name: Extract vhost name from httpd config
+  command: |
+    awk -F '[ >:]*' '/VirtualHost/ {print $2; exit}' {{ container_registry_httpd_config }}
+  register: virthost_name
 
 - name: Ensure port is open
   wait_for:
     port: "{{ container_registry_port }}"
-    host: "{{ container_registry_host }}"
+    host: "{{ virthost_name.stdout }}"
     timeout: 10
 
 - name: Ensure registry does answer
   uri:
     method: HEAD
-    url: "http://{{ container_registry_host }}:{{ container_registry_port }}/v2/index.json"
+    url: "http://{{ virthost_name.stdout }}:{{ container_registry_port }}/v2/index.json"
     status_code:
       - 200
       - 204
