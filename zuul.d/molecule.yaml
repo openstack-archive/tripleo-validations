@@ -2,7 +2,6 @@
 - project-template:
     check:
       jobs:
-      - tripleo-validations-centos-8-molecule-system_encoding
       - tripleo-validations-centos-8-molecule-ceph
       - tripleo-validations-centos-8-molecule-check_latest_packages_version
       - tripleo-validations-centos-8-molecule-check_network_gateway
@@ -13,9 +12,11 @@
       - tripleo-validations-centos-8-molecule-haproxy
       - tripleo-validations-centos-8-molecule-image_serve
       - tripleo-validations-centos-8-molecule-nova_status
+      - tripleo-validations-centos-8-molecule-package_version
       - tripleo-validations-centos-8-molecule-rabbitmq_limits
       - tripleo-validations-centos-8-molecule-repos
       - tripleo-validations-centos-8-molecule-stonith_exists
+      - tripleo-validations-centos-8-molecule-system_encoding
       - tripleo-validations-centos-8-molecule-undercloud_cpu
       - tripleo-validations-centos-8-molecule-undercloud_debug
       - tripleo-validations-centos-8-molecule-undercloud_disk_space
@@ -25,7 +26,6 @@
       - tripleo-validations-centos-8-molecule-validate_selinux
     gate:
       jobs:
-      - tripleo-validations-centos-8-molecule-system_encoding
       - tripleo-validations-centos-8-molecule-ceph
       - tripleo-validations-centos-8-molecule-check_latest_packages_version
       - tripleo-validations-centos-8-molecule-check_network_gateway
@@ -38,9 +38,11 @@
       - tripleo-validations-centos-8-molecule-image_serve
       - tripleo-validations-centos-8-molecule-nova_status
       - tripleo-validations-centos-8-molecule-nova_status
+      - tripleo-validations-centos-8-molecule-package_version
       - tripleo-validations-centos-8-molecule-rabbitmq_limits
       - tripleo-validations-centos-8-molecule-repos
       - tripleo-validations-centos-8-molecule-stonith_exists
+      - tripleo-validations-centos-8-molecule-system_encoding
       - tripleo-validations-centos-8-molecule-undercloud_cpu
       - tripleo-validations-centos-8-molecule-undercloud_debug
       - tripleo-validations-centos-8-molecule-undercloud_disk_space
@@ -397,3 +399,10 @@
     parent: tripleo-validations-centos-8-base
     vars:
       tripleo_validations_role_name: system_encoding
+- job:
+    files:
+    - ^roles/package_version/.*
+    name: tripleo-validations-centos-8-molecule-package_version
+    parent: tripleo-validations-centos-8-base
+    vars:
+      tripleo_validations_role_name: package_version

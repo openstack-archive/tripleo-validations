@@ -1,0 +1,67 @@
+---
+# Copyright 2019 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+- name: Ensure we get needed facts
+  setup:
+    gather_subset:
+      - '!all'
+      - '!any'
+      - '!min'
+      - distribution
+      - os_family
+
+# find within the "vars/" path. If no OS files are found the task will skip.
+- name: Gather variables for each operating system
+  include_vars: "{{ item }}"
+  with_first_found:
+    - skip: true
+      files:
+        - "{{ ansible_distribution | lower }}-{{ ansible_distribution_version | lower }}.yml"
+        - "{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version | lower }}.yml"
+        - "{{ ansible_os_family | lower }}-{{ ansible_distribution_major_version | lower }}.yml"
+        - "{{ ansible_distribution | lower }}.yml"
+        - "{{ ansible_os_family | lower }}-{{ ansible_distribution_version.split('.')[0] }}.yml"
+        - "{{ ansible_os_family | lower }}.yml"
+  tags:
+    - always
+
+- name: Get repositories packages versions
+  yum:
+    list: "{{ item }}"
+  register: repo_packages
+  loop: "{{ package_version_packages|map(attribute='name')|list }}"
+
+- name: Initialiaze ok_versions
+  set_fact:
+    ok_versions: {}
+
+- name: Compare versions
+  include_tasks: compare.yaml
+  loop: "{{ package_version_packages|map(attribute='name')|list }}"
+  loop_control:
+    label: "{{ item }}"
+
+- name: Fail if we lack a version for any package
+  fail:
+    msg: >-
+      Unable to find a matching version for {{ item.key }}.
+      Should get {{ (package_version_packages|selectattr('name', 'equalto', item.key)|list)[0].version }}
+      as {{ (package_version_packages|selectattr('name', 'equalto', item.key)|list)[0].state }}.
+  when:
+    - item.value|length == 0
+  loop: "{{ ok_versions | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
