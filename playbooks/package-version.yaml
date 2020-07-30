@@ -1,0 +1,18 @@
+---
+- hosts: all
+  vars:
+    metadata:
+      name: The Validation name goes here
+      description: >-
+        Write a description of your validations
+      groups:
+        - prep
+        - pre-deployment
+        - post-deployment
+        - pre-upgrade
+        - post-upgrade
+        - pre-ceph
+        - post-ceph
+    package_version_debug: false
+  roles:
+    - package_version

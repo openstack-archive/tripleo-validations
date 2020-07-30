@@ -1,0 +1,16 @@
+---
+- name: Get wanted package
+  set_fact:
+    wanted: "{{ (package_version_packages|selectattr('name', 'equalto', item)|list)[0] }}"
+    ok_versions: "{{ ok_versions |combine({item: []}) }}"
+
+- name: Do the comparison
+  when:
+    - (pkg.version ~ '-' ~ pkg.release) is version(wanted.version, wanted.comparison)
+    - (wanted.state == 'any' or wanted.state == pkg.yumstate)
+  set_fact:
+    ok_versions: "{{ ok_versions |combine({pkg.name: [ pkg.version ]}) }}"
+  loop: "{{ (repo_packages.results|selectattr('item', 'equalto', item)|map(attribute='results')|list)[0] }}"
+  loop_control:
+    label: "{{ pkg.name }}"
+    loop_var: 'pkg'

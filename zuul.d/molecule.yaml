@@ -13,6 +13,7 @@
       - tripleo-validations-centos-8-molecule-image_serve
       - tripleo-validations-centos-8-molecule-nova_status
       - tripleo-validations-centos-8-molecule-nova_svirt
+      - tripleo-validations-centos-8-molecule-package_version
       - tripleo-validations-centos-8-molecule-rabbitmq_limits
       - tripleo-validations-centos-8-molecule-repos
       - tripleo-validations-centos-8-molecule-stonith_exists
@@ -37,6 +38,7 @@
       - tripleo-validations-centos-8-molecule-image_serve
       - tripleo-validations-centos-8-molecule-nova_status
       - tripleo-validations-centos-8-molecule-nova_svirt
+      - tripleo-validations-centos-8-molecule-package_version
       - tripleo-validations-centos-8-molecule-rabbitmq_limits
       - tripleo-validations-centos-8-molecule-repos
       - tripleo-validations-centos-8-molecule-stonith_exists
@@ -392,15 +394,15 @@
       tripleo_validations_role_name: ceph
 - job:
     files:
-    - ^roles/system_encoding/.*
-    name: tripleo-validations-centos-8-molecule-system_encoding
-    parent: tripleo-validations-centos-8-base
-    vars:
-      tripleo_validations_role_name: system_encoding
-- job:
-    files:
     - ^roles/nova_svirt/.*
     name: tripleo-validations-centos-8-molecule-nova_svirt
     parent: tripleo-validations-centos-8-base
     vars:
       tripleo_validations_role_name: nova_svirt
+- job:
+    files:
+    - ^roles/package_version/.*
+    name: tripleo-validations-centos-8-molecule-package_version
+    parent: tripleo-validations-centos-8-base
+    vars:
+      tripleo_validations_role_name: package_version
