@@ -14,6 +14,6 @@
       groups:
         - prep
         - pre-introspection
-    min_undercloud_disk_gb: 60
+    min_undercloud_disk_gb: 100
   tasks:
   - include_tasks: tasks/disk_space.yaml
