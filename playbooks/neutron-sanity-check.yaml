@@ -1,5 +1,6 @@
 ---
 - hosts: Controller
+  gather_facts: false
   vars:
     metadata:
       name: Neutron Sanity Check
@@ -12,16 +13,6 @@
 
       groups:
         - post-deployment
-
-    # The list of Neutron configuration files and directories that
-    # will be passed to the Neutron services. The order is important
-    # here: the values in later files take precedence.
-    configs:
-      - /etc/neutron/neutron.conf
-      - /usr/share/neutron/neutron-dist.conf
-      - /etc/neutron/metadata_agent.ini
-      - /etc/neutron/dhcp_agent.ini
-      - /etc/neutron/l3_agent.ini
 
   roles:
     - neutron_sanity_check

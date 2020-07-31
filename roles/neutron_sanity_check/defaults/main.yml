@@ -1,4 +1,7 @@
 ---
+# The list of Neutron configuration files and directories that
+# will be passed to the Neutron services. The order is important
+# here: the values in later files take precedence.
 configs:
   - /etc/neutron/neutron.conf
   - /usr/share/neutron/neutron-dist.conf
