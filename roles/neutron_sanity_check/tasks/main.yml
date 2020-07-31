@@ -2,7 +2,7 @@
 - name: Set oc_container_cli and container_name for the Controller
   set_fact:
     oc_container_cli: "{{ hostvars[inventory_hostname].container_cli | default('podman', true) }}"
-    container_name: "neutron_api"
+    container_name: "neutron_ovs_agent"
   when: "'Controller' in group_names"
 
 - when: "'Undercloud' in group_names"
@@ -26,42 +26,49 @@
         uc_container_cli: "{{ container_cli.value|default('podman', true) }}"
         container_name: "neutron_ovs_agent"
 
-- name: Run neutron-sanity-check
+- name: Check if wanted container exists
   command: >
     {% if oc_container_cli is defined %}{{ oc_container_cli }}{% else %}{{ uc_container_cli }}{% endif %}
-    exec -u root {{ container_name }}
-    /bin/bash -c 'neutron-sanity-check --config-file {{ item }}'
-  with_items: "{{ configs }}"
+    ps --filter name={{ container_name }} -q
   become: true
-  register: nsc_return
+  register: container_exists
   ignore_errors: true
-  changed_when: false
 
-- name: Detect errors
-  set_fact:
-    has_errors: "{{ nsc_return.results
-                    | sum(attribute='stderr_lines', start=[])
-                    | select('search', '(ERROR)')
-                    | list | length | int > 0 }}"
+- name: Run sanity check only if container exists
+  when: container_exists.stdout != ''
+  block:
+    - name: Run neutron-sanity-check
+      command: >
+        {% if oc_container_cli is defined %}{{ oc_container_cli }}{% else %}{{ uc_container_cli }}{% endif %}
+        exec -u root {{ container_name }}
+        /bin/bash -c 'neutron-sanity-check --config-file {{ " --config-file ".join(configs) }} -d'
+      become: true
+      register: nsc_return
+      ignore_errors: true
+      changed_when: false
 
-- name: Detect warnings
-  set_fact:
-    has_warnings: "{{ nsc_return.results
-                    | sum(attribute='stderr_lines', start=[])
-                    | select('search', '(WARNING)')
-                    | list | length | int > 0 }}"
+    - name: Detect errors
+      set_fact:
+        has_errors: "{{ nsc_return.stderr_lines
+                        | select('search', '(ERROR)')
+                        | list | length | int > 0 }}"
 
-- name: Create output
-  set_fact:
-    output_msg: "{{ nsc_return.results
-                    | sum(attribute='stderr_lines', start=[])
-                    | select('search', '(ERROR|WARNING)')
-                    | list }}"
+    - name: Detect warnings
+      set_fact:
+        has_warnings: "{{ nsc_return.stderr_lines
+                        | select('search', '(WARNING)')
+                        | list | length | int > 0 }}"
 
-- name: Output warning
-  warn: msg="{{ output_msg | join('\n') }}"
-  when: has_warnings and not has_errors
+    - name: Create output
+      set_fact:
+        output_msg: "{{ nsc_return.stderr_lines
+                        | select('search', '(ERROR|WARNING)')
+                        | list }}"
 
-- name: Fail
-  fail: msg="{{ output_msg | join('\n') }}"
-  when: has_errors
+    - name: Output warning
+      warn: msg="{{ output_msg | join('\n') }}"
+      when: has_warnings and not has_errors
+
+    - name: Fail
+      fail: msg="{{ output_msg | join('\n') }}"
+      when: has_errors
