@@ -13,7 +13,7 @@
           - ^doc/.*
           - ^README.rst
       - openstack-tox-lower-constraints
-      - tripleo-ci-centos-7-scenario004-standalone:
+      - tripleo-ci-centos-8-scenario004-standalone:
           dependencies: &deps
             - openstack-tox-linters
           files:
@@ -23,7 +23,7 @@
       - openstack-tox-linters
       - openstack-tox-docs: *tripleo-docs
       - openstack-tox-lower-constraints
-      - tripleo-ci-centos-7-scenario004-standalone:
+      - tripleo-ci-centos-8-scenario004-standalone:
           files:
             - ^roles/ceph.*$
     promote:
