@@ -11,3 +11,4 @@ pytest-cov
 pytest-html
 pytest-xdist
 selinux  # MIT
+lxml # BSD
