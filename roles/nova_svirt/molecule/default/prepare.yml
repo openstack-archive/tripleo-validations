@@ -1,0 +1,60 @@
+---
+# Copyright 2020 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+
+- name: Prepare
+  hosts: all
+  tasks:
+    - name: Create directory tree
+      file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - /libvirt
+        - /libvirt/success
+        - /libvirt/failure
+
+    - name: Push correct xml
+      copy:
+        mode: 0644
+        dest: /libvirt/success/instance-0001.xml
+        content: |
+          <domstatus>
+            <domain>
+              <seclabel type='dynamic' model='dac' relabel='yes'>
+                <label>+107:+107</label>
+                <imagelabel>+107:+107</imagelabel>
+              </seclabel>
+              <seclabel type='dynamic' model='selinux' relabel='yes'>
+                <label>system_u:system_r:svirt_t:s0:c687,c775</label>
+                <imagelabel>system_u:object_r:svirt_image_t:s0:c687,c775</imagelabel>
+              </seclabel>
+            </domain>
+          </domstatus>
+
+    - name: Push incorrect xml
+      copy:
+        mode: 0644
+        dest: /libvirt/failure/instance-0002.xml
+        content: |
+          <domstatus>
+            <domain>
+              <seclabel type='dynamic' model='dac' relabel='yes'>
+                <label>+107:+107</label>
+                <imagelabel>+107:+107</imagelabel>
+              </seclabel>
+            </domain>
+          </domstatus>

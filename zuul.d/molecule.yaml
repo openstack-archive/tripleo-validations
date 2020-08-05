@@ -12,6 +12,7 @@
       - tripleo-validations-centos-8-molecule-haproxy
       - tripleo-validations-centos-8-molecule-image_serve
       - tripleo-validations-centos-8-molecule-nova_status
+      - tripleo-validations-centos-8-molecule-nova_svirt
       - tripleo-validations-centos-8-molecule-rabbitmq_limits
       - tripleo-validations-centos-8-molecule-repos
       - tripleo-validations-centos-8-molecule-stonith_exists
@@ -33,6 +34,7 @@
       - tripleo-validations-centos-8-molecule-haproxy
       - tripleo-validations-centos-8-molecule-image_serve
       - tripleo-validations-centos-8-molecule-nova_status
+      - tripleo-validations-centos-8-molecule-nova_svirt
       - tripleo-validations-centos-8-molecule-rabbitmq_limits
       - tripleo-validations-centos-8-molecule-repos
       - tripleo-validations-centos-8-molecule-stonith_exists
@@ -397,3 +399,10 @@
     vars:
       tripleo_validations_role_name: ceph
     voting: false
+- job:
+    files:
+    - ^roles/nova_svirt/.*
+    name: tripleo-validations-centos-8-molecule-nova_svirt
+    parent: tripleo-validations-centos-8-base
+    vars:
+      tripleo_validations_role_name: nova_svirt
