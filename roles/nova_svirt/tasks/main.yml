@@ -1,0 +1,14 @@
+---
+- name: Get all instance XMLs
+  register: xmls
+  find:
+    paths: "{{ nova_svirt_directory }}"
+    patterns: "*.xml"
+    recurse: true
+    depth: 1
+
+- name: Loop on XMLs and validate sVirt availability
+  loop: "{{ xmls.files }}"
+  loop_control:
+    label: "{{ item.path }}"
+  include_tasks: validate.yml
