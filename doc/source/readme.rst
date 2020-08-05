@@ -126,7 +126,7 @@ As shown here, the validation playbook requires three top-level directives:
 
 ``hosts`` specify which nodes to run the validation on. Based on the
 ``hosts.sample`` structure, the options can be ``all`` (run on all nodes),
-``undercloud``, ``overcloud`` (all overcloud nodes), ``controller`` and
+``undercloud``, ``allovercloud`` (all overcloud nodes), ``controller`` and
 ``compute``.
 
 The ``vars`` section serves for storing variables that are going to be
@@ -190,7 +190,7 @@ inventory file. It should look something like this::
     [undercloud]
     undercloud.example.com
 
-    [overcloud:children]
+    [allovercloud:children]
     controller
     compute
 
@@ -208,7 +208,7 @@ inventory file. It should look something like this::
 It will have a ``[group]`` section for each role (``undercloud``,
 ``controller``, ``compute``) listing all the nodes belonging to that group. It
 is also possible to create a group from other groups as done with
-``[overcloud:children]`` in the above example. If a validation specifies
+``[allovercloud:children]`` in the above example. If a validation specifies
 ``hosts: overcloud``, it will be run on any node that belongs to the
 ``compute`` or ``controller`` groups. If a node happens to belong to both, the
 validation will only be run once.

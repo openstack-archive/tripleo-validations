@@ -1,7 +1,7 @@
 ---
 - name: Set fact to identify if the overcloud was deployed
   set_fact:
-    overcloud_deployed: "{{ groups['overcloud'] is defined }}"
+    overcloud_deployed: "{{ groups['allovercloud'] is defined }}"
 
 # Check that the Horizon endpoint exists
 - name: Fail if the HorizonPublic endpoint is not defined

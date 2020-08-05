@@ -1,7 +1,7 @@
 ---
 - name: Set fact to identify if the overcloud was deployed
   set_fact:
-    overcloud_deployed: "{{ groups['overcloud'] is defined }}"
+    overcloud_deployed: "{{ groups['allovercloud'] is defined }}"
 
 - name: Warn if no overcloud deployed yet
   warn:
