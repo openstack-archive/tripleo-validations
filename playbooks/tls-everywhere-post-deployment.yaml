@@ -1,5 +1,5 @@
 ---
-- hosts: overcloud
+- hosts: allovercloud
   vars:
     metadata:
       name: Confirm that overcloud nodes are setup correctly
