@@ -1,8 +1,8 @@
 ---
-- name: Collect IPs for overcloud nodes
+- name: Collect IPs for allovercloud nodes
   set_fact: ansible_host="{{ hostvars[item]['ansible_host'] }}"
   register: oc_ips
-  with_items: "{{ groups.overcloud }}"
+  with_items: "{{ groups.allovercloud }}"
 
 - name: Ping all overcloud nodes
   icmp_ping:

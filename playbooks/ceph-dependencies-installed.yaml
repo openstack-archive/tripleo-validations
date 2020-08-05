@@ -1,5 +1,5 @@
 ---
-- hosts: overcloud
+- hosts: allovercloud
   vars:
     metadata:
       name: Check if Ceph dependencies are installed
@@ -9,7 +9,7 @@
         - pre-deployment
         - pre-ceph
     fail_without_deps: true
-    tripleo_delegate_to: "{{ groups['overcloud'] | default([]) }}"
+    tripleo_delegate_to: "{{ groups['allovercloud'] | default([]) }}"
     packages:
       - lvm2
   tasks:
