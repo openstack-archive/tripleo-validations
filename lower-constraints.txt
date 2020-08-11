@@ -39,6 +39,7 @@ jsonpatch==1.21
 jsonpointer==2.0
 jsonschema==3.2.0
 keystoneauth1==3.16.0
+lxml==4.2.0
 linecache2==1.0.0
 MarkupSafe==1.0
 mccabe==0.2.1
