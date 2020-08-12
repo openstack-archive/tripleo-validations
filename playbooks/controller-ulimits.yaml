@@ -1,5 +1,5 @@
 ---
-- hosts: Controller
+- hosts: "{{ controller_rolename | default('Controller') }}"
   vars:
     metadata:
       name: Check controller ulimits
