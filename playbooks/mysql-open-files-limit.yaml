@@ -1,5 +1,7 @@
 ---
-- hosts: Controller, Database
+- hosts:
+    - "{{ controller_rolename | default('Controller') }}"
+    - mysql
   vars:
     metadata:
       name: MySQL Open Files Limit
