@@ -1,5 +1,5 @@
 ---
-- hosts: ComputeOvsDpdk
+- hosts: "{{ compute_ovsdpdk_rolename | default('ComputeOvsDpdk') }}"
   vars:
     metadata:
       name: Validates OVS DPDK PMD cores from all NUMA nodes.

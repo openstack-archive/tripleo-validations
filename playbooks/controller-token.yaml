@@ -1,5 +1,7 @@
 ---
-- hosts: undercloud, Controller
+- hosts:
+    - undercloud
+    - "{{ controller_rolename | default('Controller') }}"
   vars:
     metadata:
       name: Verify that keystone admin token is disabled
