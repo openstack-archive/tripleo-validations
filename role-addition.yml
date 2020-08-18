@@ -38,6 +38,7 @@
     - name: Normalize the role name
       set_fact:
         _role_name: "{{ role_name | replace('-', '_' ) }}"
+        dashed_role_name: "{{ role_name | replace('_', '-') }}"
 
     - name: Create role
       command: >-
@@ -102,6 +103,7 @@
         content: |
           ---
           - hosts: undercloud
+            gather_facts: false
             vars:
               metadata:
                 name: The Validation name goes here
@@ -118,10 +120,10 @@
                   - post-upgrade
                   - pre-ceph
                   - post-ceph
-              {{ role_name | replace('-', '_') }}_debug: false
+              {{ _role_name }}_debug: false
             roles:
-              - {{ role_name }}
-        dest: "playbooks/{{ role_name }}.yaml"
+              - {{ _role_name }}
+        dest: "playbooks/{{ dashed_role_name }}.yaml"
 
     - name: Create role documentation
       copy:
