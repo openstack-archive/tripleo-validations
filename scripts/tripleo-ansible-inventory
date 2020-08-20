@@ -23,6 +23,7 @@ from __future__ import print_function
 
 import json
 import os
+import os_client_config
 import sys
 import traceback
 
@@ -67,6 +68,8 @@ opts = [
     cfg.StrOpt('ansible_python_interpreter', default=None),
     cfg.BoolOpt('debug', help='Print tracebacks for exceptions'),
     cfg.StrOpt('serial', default=1),
+    cfg.StrOpt('os-cloud', default=None, help=('Provide authentication '
+                                               'with clouds.yaml file.')),
 ]
 
 
@@ -79,12 +82,14 @@ def _parse_config():
     configs.register_cli_opts(opts)
     configs(prog='tripleo-ansible-inventory',
             default_config_files=default_config)
-    if configs.auth_url is None:
+    if configs.auth_url is None and configs.os_cloud is None:
         print('ERROR: auth-url not defined and OS_AUTH_URL environment '
-              'variable missing, unable to proceed.', file=sys.stderr)
+              'variable missing or --os-cloud option is not set, '
+              'unable to proceed.', file=sys.stderr)
         sys.exit(1)
-    if '/v2.0' in configs.auth_url:
-        configs.auth_url = configs.auth_url.replace('/v2.0', '/v3')
+    if configs.auth_url:
+        if '/v2.0' in configs.auth_url:
+            configs.auth_url = configs.auth_url.replace('/v2.0', '/v3')
     if not configs.plan:
         configs.plan = ['overcloud']
     return configs
@@ -126,25 +131,46 @@ def write_static_inventory(inventory_file_path, inventory):
 
 def main():
     configs = _parse_config()
-    auth_variables = {
-        'auth_url': configs.auth_url,
-        'username': configs.username,
-        'project_name': configs.project_name,
-        'os_auth_token': configs.auth_token,
-        'password': configs.password,
-        'cacert': configs.cacert,
-        'timeout': 30
-    }
+    if configs.auth_url:
+        auth_variables = {
+            'auth_url': configs.auth_url,
+            'username': configs.username,
+            'project_name': configs.project_name,
+            'os_auth_token': configs.auth_token,
+            'password': configs.password,
+            'cacert': configs.cacert,
+            'timeout': 30
+        }
+    elif configs.os_cloud:
+        config = os_client_config.OpenStackConfig()
+        for cloud in config.get_all_clouds():
+            if cloud.name == configs.os_cloud:
+                try:
+                    auth_variables = {
+                        'auth_url': cloud.config['auth'].get('auth_url'),
+                        'username': cloud.config['auth'].get('username'),
+                        'project_name':
+                            cloud.config['auth'].get('project_name'),
+                        'os_auth_token':
+                            cloud.config['auth'].get('auth_token'),
+                        'password': cloud.config['auth'].get('password'),
+                        'cacert': cloud.config.get('cacert'),
+                        'timeout': cloud.config.get('api_timeout')
+                    }
+                except KeyError:
+                    raise KeyError("Missing values in clouds.yaml format")
+    else:
+        raise RuntimeError("No auth provided.")
 
     inventory_map = {}
     for _plan in (configs.stack or configs.plan):
         inventory_map[_plan] = inv.TripleoInventory(
             session=utils.get_auth_session(auth_variables),
             hclient=utils.get_heat_client(auth_variables),
-            auth_url=configs.auth_url,
-            cacert=configs.cacert,
-            project_name=configs.project_name,
-            username=configs.username,
+            auth_url=auth_variables.get('auth_url'),
+            cacert=auth_variables.get('cacert'),
+            project_name=auth_variables.get('project_name'),
+            username=auth_variables.get('username'),
             ansible_ssh_user=configs.ansible_ssh_user,
             plan_name=_plan,
             ansible_python_interpreter=configs.ansible_python_interpreter,
