@@ -10,7 +10,7 @@
         - post-deployment
         - pre-upgrade
         - post-upgrade
-    validate_selinux_working_dir: /var/log/validations
+    validate_selinux_working_dir: /tmp
     validate_selinux_audit_source: /var/log/audit/audit.log
     validate_selinux_skip_list_dest: "{{ validate_selinux_working_dir }}/denials-skip-list.txt"
     validate_selinux_filtered_denials_dest: "{{ validate_selinux_working_dir }}/denials-filtered.log"
