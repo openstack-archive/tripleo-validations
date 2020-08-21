@@ -65,7 +65,7 @@
 
 - name: Check Notify Nova settings values
   fail:
-    msg: "Value of {{ item.item }} is set to {{ item.value|bool }}."
+    msg: "{{ item.item }} should be set ro True. Current value: {{ item.value }}."
   when: not item.value|bool or item.value == None
   with_items: "{{ neutron_notify_nova_result.results }}"
 
