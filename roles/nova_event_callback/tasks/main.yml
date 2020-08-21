@@ -1,24 +1,31 @@
 ---
-- name: Get VIF Plugging setting values from nova.conf
+- name: Get vif_plugging_fatal value from nova.conf
   become: true
   validations_read_ini:
     path: "{{ nova_config_file }}"
     section: DEFAULT
-    key: "{{ item }}"
+    key: "{{ vif_plugging_fatal_check }}"
     ignore_missing_file: true
-  register: nova_config_result
-  with_items:
-    - "{{ vif_plugging_fatal_check }}"
-    - "{{ vif_plugging_timeout_check }}"
+  register: vif_plugging_fatal_value
 
-- name: Check Nova configuration values
+- name: Get vif_plugging_timeout value from nova.conf
+  become: true
+  validations_read_ini:
+    path: "{{ nova_config_file }}"
+    section: DEFAULT
+    key: "{{ vif_plugging_timeout_check }}"
+    ignore_missing_file: true
+  register: vif_plugging_timeout_value
+
+- name: Ensure vif plugging timeout minimum
   fail:
-    msg: "Value of {{ item.item }} is set to {{ item.value or 'None' }}."
-  when:
-    - "(item.item == vif_plugging_fatal_check and (not item.value|bool or None)) or
-      (item.item == vif_plugging_timeout_check and (item.value|int <= vif_plugging_timeout_value_min|int
-      or None))"
-  with_items: "{{ nova_config_result.results }}"
+    msg: "vif_plugging_timeout is below minimum value. Minimum: {{ vif_plugging_timeout_value_min|ing }}. Current value: {{ vig_plugging_timeout_value }}"
+  when: "{{ vif_plugging_timeout_value|int < vif_plugging_timeout_value_min|int }}"
+
+- name: Ensure vif plugging is fatal
+  fail:
+    msg: "vif_plugging_fatal should be set to True. Current value: {{ vif_plugging_fatal_value }}."
+  when: "not {{ vif_plugging_fatal_value|bool }}"
 
 - name: Get auth_url value from hiera
   become: true
