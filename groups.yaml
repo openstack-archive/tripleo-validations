@@ -32,6 +32,46 @@ post-upgrade:
   - description: >-
       Validations which try to validate your OpenStack deployment after you
       upgrade it.
+pre-system-upgrade:
+  - description: >-
+      Validations which verify that the operating system can be upgraded in
+      the target node
+post-system-upgrade:
+  - description: >-
+      Validations which verify that the operating system upgrade went fine
+      in the target node.
+pre-undercloud-upgrade:
+  - description: >-
+      Validations which verify that the undercloud is in a correct state
+      before upgrading.
+post-undercloud-upgrade:
+  - description: >-
+      Validations which verify that the undercloud is in a correct state
+      after upgrading.
+pre-overcloud-prepare:
+  - description: >-
+      Set of validations that check the right content for the templates passed
+      to the overcloud upgrade prepare step.
+post-overcloud-prepare:
+  - description: >-
+      Validations which verify that the overcloud is in a correct state
+      after running overcloud upgrade  prepare step.
+pre-overcloud-upgrade:
+  - description: >-
+      Validations which verify that the overcloud is in a correct state
+      before running overcloud upgrade run command.
+post-overcloud-upgrade:
+  - description: >-
+      Validations which verify that the overcloud is in a correct state
+      before running overcloud upgrade run command.
+pre-overcloud-converge:
+  - description: >-
+      Set of validations that check the right content for the templates passed
+      to the overcloud upgrad converge step.
+post-overcloud-converge:
+  - description: >-
+      Validations which verify that the overcloud is in a correct state
+      after running overcloud upgrade converge command.
 pre-ceph:
   - description: >-
       Validations to run on undercloud before deploying OpenStack
