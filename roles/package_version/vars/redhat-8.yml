@@ -1,0 +1,6 @@
+---
+package_version_packages:
+  - name: podman
+    version: 1.6.4-15.module+el8.2.0+7290+954fb593
+    comparison: '=='
+    state: installed
