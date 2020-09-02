@@ -1,0 +1,21 @@
+---
+- name: Prepare
+  hosts: all
+  tasks:
+    - name: create directory /etc/ipa
+      file:
+        path: /etc/ipa
+        state: directory
+    - name: create fake ipa default.conf
+      copy:
+        dest: /etc/ipa/default.conf
+        mode: 0600
+        content: |
+          [global]
+          basedn = dc=example,dc=com
+          realm = EXAMPLE.COM
+          domain = example.com
+          server = freeipa-0.example.com
+          host = undercloud-0.example.com
+          xmlrpc_uri = https://freeipa-0.example.com/ipa/xml
+          enable_ra = True

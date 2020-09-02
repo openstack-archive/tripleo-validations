@@ -1,0 +1,107 @@
+---
+#   Copyright 2020 Red Hat, Inc.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License"); you may
+#   not use this file except in compliance with the License. You may obtain
+#   a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#   License for the specific language governing permissions and limitations
+#   under the License.
+#
+#   Changes have been - and possibly will be introduced in future - that
+#   require changes in IPA permissions or ACLs.  We do not have the permissions
+#   to automatically make these changes, but we can include checks here to make
+#   sure that they have occurred before attempting an overcloud or undercloud
+#   update in a TLS-E environment.  This playbook is supposed to fail with
+#   an appropriate error message in case a requirement is not met.
+#
+#   This playbook contains the following parameters
+#   - tls_everywhere_check_dns_aci - which determines if we want to check
+#     for the DNS ACI.  This defaults to true.
+#   - tls_everywhere_undercloud_fqdn - which defaults to ansible_fqdn
+
+- name: check if undercloud is an ipa client
+  stat:
+    path: /etc/ipa/default.conf
+  register: ipa_default_conf
+
+- name: perform ipa_server tests
+  when: ipa_default_conf.stat.exists
+  vars:
+    check_dns_aci: "{{ tls_everywhere_check_dns_aci | default(True)}}"
+    undercloud_fqdn: "{{ tls_everywhere_undercloud_fqdn | default(ansible_fqdn) }}"
+    ipa_server_aci_check_failures: []
+    fail_1: >-
+      The IPA server does not have the required ACI to allow host
+      entities to view dns records.  Please add the ACI.
+    fail_2: >-
+      The nova/{{undercloud_fqdn}} user does not have the
+      "System: Modify Realm Domains" privilege.  Please add this privilege for
+      this user on the IPA server.
+  block:
+    - name: Get the ipa server hostname
+      validations_read_ini:
+        path: "/etc/ipa/default.conf"
+        section: global
+        key: server
+      register: ipa_server_fqdn
+
+    - name: set dns zone and shortname
+      set_fact:
+        dns_zone: "{{ ipa_server_fqdn.value.split('.', 1)[1] }}"
+        short_hostname: "{{ ipa_server_fqdn.value.split('.')[0] }}"
+
+    - name: kinit as the host entity
+      command: "{{ kinit_bin }} host/{{ undercloud_fqdn }} -k -t /etc/krb5.keytab"
+      register: kinit
+      become: true
+      changed_when: kinit.rc == 0
+
+    - name: check if ipa server has correct DNS ACI on host entries
+      when: check_dns_aci
+      block:
+        - name: try to view the dns record for the ipa server
+          become: true
+          command: "{{ ipa_bin }} dnsrecord-show {{dns_zone}} {{short_hostname}}"
+          register: dnsrecord_show
+          ignore_errors: true
+
+        - name: add failure message when zone is not found
+          set_fact:
+            ipa_server_aci_check_failures: "{{ ipa_server_aci_check_failures + [fail_1] }}"
+          when:
+            "'DNS zone not found' in dnsrecord_show.stderr"
+
+    - name: check if nova service has the added permissions
+      become: true
+      command: "{{ ipa_bin}} service-show nova/{{ undercloud_fqdn }} --all --raw"
+      register: service_show
+
+    - name: parse service data and fail if permission not present
+      set_fact:
+        ipa_server_aci_check_failures: "{{ ipa_server_aci_check_failures + [fail_2] }}"
+      when:
+        - "'memberof: cn=System: Modify Realm Domains' not in service_show.stdout"
+
+    - name: fail if failures detected
+      fail:
+        msg: "{{ ipa_server_aci_check_failures }}"
+      when: 'ipa_server_aci_check_failures|length > 0'
+  always:
+    - name: clean up the keytab
+      command: "{{ kdestroy_bin }} -A"
+      register: kdestroy
+      become: true
+
+    - name: set output for molecule testing
+      set_fact:
+        ipa_server_aci_check_kdestroy_output: "{{ kdestroy.stdout }}"
+        tls_everywhere_aci_check_kinit_output: "{{ kinit.stdout }}"
+        tls_everywhere_aci_check_dns_record_show_output: "{{ dnsrecord_show.stdout }}"
+        tls_everywhere_aci_check_service_show_output: "{{ service_show.stdout }}"
+      when: not ansible_check_mode
