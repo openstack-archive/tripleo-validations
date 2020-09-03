@@ -1,0 +1,16 @@
+---
+- hosts: all
+  gather_facts: false
+  vars:
+    metadata:
+      name: Verify that the RSHM version configured is the right one
+      description: |
+        This validation checks the RHSM version of the target node via
+        subscription-manager release --show and makes sure that the
+        release matches the value set in check_rhsm_version_expected.
+      groups:
+        - pre-undercloud-upgrade
+        - pre-overcloud-upgrade
+    check_rhsm_version_debug: false
+  roles:
+    - check_rhsm_version
