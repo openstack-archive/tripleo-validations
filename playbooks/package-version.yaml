@@ -2,17 +2,20 @@
 - hosts: all
   vars:
     metadata:
-      name: The Validation name goes here
+      name: package-version
       description: >-
-        Write a description of your validations
+        Ensures we can access the wanted package version. Especially useful
+        when you are switching repositories, for instance during an upgrade.
       groups:
         - prep
         - pre-deployment
-        - post-deployment
         - pre-upgrade
-        - post-upgrade
+        - pre-system-upgrade
+        - pre-undercloud-upgrade
+        - pre-overcloud-prepare
+        - pre-overcloud-upgrade
+        - pre-overcloud-converge
         - pre-ceph
-        - post-ceph
     package_version_debug: false
   roles:
     - package_version
