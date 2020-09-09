@@ -1,0 +1,28 @@
+---
+- name: "Parse {{ item.path }}"
+  become: true
+  register: seclabels
+  xml:
+    path: "{{ item.path }}"
+    content: attribute
+    xpath: '/domstatus/domain/seclabel'
+
+- name: Set or reset svirt_enabled
+  set_fact:
+    svirt_enabled: false
+
+- name: Check enabled seclabels
+  loop: "{{ seclabels.matches }}"
+  loop_control:
+    loop_var: seclabel
+  when:
+    - seclabel.seclabel.model == 'selinux'
+  set_fact:
+    svirt_enabled: true
+
+- name: Fail if sVirt is not enabled
+  fail:
+    msg: |
+      sVirt not detected for {{ item.path }}
+  when:
+    - not svirt_enabled

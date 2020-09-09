@@ -1,0 +1,13 @@
+---
+- hosts: Compute
+  gather_facts: false
+  vars:
+    metadata:
+      name: Check nova sVirt support
+      description: >-
+        Ensures all running VM are correctly protected with sVirt
+      groups:
+        - post-deployment
+        - post-upgrade
+  roles:
+    - nova_svirt
