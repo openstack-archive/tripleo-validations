@@ -17,10 +17,36 @@
 
 - name: Converge
   hosts: all
-  gather_facts: false
-
+  vars:
+    ipa_bin: echo
+    kinit_bin: echo
+    kdestroy_bin: echo
+    tls_everywhere_undercloud_fqdn: "undercloud.example.com"
   tasks:
-    - name: Warn developers about the lack of molecule testing
+    - name: Run ipa_server_check validation
+      block:
+        - name: run validation
+          include_role:
+            name: tls_everywhere
+            tasks_from: ipa-server-check
+      rescue:
+        - name: clear errors
+          meta: clear_host_errors
+
+        - name: check command outputs
+          assert:
+            that:
+              - tls_everywhere_aci_check_kinit_output == "host/undercloud.example.com -k -t /etc/krb5.keytab"
+              - tls_everywhere_aci_check_dns_record_show_output == "dnsrecord-show example.com freeipa-0"
+              - tls_everywhere_aci_check_service_show_output == "service-show nova/undercloud.example.com --all --raw"
+              - ipa_server_aci_check_kdestroy_output == "-A"
+              - ipa_server_aci_check_failures|length == 1
+              - '"Modify Realm Domains" in ipa_server_aci_check_failures[0]'
+
+        - name: End play
+          meta: end_play
+
+    - name: Fail the test
       fail:
-        msg: >-
-          This role needs molecule tests!
+        msg: |
+          The ipa-server-check validation didn't fail as expected
