@@ -18,6 +18,13 @@ gcc-c++           [platform:rpm]
 git               [platform:rpm]
 libffi-devel      [platform:rpm]
 openssl-devel     [platform:rpm]
+
+libxml2-dev       [platform:dpkg platform:apk]
+libxml2-devel     [platform:rpm]
+libxslt-devel     [platform:rpm]
+libxslt1-dev      [platform:dpkg]
+libxslt-dev       [platform:apk]
+
 python-devel      [platform:rpm !platform:rhel-8 !platform:centos-8]
 python3-devel     [platform:rpm !platform:rhel-7 !platform:centos-7]
 PyYAML            [platform:rpm !platform:rhel-8 !platform:centos-8]
