@@ -17,7 +17,7 @@
 import logging
 from validations_common.validation import Validation
 
-TRIPLEO_VALIDATION_DIR = "/usr/share/ansible/"
+TRIPLEO_VALIDATION_DIR = "/usr/share/openstack-tripleo-validations"
 
 
 class TripleOValidation(Validation):
@@ -34,7 +34,7 @@ class TripleOValidation(Validation):
         for action in tripleo_parser._actions:
             if action.dest == 'validation_dir':
                 if action.default == parser.validation_dir:
-                    parser.validation_dir = "{}/validation-playbooks".format(
+                    parser.validation_dir = "{}/playbooks".format(
                         TRIPLEO_VALIDATION_DIR)
                 if action.dest == 'ansible_base_dir':
                     if action.default == parser.ansible_base_dir:
