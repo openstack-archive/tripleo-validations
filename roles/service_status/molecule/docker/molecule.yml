@@ -1,0 +1,56 @@
+---
+driver:
+  name: docker
+
+log: true
+
+platforms:
+  - name: centos7
+    hostname: centos7
+    image: centos:7
+    pkg_extras: python-setuptools python-enum34 python-netaddr ruby epel-release PyYAML
+    easy_install:
+      - pip
+    command: /sbin/init
+    capabilities:
+      - SYS_ADMIN
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    environment: &env
+      http_proxy: "{{ lookup('env', 'http_proxy') }}"
+      https_proxy: "{{ lookup('env', 'https_proxy') }}"
+
+  - name: centos8
+    hostname: centos8
+    image: centos:8
+    command: /sbin/init
+    capabilities:
+      - SYS_ADMIN
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    pkg_extras: python*-setuptools python*-enum34 python*-netaddr ruby python*-PyYAML python*-libselinux
+    environment:
+      <<: *env
+
+provisioner:
+  name: ansible
+  log: true
+  env:
+    ANSIBLE_STDOUT_CALLBACK: yaml
+    ANSIBLE_LIBRARY: "../../../../library"
+
+scenario:
+  test_sequence:
+    - destroy
+    - create
+    - prepare
+    - converge
+    - verify
+    - destroy
+
+verifier:
+  name: testinfra

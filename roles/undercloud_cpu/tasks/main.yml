@@ -1,0 +1,7 @@
+---
+- name: Verify the number of CPU cores
+  fail:
+    msg: >-
+      There are {{ ansible_processor_vcpus }} cores in the system,
+      but there should be at least {{ min_undercloud_cpu_count }}
+  failed_when: "ansible_processor_vcpus|int < min_undercloud_cpu_count|int"

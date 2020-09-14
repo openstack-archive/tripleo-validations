@@ -1,0 +1,26 @@
+---
+- name: Get if chrony is enabled
+  become: true
+  hiera:
+    name: "chrony_enabled"
+
+- when: chrony_enabled|bool
+  block:
+    - name: Populate service facts
+      service_facts:  # needed to make yaml happy
+
+    - name: Fail if chronyd service is not running
+      fail:
+        msg: "Chronyd service is not running"
+      when: "ansible_facts.services['chronyd.service'].state != 'running'"
+
+    - name: Run chronyc
+      become: true
+      command: chronyc -a 'burst 4/4'
+      changed_when: false
+
+# ntpstat returns 0 if synchronised and non-zero otherwise:
+- name: Run ntpstat
+  command: ntpstat
+  changed_when: false
+  when: not chrony_enabled|bool

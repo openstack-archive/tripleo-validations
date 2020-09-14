@@ -1,0 +1,60 @@
+---
+# Copyright 2019 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+
+- name: Prepare
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Populate fake clean auditlog
+      copy:
+        dest: /var/log/audit-clean.log
+        owner: root
+        mode: 0600
+        group: root
+        # yamllint disable rule:line-length
+        content: |
+          type=SERVICE_START msg=audit(1575877870.934:286): pid=1 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:init_t:s0 msg='unit=sssd-kcm comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'UID="root" AUID="unset"
+          type=SERVICE_STOP msg=audit(1575878320.981:287): pid=1 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:init_t:s0 msg='unit=sssd-kcm comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'UID="root" AUID="unset"
+          type=USER_ACCT msg=audit(1575878471.739:288): pid=4430 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:system_cronjob_t:s0-s0:c0.c1023 msg='op=PAM:accounting grantors=pam_unix,pam_localuser acct="root" exe="/usr/bin/sudo" hostname=? addr=? terminal=? res=success'UID="root" AUID="unset"
+          type=USER_CMD msg=audit(1575878471.740:289): pid=4430 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:system_cronjob_t:s0-s0:c0.c1023 msg='cwd="/root" cmd=626F7267202D2D696E666F20637265617465202D2D636F6D7072657373696F6E206C7A34202D2D6578636C7564652D636163686573202D2D6578636C756465202A2F2A2E6C6F636B202D2D6578636C756465202A2F2E746F78202D2D6578636C756465202A2F2E737465737472202D2D6578636C756465202A2F727562792D76656E646F72202D2D6578636C756465202A2F7A75756C2F202D2D6578636C756465202A2F73736866732F202D2D6578636C756465202A2F2E6C6F63616C2F7368617265202F6D656469612F6261636B7570732F7268656C3A3A31306130393963382D316135612D313165612D613663622D386331363435366466626265202F686F6D652F636A65616E6E6572 exe="/usr/bin/sudo" terminal=? res=success'UID="root" AUID="unset"
+          type=USER_ACCT msg=audit(1575878554.296:294): pid=4445 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:system_cronjob_t:s0-s0:c0.c1023 msg='op=PAM:accounting grantors=pam_unix,pam_localuser acct="root" exe="/usr/bin/sudo" hostname=? addr=? terminal=? res=success'UID="root" AUID="unset"
+          type=USER_CMD msg=audit(1575878554.296:295): pid=4445 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:system_cronjob_t:s0-s0:c0.c1023 msg='cwd="/root" cmd=626F7267206C697374202F6D656469612F6261636B7570732F7268656C exe="/usr/bin/sudo" terminal=? res=success'UID="root" AUID="unset"
+          type=USER_ACCT msg=audit(1575878555.032:300): pid=4449 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:system_cronjob_t:s0-s0:c0.c1023 msg='op=PAM:accounting grantors=pam_unix,pam_localuser acct="root" exe="/usr/bin/sudo" hostname=? addr=? terminal=? res=success'UID="root" AUID="unset"
+          type=USER_CMD msg=audit(1575878555.032:301): pid=4449 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:system_cronjob_t:s0-s0:c0.c1023 msg='cwd="/root" cmd=626F7267207072756E65202D70202D2D6B6565702D77697468696E203277202D2D7374617473202F6D656469612F6261636B7570732F7268656C exe="/usr/bin/sudo" terminal=? res=success'UID="root" AUID="unset"
+          type=SERVICE_START msg=audit(1575878869.915:306): pid=1 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:init_t:s0 msg='unit=fprintd comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'UID="root" AUID="unset"
+          type=SERVICE_STOP msg=audit(1575878900.615:312): pid=1 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:init_t:s0 msg='unit=fprintd comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'UID="root" AUID="unset"
+
+    # yamllint enable rule:line-length
+    - name: Populate unclean auditlog
+      copy:
+        dest: /var/log/audit-unclean.log
+        owner: root
+        mode: 0600
+        group: root
+        # yamllint disable rule:line-length
+        content: |
+          type=AVC msg=audit(1575534183.234:4933): avc:  denied  { write } for  pid=11266 comm="iptables" path="pipe:[231496]" dev="pipefs" ino=231496 scontext=system_u:system_r:iptables_t:s0 tcontext=system_u:system_r:certmonger_t:s0 tclass=fifo_file permissive=1
+          type=AVC msg=audit(1575534183.342:4934): avc:  denied  { write } for  pid=11284 comm="iptables" path="pipe:[231496]" dev="pipefs" ino=231496 scontext=system_u:system_r:iptables_t:s0 tcontext=system_u:system_r:certmonger_t:s0 tclass=fifo_file permissive=1
+          type=USER_AVC msg=audit(1575535009.861:5275): pid=1397 uid=81 auid=4294967295 ses=4294967295 subj=system_u:system_r:system_dbusd_t:s0-s0:c0.c1023 msg='avc:  denied  { send_msg } for msgtype=method_call interface=org.freedesktop.DBus member=Hello dest=org.freedesktop.DBus spid=38869 scontext=system_u:system_r:container_t:s0:c313,c573 tcontext=system_u:system_r:system_dbusd_t:s0-s0:c0.c1023 tclass=dbus permissive=1  exe="/usr/bin/dbus-daemon" sauid=81 hostname=? addr=? terminal=?'UID="dbus" AUID="unset" SAUID="dbus"
+          type=USER_AVC msg=audit(1575535009.861:5276): pid=1397 uid=81 auid=4294967295 ses=4294967295 subj=system_u:system_r:system_dbusd_t:s0-s0:c0.c1023 msg='avc:  denied  { send_msg } for msgtype=method_call interface=org.freedesktop.systemd1.Manager member=GetDynamicUsers dest=org.freedesktop.systemd1 spid=38869 tpid=1 scontext=system_u:system_r:container_t:s0:c313,c573 tcontext=system_u:system_r:init_t:s0 tclass=dbus permissive=1  exe="/usr/bin/dbus-daemon" sauid=81 hostname=? addr=? terminal=?'UID="dbus" AUID="unset" SAUID="dbus"
+          type=USER_AVC msg=audit(1575535009.862:5277): pid=1397 uid=81 auid=4294967295 ses=4294967295 subj=system_u:system_r:system_dbusd_t:s0-s0:c0.c1023 msg='avc:  denied  { send_msg } for msgtype=method_return dest=:1.1198 spid=1 tpid=38869 scontext=system_u:system_r:init_t:s0 tcontext=system_u:system_r:container_t:s0:c313,c573 tclass=dbus permissive=1  exe="/usr/bin/dbus-daemon" sauid=81 hostname=? addr=? terminal=?'UID="dbus" AUID="unset" SAUID="dbus"
+          type=USER_AVC msg=audit(1575535013.340:5290): pid=1397 uid=81 auid=4294967295 ses=4294967295 subj=system_u:system_r:system_dbusd_t:s0-s0:c0.c1023 msg='avc:  denied  { send_msg } for msgtype=method_call interface=org.freedesktop.DBus member=Hello dest=org.freedesktop.DBus spid=39132 scontext=system_u:system_r:container_t:s0:c192,c917 tcontext=system_u:system_r:system_dbusd_t:s0-s0:c0.c1023 tclass=dbus permissive=1  exe="/usr/bin/dbus-daemon" sauid=81 hostname=? addr=? terminal=?'UID="dbus" AUID="unset" SAUID="dbus"
+          type=USER_AVC msg=audit(1575535013.341:5291): pid=1397 uid=81 auid=4294967295 ses=4294967295 subj=system_u:system_r:system_dbusd_t:s0-s0:c0.c1023 msg='avc:  denied  { send_msg } for msgtype=method_call interface=org.freedesktop.systemd1.Manager member=GetDynamicUsers dest=org.freedesktop.systemd1 spid=39132 tpid=1 scontext=system_u:system_r:container_t:s0:c192,c917 tcontext=system_u:system_r:init_t:s0 tclass=dbus permissive=1  exe="/usr/bin/dbus-daemon" sauid=81 hostname=? addr=? terminal=?'UID="dbus" AUID="unset" SAUID="dbus"
+          type=USER_AVC msg=audit(1575535013.342:5292): pid=1397 uid=81 auid=4294967295 ses=4294967295 subj=system_u:system_r:system_dbusd_t:s0-s0:c0.c1023 msg='avc:  denied  { send_msg } for msgtype=method_return dest=:1.1209 spid=1 tpid=39132 scontext=system_u:system_r:init_t:s0 tcontext=system_u:system_r:container_t:s0:c192,c917 tclass=dbus permissive=1  exe="/usr/bin/dbus-daemon" sauid=81 hostname=? addr=? terminal=?'UID="dbus" AUID="unset" SAUID="dbus"
+          type=USER_AVC msg=audit(1575535028.912:5307): pid=1397 uid=81 auid=4294967295 ses=4294967295 subj=system_u:system_r:system_dbusd_t:s0-s0:c0.c1023 msg='avc:  denied  { send_msg } for msgtype=method_call interface=org.freedesktop.DBus member=Hello dest=org.freedesktop.DBus spid=39430 scontext=system_u:system_r:container_t:s0:c776,c848 tcontext=system_u:system_r:system_dbusd_t:s0-s0:c0.c1023 tclass=dbus permissive=1  exe="/usr/bin/dbus-daemon" sauid=81 hostname=? addr=? terminal=?'UID="dbus" AUID="unset" SAUID="dbus"
+          type=USER_AVC msg=audit(1575535028.913:5308): pid=1397 uid=81 auid=4294967295 ses=4294967295 subj=system_u:system_r:system_dbusd_t:s0-s0:c0.c1023 msg='avc:  denied  { send_msg } for msgtype=method_call interface=org.freedesktop.systemd1.Manager member=GetDynamicUsers dest=org.freedesktop.systemd1 spid=39430 tpid=1 scontext=system_u:system_r:container_t:s0:c776,c848 tcontext=system_u:system_r:init_t:s0 tclass=dbus permissive=1  exe="/usr/bin/dbus-daemon" sauid=81 hostname=? addr=? terminal=?'UID="dbus" AUID="unset" SAUID="dbus"

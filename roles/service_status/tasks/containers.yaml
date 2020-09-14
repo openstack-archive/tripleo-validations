@@ -1,0 +1,59 @@
+---
+- name: Gather package facts
+  package_facts:
+    manager: auto
+
+- name: Is docker running
+  systemd:
+    name: docker
+  register: docker_svc
+  when: ansible_facts.packages['docker'] is defined
+
+- name: Do we have podman
+  stat:
+    path: /usr/bin/podman
+  register: podman_stat
+
+- name: Podman related block
+  when: podman_stat.stat.exists
+  block:
+    - name: Get failed containers for podman
+      become: true
+      shell: |
+        podman {{ service_status_podman_opt }} ps -a --filter 'status=exited' --format {{ "'{{ .Names }} {{ .Status }}'" }}
+      register: failed_podman
+
+    - name: Fail if we detect failed podman container
+      fail:
+        msg: |
+          Failed container detected.
+          On CI, please check the following locations
+          /var/log/extras/failed_containers.log
+          /var/log/extras/podman
+      when: item is not match(".* Exited \(0\) .* ago")
+      loop: "{{ failed_podman.stdout_lines }}"
+
+- name: Docker related block
+  when:
+    - ansible_facts.packages['docker'] is defined
+    - docker_svc.status['SubState'] == 'running'
+  block:
+    - name: Get failed containers from docker
+      become: true
+      shell: >
+        {% raw %}
+        docker ps -a --filter 'status=exited' --format '{{ .Names }} {{ .Status }}'
+        {% endraw %}
+      register: failed_docker
+
+    - name: Fail if we detect failed docker container
+      fail:
+        msg: |
+          Failed container detected.
+          On CI, please check the following locations
+          /var/log/extras/failed_containers.log
+          /var/log/extras/docker
+      when:
+        - failed_docker is defined
+        - item is not match(".* Exited \(0\) .* ago")
+      loop: "{{ failed_docker.stdout_lines }}"

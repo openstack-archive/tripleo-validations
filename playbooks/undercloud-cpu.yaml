@@ -1,0 +1,16 @@
+---
+- hosts: undercloud
+  gather_facts: true
+  vars:
+    metadata:
+      name: Verify undercloud fits the CPU core requirements
+      description: >
+        Make sure that the undercloud has enough CPU cores.
+
+        https://access.redhat.com/documentation/en-us/red_hat_openstack_platform/15/html/director_installation_and_usage/planning-your-undercloud#determining-environment-scale
+      groups:
+        - prep
+        - pre-introspection
+    min_undercloud_cpu_count: 8
+  roles:
+    - undercloud_cpu

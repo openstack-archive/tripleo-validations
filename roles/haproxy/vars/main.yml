@@ -1,0 +1,6 @@
+---
+metadata:
+  name: HAProxy configuration
+  description: Verify the HAProxy configuration has recommended values.
+  groups:
+    - post-deployment

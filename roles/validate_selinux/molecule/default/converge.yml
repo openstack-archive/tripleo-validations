@@ -1,0 +1,63 @@
+---
+# Copyright 2019 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+
+- name: Converge
+  hosts: all
+  gather_facts: false
+  vars:
+    validate_selinux_working_dir: '/tmp'
+
+  tasks:
+    - name: Simple run without filter against clean auditlog
+      include_role:
+        name: validate_selinux
+      vars:
+        validate_selinux_audit_source: '/var/log/audit-clean.log'
+
+    - name: Run with filter against unclean auditlog
+      include_role:
+        name: validate_selinux
+      vars:
+        validate_selinux_audit_source: '/var/log/audit-unclean.log'
+        validate_selinux_skip_list:
+          - entry: 'tcontext=system_u:system_r:init_t'
+            comment: 'This one is a real-life entry'
+          - entry: 'tcontext=system_u:system_r:system_dbusd_t'
+            comment: 'This one is another real-life entry'
+
+    - name: Run without filter against unclean auditlog
+      block:
+        - name: Run role
+          include_role:
+            name: validate_selinux
+          vars:
+            validate_selinux_audit_source: '/var/log/audit-unclean.log'
+            validate_selinux_strict: true
+      rescue:
+        - name: Clear host error
+          meta: clear_host_errors
+
+        - name: Status message
+          debug:
+            msg: 'Successfully detected denials issue!'
+
+        - name: End play
+          meta: end_play
+
+    - name: Fail if we get to this place
+      fail:
+        msg: 'Unit test failed: did not detect untracked denials!'
