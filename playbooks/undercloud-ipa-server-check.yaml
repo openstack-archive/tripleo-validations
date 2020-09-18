@@ -1,0 +1,24 @@
+---
+- hosts: undercloud
+  gather_facts: true
+  vars:
+    metadata:
+      name: Verify that the IPA server has the right permissions and ACI
+      description: |
+        This validation is relevant for systems where TLS Everywhere is enabled.
+
+        A new ACI is needed on the FreeIPA server to ensure that certificates with IP SANs can be
+        issued.  This ACI will be delivered by default from FreeIPA 4.8.5.
+
+        In addition, a new permission is needed to add DNS zones for tripleo-ipa.  This
+        permission is an addition to the current permissions for the Nova Host Manager role.
+
+        This validation confirms that the new permission and ACI are present.
+
+        https://docs.openstack.org/project-deploy-guide/tripleo-docs/latest/features/tls-introduction.html
+      groups:
+        - pre-upgrade
+  tasks:
+    - include_role:
+        name: tls_everywhere
+        tasks_from: ipa-server-check.yaml
