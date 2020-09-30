@@ -1,14 +1,11 @@
-========================
-Team and repository tags
-========================
+===================
+TripleO Validations
+===================
 
 .. image:: https://governance.openstack.org/tc/badges/tripleo-validations.svg
     :target: https://governance.openstack.org/tc/reference/tags/index.html
 
 .. Change things from this point on
-
-TripleO Validations
-===================
 
 A collection of Ansible roles and playbooks to detect and report potential
 issues during TripleO deployments.
