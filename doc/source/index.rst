@@ -3,21 +3,42 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+===============================================
 Welcome to tripleo-validations's documentation!
 ===============================================
 
-Contents:
+Introduction
+============
+
+.. include:: ../../README.rst
+
+Installation Guide
+==================
 
 .. toctree::
    :maxdepth: 2
 
-   readme
    installation
-   contributing
-   roles
-   modules
 
-Existing validations:
+Contributing
+============
+
+.. toctree::
+   :maxdepth: 2
+
+   contributing/contributing
+   contributing/developer_guide
+
+Existing Groups
+===============
+
+.. toctree::
+   :maxdepth: 2
+
+   groups
+
+Existing Validations
+====================
 
 .. toctree::
    :maxdepth: 2
@@ -48,6 +69,15 @@ Existing validations:
    validations-pre-update-converge-details
    validations-post-update-details
    validations-backup-and-restore-details
+
+Existing Roles and Modules
+==========================
+
+.. toctree::
+   :maxdepth: 2
+
+   roles
+   modules
 
 
 Indices and tables
