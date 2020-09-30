@@ -138,16 +138,13 @@ Role documentation
 def build_groups_detail(groups):
     entries = [
         """
-{group}
-{adornment}
+**{group}**:
 
-{desc}
+*{desc}*
 
 .. include:: {link}
-
 """
         .format(group=grp.capitalize(),
-                adornment=(len(grp) * '~'),
                 link="validations-{}.rst".format(grp),
                 desc=desc[0].get('description', None),
                 )
