@@ -1,60 +1,5 @@
-========================
-Team and repository tags
-========================
-
-.. image:: https://governance.openstack.org/tc/badges/tripleo-validations.svg
-    :target: https://governance.openstack.org/tc/reference/tags/index.html
-
-.. Change things from this point on
-
-TripleO Validations
-===================
-
-A collection of Ansible roles and playbooks to detect and report potential
-issues during TripleO deployments.
-
-The validations will help detect issues early in the deployment process and
-prevent field engineers from wasting time on misconfiguration or hardware
-issues in their environments.
-
-All validations are written in Ansible and are written in a way that's
-consumable by the `Mistral validation framework
-<https://review.opendev.org/#/c/255792/>`_ or by Ansible directly. They are
-available independently from the UI or the command line client.
-
-* Free software: Apache license
-* Documentation: https://docs.openstack.org/tripleo-validations/latest/
-* Release notes: https://docs.openstack.org/releasenotes/tripleo-validations/
-* Source: https://opendev.org/openstack/tripleo-validations
-* Bugs: https://storyboard.openstack.org/#!/project/openstack/tripleo-validations
-
-Prerequisites
--------------
-
-The TripleO validations require Ansible 2.7 or above::
-
-    $ sudo pip install 'ansible>=2.7'
-
-Existing validations
---------------------
-
-Here are all the validations that currently exist. They're grouped by
-the deployment stage they're should be run on.
-
-Validations can belong to multiple groups.
-
-.. include:: validations-groups.rst
-
-To add a new group, you will need to edit the ``groups.yaml`` file located in
-the root of the TripleO Validations directory::
-
-    $ [vim|emacs] groups.yaml
-    ...
-    pre-update:
-      - description: >-
-          Validations which try to validate your OpenStack deployment before you
-          update it.
-    ...
+Developer's Guide
+=================
 
 And a new entry in the sphinx documentation index::
 
@@ -76,7 +21,7 @@ Writing Validations
 -------------------
 
 All validations are written in standard Ansible with a couple of extra
-meta-data to provide information to the Mistral validation framework.
+meta-data to provide information to the validation framework.
 
 For people not familiar with Ansible, get started with their `excellent
 documentation <https://docs.ansible.com/ansible/>`_.
@@ -276,7 +221,7 @@ Learn more at the `Ansible documentation page about writing custom modules
 <https://docs.ansible.com/ansible/developing_modules.html>`__.
 
 Running a validation
-~~~~~~~~~~~~~~~~~~~~
+--------------------
 
 Running the validations require ansible and a set of nodes to run them against.
 These nodes need to be reachable from the operator's machine and need to have
@@ -484,7 +429,7 @@ And that's it! The validation is now finished and you can start using it in
 earnest.
 
 Create a new role with automation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------
 
 The role addition process is also automated using ansible. If ansible is
 available on the development workstation change directory to the root of
@@ -504,8 +449,8 @@ When the role is ready for CI, add a **job** entry into the
     - job:
         files:
         - ^roles/${NEWROLENAME}/.*
-        name: tripleo-validations-centos-7-molecule-${NEWROLENAME}
-        parent: tripleo-validations-centos-7-base
+        name: tripleo-validations-centos-8-molecule-${NEWROLENAME}
+        parent: tripleo-validations-centos-8-base
         vars:
           tripleo_validations_role_name: ${NEWROLENAME}
 
@@ -518,10 +463,10 @@ of the `molecule.yaml` file.
     - project:
         check:
           jobs:
-            - tripleo-validations-centos-7-molecule-${NEWROLENAME}
+            - tripleo-validations-centos-8-molecule-${NEWROLENAME}
         gate:
           jobs:
-            - tripleo-validations-centos-7-molecule-${NEWROLENAME}
+            - tripleo-validations-centos-8-molecule-${NEWROLENAME}
 
 
 Finally add a role documentation file at
@@ -531,7 +476,7 @@ the molecule playbook, or playbooks, used to test the role, which is noted
 as an "example" playbook.
 
 Local testing of new roles
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------
 
 Local testing of new roles can be done in any number of ways, however,
 the easiest way is via the script `run-local-test` on a *CentOS 8* machaine.
