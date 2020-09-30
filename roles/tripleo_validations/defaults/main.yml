@@ -1,0 +1,25 @@
+---
+val_working_dir: "{{ working_dir }}"
+validation_log_dir: "/var/log/validations"
+validation_environment: "{{ job.environment_type|default('undercloud') }}"
+# Passing default to component, allow to run the role outside of CI
+component: "{{ job.component|default(None) }}"
+# both commands can be used:
+# "openstack tripleo validator" or "/usr/bin/validation.py"
+# the default is validation.py because this is the 1st entry available on
+# a system for validation.
+# The openstack command needs to install python-tripleoclient and its
+# dependencies first. This value should be override as needed in the roles/vars
+# calls.
+validation_command: "/usr/bin/validation.py"
+
+# Enabling validation run
+run_tripleo_validations_tests: false
+run_validation: true
+
+# Run list and group boolean:
+run_from_list: true
+run_from_group: false
+
+# Jinja script name for the tripleo validation CLI tests:
+run_validations_cli_tests_script: run-validations-cli-tests.sh.j2

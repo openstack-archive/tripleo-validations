@@ -1,0 +1,13 @@
+---
+- name: Create run-validations-cli-tests.sh
+  template:
+    src: "{{ run_validations_cli_tests_script }}"
+    dest: "{{ val_working_dir }}/run-validations-cli-tests.sh"
+    mode: 0755
+  when: run_tripleo_validations_tests|bool
+
+- name: Run TripleO validations script tests
+  register: run_tripleo_validation_tests
+  shell: |
+    {{ val_working_dir }}/run-validations-cli-tests.sh > run_validations_cli_tests.log 2>&1
+  when: run_tripleo_validations_tests|bool
