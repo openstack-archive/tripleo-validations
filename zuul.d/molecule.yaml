@@ -28,8 +28,6 @@
       - tripleo-validations-centos-8-molecule-controller_ulimits
       - tripleo-validations-centos-8-molecule-ctlplane_ip_range
       - tripleo-validations-centos-8-molecule-image_serve
-      - tripleo-validations-centos-8-molecule-image_serve
-      - tripleo-validations-centos-8-molecule-nova_status
       - tripleo-validations-centos-8-molecule-nova_status
       - tripleo-validations-centos-8-molecule-nova_svirt
       - tripleo-validations-centos-8-molecule-package_version
