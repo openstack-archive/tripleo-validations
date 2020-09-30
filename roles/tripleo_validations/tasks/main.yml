@@ -1,0 +1,16 @@
+---
+- name: Ensure tripleo-validations is present
+  yum:
+    name: openstack-tripleo-validations
+    state: present
+  become: true
+
+- name: Run validations
+  include_tasks: run.yml
+  when:
+    - run_validation|default(false)|bool
+    - component != ''
+
+- name: Run validations tests scripts
+  include_tasks: test_script.yml
+  when: run_tripleo_validations_tests|bool

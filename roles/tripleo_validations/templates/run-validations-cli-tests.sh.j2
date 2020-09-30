@@ -1,0 +1,149 @@
+#!/bin/bash
+
+set -ux
+
+### --start_docs
+## Run CLI Validations tests
+## =========================
+
+## Prepare Your Environment
+## ------------------------
+
+## * Source in the undercloud credentials.
+## ::
+
+WORKING_DIR={{ val_working_dir }}
+
+source ${WORKING_DIR}/stackrc
+
+VALIDATIONS_CLI="{{ tripleo_validation_command }}"
+LIST_FAILURE_COUNTER=0
+RUN_FAILURE_COUNTER=0
+
+## CLI Validations Listing tests
+## -----------------------------
+
+function run_validations_cli_listing {
+## * Get the list of all the existing validations through the CLI
+## with no arguments (table output by default)
+## ::
+
+    time ${VALIDATIONS_CLI} list
+
+    if [ $? -eq 0 ]; then
+        echo "Validations Listing (no args) passed successfully"
+    else
+        echo "Validations Listing (no args) Failed"
+        LIST_FAILURE_COUNTER=$(($LIST_FAILURE_COUNTER+1))
+    fi
+
+## * Get the list of all the existing validations through the CLI
+## with JSON output
+## ::
+
+    time ${VALIDATIONS_CLI} list -f json
+
+    if [ $? -eq 0 ]; then
+        echo "Validations Listing (JSON format) passed successfully"
+    else
+        echo "Validations Listing (JSON Format) Failed"
+        LIST_FAILURE_COUNTER=$(($LIST_FAILURE_COUNTER+1))
+    fi
+
+## * Get the list of all the existing validations through the CLI
+## with YAML output
+## ::
+
+    time ${VALIDATIONS_CLI} list -f yaml
+
+    if [ $? -eq 0 ]; then
+        echo "Validations Listing (YAML format) passed successfully"
+    else
+        echo "Validations Listing (YAML Format) Failed"
+        LIST_FAILURE_COUNTER=$(($LIST_FAILURE_COUNTER+1))
+    fi
+
+## * Get all the information about the undercloud-ram
+## validation
+## ::
+
+    time ${VALIDATIONS_CLI} show check-ram
+
+    if [ $? -eq 0 ]; then
+        echo "Listing validation information passed successfully"
+    else
+        echo "Listing validation information Failed"
+        LIST_FAILURE_COUNTER=$(($LIST_FAILURE_COUNTER+1))
+    fi
+
+
+## * Get the list of all parameters available for the check-ram
+## validation
+## ::
+
+    time ${VALIDATIONS_CLI} show parameter --validation check-ram
+
+    if [ $? -eq 0 ]; then
+        echo "Listing validation parameters passed successfully"
+    else
+        echo "Listing validation parameters failed"
+        LIST_FAILURE_COUNTER=$(($LIST_FAILURE_COUNTER+1))
+    fi
+
+## * Get the list of all parameters available for the undercloud-ram
+## validation and create a JSON file with those variables
+## ::
+
+    if [ -f ${WORKING_DIR}/uc-ram-vars.json ]; then
+        rm -Rf ${WORKING_DIR}/uc-ram-vars.json
+    fi
+
+    time ${VALIDATIONS_CLI} show parameter \
+         --download json ${WORKING_DIR}/uc-ram-vars.json \
+         --validation check-ram
+
+    if [ $? -eq 0 ] && [ -f ${WORKING_DIR}/uc-ram-vars.json ]; then
+        echo "Creating file with validation parameters passed successfully"
+    else
+        echo "Creating file with validation parameters failed"
+        LIST_FAILURE_COUNTER=$(($LIST_FAILURE_COUNTER+1))
+    fi
+}
+
+function run_validations_cli_run {
+## * Run no-op validations through the CLI
+## ::
+
+    time ${VALIDATIONS_CLI} run --validation no-op
+
+    if [ $? -eq 0 ]; then
+        echo "No-op validations run passed successfully"
+    else
+        echo "No-op validations run Failed"
+        RUN_FAILURE_COUNTER=$(($RUN_FAILURE_COUNTER+1))
+    fi
+
+## * Run no-op validations through the CLI
+## ::
+
+    ${VALIDATIONS_CLI} run --group no-op
+
+    if [ $? -eq 0 ]; then
+        echo "No-op validations group run passed successfully"
+    else
+        echo "No-op validations group run Failed"
+        RUN_FAILURE_COUNTER=$(($RUN_FAILURE_COUNTER+1))
+    fi
+}
+
+run_validations_cli_listing
+run_validations_cli_run
+
+if [ $LIST_FAILURE_COUNTER -gt 0 ] || [ $RUN_FAILURE_COUNTER -gt 0 ]; then
+    echo "At least one test has failed!"
+    exit 1
+else
+    exit 0
+fi
+
+## --stop_docs

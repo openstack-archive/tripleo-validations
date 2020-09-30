@@ -1,0 +1,18 @@
+---
+validations_list:
+  compute:
+    - nova-status
+    - nova-svirt
+  network:
+    - neutron-sanity-check
+  validation:
+    - check-ram
+    - check-cpu
+    - 512e
+  tripleo:
+    - undercloud-disk-space
+validations_group:
+  compute:
+    - compute
+  network:
+    - network
