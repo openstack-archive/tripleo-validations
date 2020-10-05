@@ -14,12 +14,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-
-- name: Prepare
-  hosts: all
-  tasks:
-    - name: Container registry installation
-      include_role:
-        name: tripleo_image_serve
-      vars:
-        tripleo_container_registry_host: undercloud.ctlplane.mydomain.tld
+- name: tripleo-ansible
+  scm: git
+  src: https://opendev.org/openstack/tripleo-ansible
+  version: master
+  trackbranch: master
