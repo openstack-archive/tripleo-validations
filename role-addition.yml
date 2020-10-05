@@ -45,9 +45,9 @@
         ansible-galaxy init
         --role-skeleton=_skeleton_role_
         --init-path=roles/
-        {{ _role_name }}
+        validation_{{ _role_name }}
       args:
-        creates: "roles/{{ _role_name }}"
+        creates: "roles/validation_{{ _role_name }}"
 
     - name: Read zuul molecule file
       slurp:
@@ -86,10 +86,10 @@
                   "name": new_job_name,
                   "parent": "tripleo-validations-centos-8-base",
                   "files": [
-                    "^roles/" ~ _role_name ~ "/.*"
+                    "^roles/validation_" ~ _role_name ~ "/.*"
                   ],
                   "vars": {
-                    "tripleo_validations_role_name": _role_name
+                    "tripleo_validations_role_name": "validation_" ~ _role_name
                   }
                 }
           %}
@@ -130,9 +130,9 @@
                   - post-overcloud-converge
                   - pre-ceph
                   - post-ceph
-              {{ _role_name }}_debug: false
+              validation_{{ _role_name }}_debug: false
             roles:
-              - {{ _role_name }}
+              - validation_{{ _role_name }}
         dest: "playbooks/{{ dashed_role_name }}.yaml"
 
     - name: Create role documentation
@@ -144,5 +144,5 @@
           {{ '=' * (opening | length) }}
 
           .. ansibleautoplugin::
-            :role: roles/{{ _role_name }}
-        dest: "doc/source/roles/role-{{ _role_name }}.rst"
+            :role: roles/validation_{{ _role_name }}
+        dest: "doc/source/roles/role-validation_{{ _role_name }}.rst"
