@@ -41,8 +41,7 @@ provisioner:
   log: true
   env:
     ANSIBLE_STDOUT_CALLBACK: yaml
-    ANSIBLE_LIBRARY: ../../../../library
-    ANSIBLE_ROLES_PATH: ../../../../roles/roles.galaxy/tripleo-ansible/tripleo-ansible/tripleo_ansible/roles
+    ANSIBLE_ROLES_PATH: ../../../../roles/roles.galaxy/tripleo-ansible/tripleo_ansible/roles
 
 scenario:
   test_sequence:

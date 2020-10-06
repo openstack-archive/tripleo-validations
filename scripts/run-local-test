@@ -67,4 +67,4 @@ ansible-playbook -i "${PROJECT_DIR}/tests/hosts.ini" \
                  -e "ansible_user=${USER}" \
                  -e "ansible_user_dir=${HOME}" \
                  "${PROJECT_DIR}/tests/prepare-test-host.yml" \
-                 "${PROJECT_DIR}/zuul.d/playbooks/run-local.yml"
+                 "${PROJECT_DIR}/ci/playbooks/run-local.yml"

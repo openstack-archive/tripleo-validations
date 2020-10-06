@@ -33,7 +33,7 @@ provisioner:
   log: true
   env:
     ANSIBLE_STDOUT_CALLBACK: yaml
-    ANSIBLE_LIBRARY: "../../../../library"
+    ANSIBLE_LIBRARY: "../../../../library:../../../../roles/roles.galaxy/validations-common/validations_common/library"
 
 scenario:
   test_sequence:

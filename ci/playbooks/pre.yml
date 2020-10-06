@@ -30,13 +30,15 @@
         virtualenv_site_packages: true
 
   tasks:
-    - name: Get Ansible Galaxy roles
-      command: >-
-        {{ ansible_user_dir }}/test-python/bin/ansible-galaxy install
-        -fr
-        {{ ansible_user_dir }}/{{ zuul.project.src_dir }}/ansible-role-requirements.yml
-      environment:
-        ANSIBLE_ROLES_PATH: "{{ ansible_user_dir }}/{{ zuul.project.src_dir }}/roles/roles.galaxy"
+    - name: Get necessary git repos
+      git:
+        repo: https://opendev.org/openstack/{{ item }}
+        dest: "{{ ansible_user_dir}}/{{ zuul.project.src_dir }}/roles/roles.galaxy/{{ item }}"
+        version: master
+        force: true
+      with_items:
+        - tripleo-ansible
+        - validations-common
 
   roles:
     - role: ensure-docker
