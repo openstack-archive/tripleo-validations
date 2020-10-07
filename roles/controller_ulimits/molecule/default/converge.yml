@@ -19,20 +19,34 @@
   hosts: all
   gather_facts: false
 
-  vars:
-    nofiles_min: 102400
-    nproc_min: 204800
-
   tasks:
     - block:
         - include_role:
             name: controller_ulimits
+          vars:
+            nofiles_min: 102400
+            nproc_min: 512
       rescue:
         - name: Clear host errors
           meta: clear_host_errors
 
         - debug:
-            msg: The validation works! End the playbook run
+            msg: The validation works for detecting nofiles_min!
+
+    - block:
+        - include_role:
+            name: controller_ulimits
+          vars:
+            nofiles_min: 512
+            nproc_min: 204800
+      rescue:
+        - name: Clear host errors
+          meta: clear_host_errors
+
+        - debug:
+            msg: >-
+              The validation works for detecting noproc_min!
+              End of playbook run.
 
         - name: End play
           meta: end_play

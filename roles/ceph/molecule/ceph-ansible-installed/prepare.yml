@@ -24,6 +24,6 @@
       yum_repository:
         name: tripleo-centos-ceph-nautilus
         description: ceph-nautilus repository
-        baseurl: http://mirror.centos.org/centos/7/storage/x86_64/ceph-nautilus/
+        baseurl: http://mirror.centos.org/centos/8/storage/x86_64/ceph-nautilus/
         gpgcheck: false
         enabled: true

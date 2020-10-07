@@ -513,3 +513,106 @@ Finally add a role documentation file at
 a title, a literal include of the defaults yaml and a literal include of
 the molecule playbook, or playbooks, used to test the role, which is noted
 as an "example" playbook.
+
+Local testing of new roles
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Local testing of new roles can be done in any number of ways, however,
+the easiest way is via the script `run-local-test` on a *CentOS 8* machaine.
+This script will setup the local work environment to execute tests mimicking
+what Zuul does.
+
+.. warning::
+
+    This script makes the assumption the executing user has the
+    ability to escalate privileges and will modify the local system.
+
+To use this script execute the following command.
+
+.. code-block:: console
+
+    $ ./scripts/run-local-test ${NEWROLENAME}
+
+When using the `run-local-test` script, the TRIPLEO_JOB_ANSIBLE_ARGS
+environment variable can be used to pass arbitrary Ansible arguments.
+For example, the following shows how to use `--skip-tags` when testing
+a role with tags.
+
+.. code-block:: console
+
+    $ export TRIPLEO_JOB_ANSIBLE_ARGS="--skip-tags tag_one,tag_two"
+    $ ./scripts/run-local-test ${ROLENAME}
+
+Role based testing with molecule can be executed directly from within
+the role directory.
+
+.. note::
+
+    All tests require Podman for container based testing. If Podman
+    is not available on the local workstation it will need to be
+    installed prior to executing most molecule based tests.
+
+
+.. note::
+
+    The script `bindep-install`, in the **scripts** path, is
+    available and will install all system dependencies.
+
+
+.. note::
+
+    Some roles depend on some packages which are available only through the EPEL
+    repositories. So, please ensure you have installed them on your CentOS 8 host
+    before running molecule tests.
+
+
+Before running basic molecule tests, it is recommended to install all
+of the python dependencies in a virtual environment.
+
+.. code-block:: console
+
+    $ python -m virtualenv --system-site-packages "${HOME}/test-python"
+    $ ${HOME}/test-python/bin/pip install -r requirements.txt \
+                                          -r test-requirements.txt \
+                                          -r molecule-requirements.txt
+    $ source ${HOME}/test-python/bin/activate
+
+
+Now, it is important to install validations-common and tripleo-ansible as
+dependencies.
+
+.. code-block:: console
+
+    $ cd tripleo-validations/
+    $ for REPO in validations-common tripleo-ansible; do
+        git clone https://opendev.org/openstack/${REPO} roles/roles.galaxy/${REPO}
+      done
+
+
+To run a basic molecule test, simply source the `ansible-test-env.rc`
+file from the project root, and then execute the following commands.
+
+.. code-block:: console
+
+    (test-python) $ cd roles/${NEWROLENAME}/
+    (test-python) $ molecule test --all
+
+
+If a role has more than one scenario, a specific scenario can be
+specified on the command line. Running specific scenarios will
+help provide developer feedback faster. To pass-in a scenario use
+the `--scenario-name` flag with the name of the desired scenario.
+
+.. code-block:: console
+
+    (test-python) $ cd tripleo-validations/roles/${NEWROLENAME}/
+    (test-python) $ molecule test --scenario-name ${EXTRA_SCENARIO_NAME}
+
+
+When debugging molecule tests its sometimes useful to use the
+`--debug` flag. This flag will provide extra verbose output about
+test being executed and running the environment.
+
+.. code-block:: console
+
+    (test-python) $ molecule --debug test
