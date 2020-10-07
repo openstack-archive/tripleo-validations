@@ -1,13 +1,10 @@
 ---
 driver:
-  name: docker
+  name: podman
 log: true
 
 platforms:
   - name: centos7
-    ulimits: &ulimits
-      - nofile:512:512
-      - nproc:512:512
     hostname: centos7
     image: centos:7
     pkg_extras: python-setuptools
@@ -18,9 +15,11 @@ platforms:
     environment: &env
       http_proxy: "{{ lookup('env', 'http_proxy') }}"
       https_proxy: "{{ lookup('env', 'https_proxy') }}"
+    ulimits: &ulimit
+      - nofile=512:512
+      - nproc=512:512
 
   - name: centos8
-    ulimits: *ulimits
     hostname: centos8
     image: centos:8
     pkg_extras: python*-setuptools
@@ -28,6 +27,7 @@ platforms:
       - /etc/ci/mirror_info.sh:/etc/ci/mirror_info.sh:ro
     environment:
       <<: *env
+    ulimits: *ulimit
 
 provisioner:
   name: ansible

@@ -39,6 +39,3 @@
       with_items:
         - tripleo-ansible
         - validations-common
-
-  roles:
-    - role: ensure-docker

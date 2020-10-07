@@ -40,6 +40,10 @@ case "${ID,,}" in
         ;;
 esac
 
+# Ensure the required ci file is present
+sudo mkdir -p /etc/ci
+sudo touch /etc/ci/mirror_info.sh
+
 # Create a virtual env
 "${PYTHON_EXEC}" -m virtualenv --system-site-packages "${HOME}/test-python"
 
