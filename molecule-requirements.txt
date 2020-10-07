@@ -1,7 +1,6 @@
 # this is required for the molecule jobs
 ansi2html
 ansible
-docker
 jinja2>=2.8.0,<3
 molecule>=3.0,<3.1
 pytest
