@@ -20,6 +20,7 @@
       - tripleo-validations-centos-8-molecule-undercloud_debug
       - tripleo-validations-centos-8-molecule-undercloud_heat_purge_deleted
       - tripleo-validations-centos-8-molecule-undercloud_tokenflush
+      - tripleo-validations-centos-8-molecule-check_kernel_version
     gate:
       jobs:
       - tripleo-validations-centos-8-molecule-ceph
@@ -40,6 +41,7 @@
       - tripleo-validations-centos-8-molecule-undercloud_debug
       - tripleo-validations-centos-8-molecule-undercloud_heat_purge_deleted
       - tripleo-validations-centos-8-molecule-undercloud_tokenflush
+      - tripleo-validations-centos-8-molecule-check_kernel_version
     name: tripleo-validations-molecule-jobs
 - job:
     files:
@@ -314,3 +316,10 @@
     parent: tripleo-validations-centos-8-base
     vars:
       tripleo_validations_role_name: package_version
+- job:
+    files:
+    - ^roles/check_kernel_version/.*
+    name: tripleo-validations-centos-8-molecule-check_kernel_version
+    parent: tripleo-validations-centos-8-base
+    vars:
+      tripleo_validations_role_name: check_kernel_version

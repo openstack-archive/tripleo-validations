@@ -1,0 +1,3 @@
+---
+check_kernel_version_fact: "{{ ansible_facts.kernel }}"
+check_kernel_version_expected: "el8"
