@@ -16,7 +16,7 @@
 
 - project:
     templates:
-      - tripleo-multinode-container-minimal
+      - tripleo-multinode-container-minimal-pipeline
       - openstack-python3-victoria-jobs
       - tripleo-validations-molecule-jobs
       - check-requirements
@@ -32,16 +32,27 @@
               - ^molecule-requirements.txt
               - ^requirements.txt
               - ^README.rst
-        - tripleo-ci-centos-8-scenario004-standalone: &standalone0004
-            dependencies: &deps
+        - openstack-tox-lower-constraints
+        - tripleo-ci-centos-8-content-provider: &content-provider
+            dependencies:
               - openstack-tox-linters
+              - openstack-tox-lower-constraints
+        - tripleo-ci-centos-8-scenario004-standalone: &scenario004
+            vars: &vars_scen004
+              consumer_job: true
+              build_container_images: false
+            dependencies: &deps
+              - tripleo-ci-centos-8-content-provider
             files:
               - ^roles/ceph.*$
     gate:
       jobs:
         - openstack-tox-linters
+        - openstack-tox-lower-constraints
         - openstack-tox-docs: *tripleo-docs
-        - tripleo-ci-centos-8-scenario004-standalone: *standalone0004
+        - tripleo-ci-centos-8-content-provider: *content-provider
+        - tripleo-ci-centos-8-scenario004-standalone: *scenario004
+
     promote:
       jobs:
         - promote-openstack-tox-docs: *tripleo-docs
