@@ -3,7 +3,7 @@
   vars:
     metadata:
       name: Validate the Heat environment file for network configuration
-      description: >
+      description: |
         This validates the network environment and nic-config files
         that specify the overcloud network configuration and are stored
         in the current plan's Swift container.

@@ -3,7 +3,7 @@
   vars:
     metadata:
       name: Check controller ulimits
-      description: >
+      description: |
         This will check the ulimits of each controller.
       groups:
         - post-deployment

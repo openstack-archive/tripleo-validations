@@ -4,7 +4,7 @@
   vars:
     metadata:
       name: DHCP on the Introspection Network
-      description: >
+      description: |
         An unexpected DHCP server on the network used for node
         introspection can cause some nodes to not be inspected.
 

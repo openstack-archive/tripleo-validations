@@ -4,7 +4,7 @@
     metadata:
       name: Check connectivity to various OpenStack services
       # TODO: this could also check for undercloud endpoints
-      description: >
+      description: |
         This validation gets the PublicVip address from the deployment and
         tries to access Horizon and get a Keystone token.
       groups:

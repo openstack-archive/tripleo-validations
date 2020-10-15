@@ -3,7 +3,7 @@
   vars:
     metadata:
       name: Undercloud Services Debug Check
-      description: >
+      description: |
         The undercloud's openstack services should _not_ have debug enabled.
         This will check if debug is enabled on undercloud services.
         If debug is enabled, the root filesystem can fill up quickly, and

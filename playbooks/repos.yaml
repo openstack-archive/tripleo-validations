@@ -4,7 +4,7 @@
   vars:
     metadata:
       name: Check correctness of current repositories
-      description: >
+      description: |
         Detect whether the repositories listed in `yum repolist`
         can be connected to and that there is at least one repo
         configured.

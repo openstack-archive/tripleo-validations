@@ -3,7 +3,7 @@
   vars:
     metadata:
       name: Ensure container status
-      description: >
+      description: |
         Detect failed containers and raise an error.
       groups:
         - pre-upgrade

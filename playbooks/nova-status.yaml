@@ -3,7 +3,7 @@
   vars:
     metadata:
       name: Nova Status Upgrade Check
-      description: >
+      description: |
         Performs a release-specific readiness check before restarting services with
         new code. This command expects to have complete configuration and access to
         databases and services within a cell. For example, this check may query the

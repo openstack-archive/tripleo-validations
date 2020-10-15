@@ -3,7 +3,7 @@
   vars:
     metadata:
       name: Verify undercloud services state before running update or upgrade
-      description: >
+      description: |
         Check undercloud status before running a stack update - especially minor update and major upgrade.
       groups:
         - post-upgrade

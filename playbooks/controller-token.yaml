@@ -5,7 +5,7 @@
   vars:
     metadata:
       name: Verify that keystone admin token is disabled
-      description: >
+      description: |
         This validation checks that keystone admin token is disabled on both
         undercloud and overcloud controller after deployment.
       groups:

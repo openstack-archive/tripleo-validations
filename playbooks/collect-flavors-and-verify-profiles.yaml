@@ -3,7 +3,7 @@
   vars:
     metadata:
       name: Collect and verify role flavors
-      description: >
+      description: |
         This validation checks the flavors assigned to roles exist and have the
         correct capabilities set.
       groups:

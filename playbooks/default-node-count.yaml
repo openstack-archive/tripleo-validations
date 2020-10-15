@@ -3,7 +3,7 @@
   vars:
     metadata:
       name: Verify hypervisor statistics
-      description: >
+      description: |
         This validation checks that the nodes and hypervisor statistics
         add up.
       groups:

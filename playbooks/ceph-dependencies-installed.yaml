@@ -3,7 +3,7 @@
   vars:
     metadata:
       name: Check if Ceph dependencies are installed
-      description: >
+      description: |
         Prints a message if a ceph dependency is missed
       groups:
         - pre-deployment

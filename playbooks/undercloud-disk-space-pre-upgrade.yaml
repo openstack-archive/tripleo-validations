@@ -3,7 +3,7 @@
   vars:
     metadata:
       name: Verify undercloud fits the disk space requirements to perform an upgrade
-      description: >
+      description: |
         Make sure that the root partition on the undercloud node has enough
         free space before starting an upgrade
 

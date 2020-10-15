@@ -107,7 +107,7 @@
             vars:
               metadata:
                 name: The Validation name goes here
-                description: >-
+                description: |
                   Write a description of your validations
                 groups:
                   - no-op

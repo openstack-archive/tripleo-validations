@@ -3,7 +3,7 @@
   vars:
     metadata:
       name: System encoding
-      description: >-
+      description: |
         Ensure the local is unicode
       groups:
         - pre-deployment

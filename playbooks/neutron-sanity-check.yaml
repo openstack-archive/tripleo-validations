@@ -4,7 +4,7 @@
   vars:
     metadata:
       name: Neutron Sanity Check
-      description: >
+      description: |
         Run `neutron-sanity-check` on the controller nodes to find out
         potential issues with Neutron's configuration.
 

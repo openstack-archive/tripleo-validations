@@ -4,7 +4,7 @@
   vars:
     metadata:
       name: Verify the kernel version contains el8 in its name
-      description: >
+      description: |
         This validation checks the kernel has been upgaded by checking
         el8 is in kernel (uname -r) version string
       groups:

@@ -3,17 +3,17 @@
   vars:
     metadata:
       name: Validate requested Ceph Placement Groups
-      description: >
-        In Ceph Lumionus and newer the Placement Group overdose protection
-        check (https://ceph.com/community/new-luminous-pg-overdose-protection)
-        is executed by Ceph before a pool is created. If the check does not
-        pass, then the pool is not created. When TripleO deploys Ceph it
-        triggers ceph-ansible which creates the pools that OpenStack needs.
-        This validation runs the same check that the overdose protection uses
-        to determine if the user should update their CephPools, PG count, or
-        number of OSD. Without this check a deployer may have to wait until
-        after Ceph is running but before the pools are created to realize
-        the deployment will fail.
+      description: |
+        In Ceph Lumionus and newer the Placement Group overdose protection check
+        (https://ceph.com/community/new-luminous-pg-overdose-protection) is
+        executed by Ceph before a pool is created. If the check does not pass,
+        then the pool is not created. When TripleO deploys Ceph it triggers
+        ceph-ansible which creates the pools that OpenStack needs.  This
+        validation runs the same check that the overdose protection uses to
+        determine if the user should update their CephPools, PG count, or number
+        of OSD. Without this check a deployer may have to wait until after Ceph
+        is running but before the pools are created to realize the deployment
+        will fail.
       groups:
         - pre-deployment
         - post-ceph

@@ -3,7 +3,7 @@
   vars:
     metadata:
       name: Compare switch port VLANs to VLANs in nic config
-      description: >
+      description: |
         LLDP data received during introspection contains the configured VLANs
         for each switch port attached to the nodes interfaces.  Compare the
         VLAN IDs set on the switch port to those configured in nic config

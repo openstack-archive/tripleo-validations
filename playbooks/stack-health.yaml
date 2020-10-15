@@ -3,7 +3,7 @@
   vars:
     metadata:
       name: Stack Health Check
-      description: >
+      description: |
         Check if all stack resources are in a 'COMPLETE' state before starting
         an upgrade.
       groups:

@@ -3,7 +3,7 @@
   vars:
     metadata:
       name: Healthcheck systemd services Check
-      description: >
+      description: |
         Check for failed healthcheck systemd services.
       groups:
         - post-deployment

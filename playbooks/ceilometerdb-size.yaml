@@ -3,7 +3,7 @@
   vars:
     metadata:
       name: Events Database Size Check (DEPRECATED)
-      description: >
+      description: |
         The undercloud's events database can grow to a substantial
         size if event_time_to_live is set to a negative value (infinite limit).
 

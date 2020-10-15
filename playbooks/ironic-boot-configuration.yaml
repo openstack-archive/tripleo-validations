@@ -3,7 +3,7 @@
   vars:
     metadata:
       name: Check Ironic boot configuration
-      description: >
+      description: |
         Check if baremetal boot configuration is correct.
       groups:
         - pre-deployment

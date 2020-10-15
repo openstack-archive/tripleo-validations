@@ -3,7 +3,7 @@
   vars:
     metadata:
       name: package-version
-      description: >-
+      description: |
         Ensures we can access the wanted package version. Especially useful
         when you are switching repositories, for instance during an upgrade.
       groups:

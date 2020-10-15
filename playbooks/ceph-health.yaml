@@ -3,10 +3,9 @@
   vars:
     metadata:
       name: Check the status of the ceph cluster
-      description: >
+      description: |
         Uses `ceph health` to check if cluster is in HEALTH_WARN state
         and prints a debug message.
-
       groups:
         - post-deployment
         - post-ceph

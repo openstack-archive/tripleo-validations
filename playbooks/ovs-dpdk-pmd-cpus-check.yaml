@@ -3,7 +3,7 @@
   vars:
     metadata:
       name: Validates OVS DPDK PMD cores from all NUMA nodes.
-      description: >
+      description: |
         OVS DPDK PMD cpus must be provided from all NUMA nodes.
 
         A failed status post-deployment indicates PMD CPU list is not

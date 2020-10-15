@@ -4,7 +4,7 @@
   vars:
     metadata:
       name: DHCP on the Provisioning Network
-      description: >
+      description: |
         An unexpected DHCP server on the provisioning network can
         cause problems with deploying the Ironic nodes.
 

@@ -3,7 +3,7 @@
   vars:
     metadata:
       name: Check if ceph-ansible is installed on the undercloud
-      description: >
+      description: |
         Prints a message if ceph-ansible isn't installed
       groups:
         - pre-deployment

@@ -3,7 +3,7 @@
   vars:
     metadata:
       name: Verify undercloud fits the disk space requirements
-      description: >
+      description: |
         Make sure that the root partition on the undercloud node has enough
         free space.
 

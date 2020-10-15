@@ -3,7 +3,7 @@
   vars:
     metadata:
       name: Check the status of the pacemaker cluster
-      description: >
+      description: |
         This runs `pcs status` and checks for any failed actions.
 
         A failed status post-deployment indicates something is not configured
