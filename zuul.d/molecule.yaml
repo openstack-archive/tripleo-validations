@@ -16,6 +16,7 @@
       - tripleo-validations-centos-8-molecule-rabbitmq_limits
       - tripleo-validations-centos-8-molecule-repos
       - tripleo-validations-centos-8-molecule-stonith_exists
+      - tripleo-validations-centos-8-molecule-tls_everywhere
       - tripleo-validations-centos-8-molecule-undercloud_cpu
       - tripleo-validations-centos-8-molecule-undercloud_debug
       - tripleo-validations-centos-8-molecule-undercloud_disk_space
@@ -38,6 +39,7 @@
       - tripleo-validations-centos-8-molecule-rabbitmq_limits
       - tripleo-validations-centos-8-molecule-repos
       - tripleo-validations-centos-8-molecule-stonith_exists
+      - tripleo-validations-centos-8-molecule-tls_everywhere
       - tripleo-validations-centos-8-molecule-undercloud_cpu
       - tripleo-validations-centos-8-molecule-undercloud_debug
       - tripleo-validations-centos-8-molecule-undercloud_disk_space
