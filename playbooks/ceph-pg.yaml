@@ -14,9 +14,7 @@
         of OSD. Without this check a deployer may have to wait until after Ceph
         is running but before the pools are created to realize the deployment
         will fail.
-      groups:
-        - pre-deployment
-        - post-ceph
+      groups: []
   tasks:
     - include_role:
         name: ceph
