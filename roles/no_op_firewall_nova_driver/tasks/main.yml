@@ -5,6 +5,7 @@
     path: "{{ nova_conf_path }}"
     section: DEFAULT
     key: firewall_driver
+    default: "nova.virt.firewall.NoopFirewallDriver"
   register: nova_firewall_driver
 
 - name: Verify `firewall_driver` is set to `NoopFirewallDriver`
