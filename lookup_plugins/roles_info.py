@@ -63,7 +63,7 @@ class LookupModule(LookupBase):
             return {
                 'name': role['name'],
                 'count': role.get('CountDefault', 0),
-                'flavor': None
+                'flavor': role.get('FlavorDefault', 'baremetal')
             }
 
         roles = list(map(default_role_data, roles_data))
