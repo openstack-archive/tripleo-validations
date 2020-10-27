@@ -1,6 +1,6 @@
 - project:
     templates:
-    - tripleo-multinode-container-minimal
+    - tripleo-multinode-container-minimal-pipeline
     - openstack-python3-ussuri-jobs
     - tripleo-validations-molecule-jobs
     - check-requirements
@@ -13,9 +13,16 @@
           - ^doc/.*
           - ^README.rst
       - openstack-tox-lower-constraints
-      - tripleo-ci-centos-8-scenario004-standalone:
+      - tripleo-ci-centos-8-content-provider
+      - tripleo-ci-centos-8-scenario004-standalone: &scenario004
+          vars:
+            consumer_job: true
+            build_container_images: false
+            tags:
+              - standalone
           dependencies: &deps
             - openstack-tox-linters
+            - tripleo-ci-centos-8-content-provider
           files:
             - ^roles/ceph.*$
     gate:
@@ -23,9 +30,8 @@
       - openstack-tox-linters
       - openstack-tox-docs: *tripleo-docs
       - openstack-tox-lower-constraints
-      - tripleo-ci-centos-8-scenario004-standalone:
-          files:
-            - ^roles/ceph.*$
+      - tripleo-ci-centos-8-content-provider
+      - tripleo-ci-centos-8-scenario004-standalone: *scenario004
     promote:
       jobs:
       - promote-openstack-tox-docs: *tripleo-docs
