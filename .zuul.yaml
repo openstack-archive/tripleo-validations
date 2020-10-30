@@ -17,7 +17,7 @@
 - project:
     templates:
       - tripleo-multinode-container-minimal-pipeline
-      - openstack-python3-victoria-jobs
+      - openstack-python3-wallaby-jobs
       - tripleo-validations-molecule-jobs
       - check-requirements
       - openstack-lower-constraints-jobs
