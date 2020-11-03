@@ -1,13 +1,13 @@
 ---
 - name: Set container_cli fact from the inventory
   set_fact:
-    container_cli: "{{ hostvars[inventory_hostname].container_cli }}"
+    container_cli: "{{ hostvars[inventory_hostname].container_cli |default('podman', true) }}"
 
 - name: Get the open_files_limit value
   become: true
   shell: >-
-    "{{ container_cli|default('podman', true) }}" exec -u root
-    $("{{ container_cli|default('podman', true) }}" ps -q --filter "name=mysql|galera-bundle" | head -1)
+    "{{ container_cli }}" exec -u root
+    $("{{ container_cli }}" ps -q --filter "name=mysql|galera-bundle" | head -1)
     /bin/bash -c 'ulimit -n'
   changed_when: false
   register: mysqld_open_files_limit
