@@ -1,0 +1,15 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Verify undercloud.conf correctness
+      description: |
+        This validation verifies that no deprecated, invalid or
+        incompatible parameters are being passwed in the Undercloud's
+        undercloud.conf configuration file.
+      groups:
+        - prep
+        - pre-undercloud-upgrade
+    check_undercloud_conf_debug: false
+  roles:
+    - check_undercloud_conf
