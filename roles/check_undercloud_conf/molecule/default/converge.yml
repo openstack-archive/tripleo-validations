@@ -1,0 +1,55 @@
+---
+# Copyright 2020 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+# Validate an undercloud.conf with the following content:
+#
+# [DEFAULT]
+# container_images_file= /home/stack/containers-prepare-parameter.yaml
+#
+# The validation should fail as the file /home/stack/containers-prepare-parameter.yaml
+# does not exist.
+
+- name: Converge
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: detect non existing file assigned to a parameter
+      block:
+        - name: run validation check_undercloud_conf
+          include_role:
+            name: "check_undercloud_conf"
+      rescue:
+        - name: Clear host errors
+          meta: clear_host_errors
+
+        - name: Detect right error message
+          fail:
+            msg: "Test failed due to wrong error: {{ ansible_failed_result.results.0.msg }}"
+          when:
+            - not ansible_failed_result.results.0.msg |
+              regex_search("^File configured in .* does not exist$")
+
+        - name: Status message
+          debug:
+            msg: "Detected undercloud.conf configuration issue!"
+
+        - name: End play
+          meta: end_play
+
+    - name: Fail the test
+      fail:
+        msg: |
+          A configuration issue should have been detected but it wasn't..
