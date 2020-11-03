@@ -1,0 +1,65 @@
+---
+# Copyright 2019 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+
+- name: Prepare
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Ensure we get needed facts
+      setup:
+        gather_subset:
+          - '!all'
+          - '!any'
+          - '!min'
+          - env
+
+    - name: populate undercloud.conf
+      copy:
+        dest: "{{ ansible_env.HOME }}/undercloud.conf"
+        content: |
+          [DEFAULT]
+          local_interface = em0
+          local_ip = 192.168.24.1/24
+          undercloud_public_host = 192.168.24.2
+          undercloud_admin_host = 192.168.24.3
+          undercloud_nameservers = 172.16.0.1,10.0.0.1
+          undercloud_ntp_servers=clock1.rdu2.redhat.com
+          overcloud_domain_name=redhat.local
+          undercloud_service_certificate = /undercloud.pem
+          hieradata_override = /hiera_override.yaml
+          container_images_file= /containers-prepare-parameter.yaml
+          enabled_hardware_types = ipmi,redfish
+          custom_env_files = /skip_rhel_release.yaml
+
+          [ctlplane-subnet]
+          local_subnet = ctlplane-subnet
+          cidr = 192.168.24.0/24
+          dhcp_start = 192.168.24.5
+          dhcp_end = 192.168.24.55
+          gateway = 192.168.24.1
+          inspection_iprange = 192.168.24.100,192.168.24.120
+
+    - name: create files with random content
+      copy:
+        dest: "/{{ item }}"
+        content: |
+          I'm the file {{ item }}
+      loop:
+        - 'undercloud.pem'
+        - 'hiera_override.yaml'
+        - 'containers-prepare-parameter.yaml'
+        - 'skip_rhel_release.yaml'

@@ -1,0 +1,69 @@
+---
+# Copyright 2020 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+
+- name: Ensure we get needed facts
+  setup:
+    gather_subset:
+      - '!all'
+      - '!any'
+      - '!min'
+      - env
+
+# "check_undercloud_conf" tasks
+- name: "Retrieve {{ ansible_env.HOME }}/undercloud.conf content"
+  slurp:
+    src: "{{ ansible_env.HOME }}/undercloud.conf"
+  register: uc_conf_content
+
+- name: Store all properties and file type properties
+  # b64decode will return all lines delimited by \n character in a
+  # single string. Therefore, we can really use ^/$.
+  # Get the string ([a-zA-Z0-9_]) after each \n skipping whitespaces
+  # until the equals.
+  # For the file properties, store all properties which after the =
+  # matches a directory. Being the directory optionally started
+  # by . or ~, followed by / and anything else until getting to \n.
+  # Ex: container_images_file= /home/stack/containers-prepare-parameter.yaml
+  set_fact:
+    uc_conf_props: "{{ uc_conf_content['content'] | b64decode |
+                   regex_findall('\\\n\\s*(\\w+)\\s*=[^\\\n]') }}"
+    uc_file_props: "{{ uc_conf_content['content'] | b64decode |
+                   regex_findall('\\\n\\s*(\\w+)\\s*=\\s*[.~]*\\/[^\\\n]') }}"
+
+- name: Get value from conf file
+  validations_read_ini:
+    path: "{{ ansible_env.HOME }}/undercloud.conf"
+    section: DEFAULT
+    key: "{{ item }}"
+  register: conf_values
+  loop: "{{ uc_file_props }}"
+
+- name: Check file property point to existing file
+  stat:
+    path: "{{ item.value }}"
+  register: file_prop_stat
+  loop: "{{ conf_values.results }}"
+
+- name: fail if location doesn't exist
+  fail:
+    msg: >-
+      File configured in {{ ansible_env.HOME }}/undercloud.conf {{ item.item.item }}
+      does not exist
+  when: not item.stat.exists
+  loop: "{{ file_prop_stat.results }}"
+
+- include_tasks: check_syntax.yml
