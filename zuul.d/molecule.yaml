@@ -4,6 +4,7 @@
       jobs:
       - tripleo-validations-centos-8-molecule-ceph
       - tripleo-validations-centos-8-molecule-check_network_gateway
+      - tripleo-validations-centos-8-molecule-check_rhsm_version
       - tripleo-validations-centos-8-molecule-controller_token
       - tripleo-validations-centos-8-molecule-controller_ulimits
       - tripleo-validations-centos-8-molecule-ctlplane_ip_range
@@ -22,6 +23,7 @@
       jobs:
       - tripleo-validations-centos-8-molecule-ceph
       - tripleo-validations-centos-8-molecule-check_network_gateway
+      - tripleo-validations-centos-8-molecule-check_rhsm_version
       - tripleo-validations-centos-8-molecule-controller_token
       - tripleo-validations-centos-8-molecule-controller_ulimits
       - tripleo-validations-centos-8-molecule-ctlplane_ip_range
@@ -303,3 +305,10 @@
     parent: tripleo-validations-centos-8-base
     vars:
       tripleo_validations_role_name: package_version
+- job:
+    files:
+      - ^roles/check_rhsm_version/.*
+    name: tripleo-validations-centos-8-molecule-check_rhsm_version
+    parent: tripleo-validations-centos-8-base
+    vars:
+      tripleo_validations_role_name: check_rhsm_version
