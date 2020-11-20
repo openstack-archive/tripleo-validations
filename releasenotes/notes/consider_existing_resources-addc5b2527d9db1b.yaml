@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    Existing resources "DISK_GB", "MEMORY_MB", "VCPU" were not considered to
+    be available in case of custom_resource_class_val == False, also use correct
+    types for resource comparison and required_count calculation.
