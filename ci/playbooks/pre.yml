@@ -1,6 +1,10 @@
 ---
 - hosts: all
   pre_tasks:
+    - name: Set project path fact
+      set_fact:
+        tripleo_validations_project_path: "{{ ansible_user_dir }}/{{ zuul.projects['opendev.org/openstack/tripleo-validations'].src_dir }}"
+
     - name: Ensure output dirs
       file:
         path: "{{ ansible_user_dir }}/zuul-output/logs"
@@ -19,13 +23,13 @@
     - name: Run bindep
       shell: |-
         . {{ ansible_user_dir }}/test-python/bin/activate
-        {{ ansible_user_dir }}/{{ zuul.project.src_dir }}/scripts/bindep-install
+        {{ tripleo_validations_project_path }}/scripts/bindep-install
       become: true
       changed_when: false
 
     - name: Setup test-python
       pip:
-        requirements: "{{ ansible_user_dir }}/{{ zuul.project.src_dir }}/molecule-requirements.txt"
+        requirements: "{{ tripleo_validations_project_path }}/molecule-requirements.txt"
         virtualenv: "{{ ansible_user_dir }}/test-python"
         virtualenv_site_packages: true
 
@@ -33,7 +37,7 @@
     - name: Get necessary git repos
       git:
         repo: https://opendev.org/openstack/{{ item }}
-        dest: "{{ ansible_user_dir}}/{{ zuul.project.src_dir }}/roles/roles.galaxy/{{ item }}"
+        dest: "{{ tripleo_validations_project_path }}/roles/roles.galaxy/{{ item }}"
         version: master
         force: true
       with_items:
