@@ -109,7 +109,7 @@ def verify_profiles(nodes, flavors):
 
         assigned_nodes = [uu for uu, caps in free_node_caps.items()
                           if caps.get('profile') == profile]
-        required_count = scale - len(assigned_nodes)
+        required_count = int(scale) - len(assigned_nodes)
 
         if required_count < 0:
             warnings.append('%d nodes with profile %s won\'t be used '
