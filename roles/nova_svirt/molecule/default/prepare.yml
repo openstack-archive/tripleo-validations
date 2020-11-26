@@ -18,6 +18,11 @@
 - name: Prepare
   hosts: all
   tasks:
+    - name: Install python lxml library
+      package:
+        name: python*-lxml
+        state: present
+
     - name: Create directory tree
       file:
         path: "{{ item }}"

@@ -10,6 +10,10 @@
         path: "{{ ansible_user_dir }}/zuul-output/logs"
         state: directory
 
+    - name: Ensure pip is available
+      include_role:
+        name: ensure-pip
+
     - name: Ensure virtualenv is available
       include_role:
         name: ensure-virtualenv
@@ -18,6 +22,7 @@
       pip:
         name: "bindep"
         virtualenv: "{{ ansible_user_dir }}/test-python"
+        virtualenv_command: "{{ ensure_pip_virtualenv_command }}"
         virtualenv_site_packages: true
 
     - name: Run bindep
@@ -31,8 +36,72 @@
       pip:
         requirements: "{{ tripleo_validations_project_path }}/molecule-requirements.txt"
         virtualenv: "{{ ansible_user_dir }}/test-python"
+        virtualenv_command: "{{ ensure_pip_virtualenv_command }}"
         virtualenv_site_packages: true
 
+    - name: Display test-python virtualenv package versions
+      shell: |-
+        . {{ ansible_user_dir }}/test-python/bin/activate
+        pip freeze
+
+    - name: Basic ci setup
+      become: true
+      block:
+        - name: Ensure ci directories
+          file:
+            path: "/etc/ci"
+            state: "directory"
+
+        - name: Ensure ci mirror file
+          file:
+            path: "/etc/ci/mirror_info.sh"
+            state: "touch"
+
+        - name: Set an appropriate fs.file-max
+          sysctl:
+            name: fs.file-max
+            value: 2048000
+            sysctl_set: true
+            state: present
+            reload: true
+
+        - name: Set container_manage_cgroup boolean
+          seboolean:
+            name: container_manage_cgroup
+            state: true
+            persistent: true
+          failed_when: false
+
+        - name: Create limits file for containers
+          copy:
+            content: |
+              * soft nofile 102400
+              * hard nofile 204800
+              * soft nproc 2048
+              * hard nproc 4096
+            dest: /etc/security/limits.d/containers.conf
+
+        - name: Install epel-release
+          package:
+            name: epel-release
+            state: present
+
+        - name: Be sure to enable epel repo
+          become: true
+          command: >-
+            dnf config-manager --set-enabled epel
+          args:
+            warn: false
+
+        - name: Copy repos directory to opt workspace
+          copy:
+            src: /etc/yum.repos.d
+            dest: /opt/
+            remote_src: true
+            mode: "0777"
+
+        - name: Reset ssh connection
+          meta: reset_connection
   tasks:
     - name: Get necessary git repos
       git:
