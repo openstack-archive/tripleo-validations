@@ -52,9 +52,10 @@ opts = [
                       'inventory data. If a comma delimited list '
                       'of stacks is passed, the inventory will '
                       'contain the union of those stacks.')),
-    cfg.ListOpt('stack', help=('This arg has the same effect '
-                               'as --plan. If both are specified,'
-                               ' --stack will take precedence.')),
+    cfg.ListOpt('stack', default=None,
+                help=('This arg has the same effect '
+                      'as --plan. If both are specified,'
+                      ' --stack will take precedence.')),
     cfg.StrOpt('ansible_ssh_user', default=os.environ.get('ANSIBLE_SSH_USER',
                'heat-admin')),
     cfg.StrOpt('undercloud-connection',
@@ -88,8 +89,6 @@ def _parse_config():
     if configs.auth_url:
         if '/v2.0' in configs.auth_url:
             configs.auth_url = configs.auth_url.replace('/v2.0', '/v3')
-    if not configs.plan:
-        configs.plan = ['overcloud']
     return configs
 
 
@@ -160,9 +159,18 @@ def main():
     else:
         raise RuntimeError("No auth provided.")
 
-    inventory_map = {}
-    for _plan in (configs.stack or configs.plan):
-        inventory_map[_plan] = inv.TripleoInventory(
+    # Stack option takes precedence on plan:
+    if configs.stack:
+        plans = configs.stack
+    elif configs.plan:
+        plans = configs.plan
+    else:
+        plans = utils.list_plan_and_stack(
+            utils.get_heat_client(auth_variables),
+            utils.get_swift_client(auth_variables))
+
+    if plans is None:
+        inventory = inv.TripleoInventory(
             session=utils.get_auth_session(auth_variables),
             hclient=utils.get_heat_client(auth_variables),
             auth_url=auth_variables.get('auth_url'),
@@ -170,14 +178,31 @@ def main():
             project_name=auth_variables.get('project_name'),
             username=auth_variables.get('username'),
             ansible_ssh_user=configs.ansible_ssh_user,
-            plan_name=_plan,
+            plan_name=plans,
             ansible_python_interpreter=configs.ansible_python_interpreter,
             undercloud_connection=configs.undercloud_connection,
             undercloud_key_file=configs.undercloud_key_file,
             host_network=configs.ssh_network,
             serial=configs.serial)
+    else:
+        inventory_map = {}
+        for _plan in plans:
+            inventory_map[str(_plan)] = inv.TripleoInventory(
+                session=utils.get_auth_session(auth_variables),
+                hclient=utils.get_heat_client(auth_variables),
+                auth_url=auth_variables.get('auth_url'),
+                cacert=auth_variables.get('cacert'),
+                project_name=auth_variables.get('project_name'),
+                username=auth_variables.get('username'),
+                ansible_ssh_user=configs.ansible_ssh_user,
+                plan_name=_plan,
+                ansible_python_interpreter=configs.ansible_python_interpreter,
+                undercloud_connection=configs.undercloud_connection,
+                undercloud_key_file=configs.undercloud_key_file,
+                host_network=configs.ssh_network,
+                serial=configs.serial)
 
-    inventory = invs.TripleoInventories(inventory_map)
+        inventory = invs.TripleoInventories(inventory_map)
     if configs.list:
         try:
             inventory_list = inventory.list()

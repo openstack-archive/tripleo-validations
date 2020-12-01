@@ -33,3 +33,7 @@ VALIDATION_GROUPS_INFO = (
         if os.path.exists('/usr/share/ansible/groups.yaml')
         else os.path.join(DEFAULT_VALIDATIONS_LEGACY_BASEDIR, 'groups.yaml')
         )
+
+# TRIPLEO_META_USAGE_KEY is inserted into metadata for containers created in
+# Swift via SwiftPlanStorageBackend to identify them from other containers
+TRIPLEO_META_USAGE_KEY = 'x-container-meta-usage-tripleo'
