@@ -2,6 +2,7 @@
 - project-template:
     check:
       jobs:
+      - tripleo-validations-centos-8-molecule-system_encoding
       - tripleo-validations-centos-8-molecule-ceph
       - tripleo-validations-centos-8-molecule-check_network_gateway
       - tripleo-validations-centos-8-molecule-controller_token
@@ -19,6 +20,7 @@
       - tripleo-validations-centos-8-molecule-undercloud_tokenflush
     gate:
       jobs:
+      - tripleo-validations-centos-8-molecule-system_encoding
       - tripleo-validations-centos-8-molecule-ceph
       - tripleo-validations-centos-8-molecule-check_network_gateway
       - tripleo-validations-centos-8-molecule-controller_token
@@ -296,3 +298,10 @@
     parent: tripleo-validations-centos-8-base
     vars:
       tripleo_validations_role_name: nova_svirt
+- job:
+    files:
+    - ^roles/system_encoding/.*
+    name: tripleo-validations-centos-8-molecule-system_encoding
+    parent: tripleo-validations-centos-8-base
+    vars:
+      tripleo_validations_role_name: system_encoding

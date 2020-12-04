@@ -1,0 +1,13 @@
+---
+- hosts: all
+  vars:
+    metadata:
+      name: System encoding
+      description: >-
+        Ensure the local is unicode
+      groups:
+        - pre-deployment
+        - pre-upgrade
+    system_encoding_debug: false
+  roles:
+    - system_encoding
