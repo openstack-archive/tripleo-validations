@@ -19,8 +19,6 @@
       - tripleo-multinode-container-minimal-pipeline
       - openstack-python3-victoria-jobs
       - tripleo-validations-molecule-jobs
-      - check-requirements
-      - openstack-lower-constraints-jobs
       - release-notes-jobs-python3
     check:
       jobs:
@@ -32,11 +30,9 @@
               - ^molecule-requirements.txt
               - ^requirements.txt
               - ^README.rst
-        - openstack-tox-lower-constraints
         - tripleo-ci-centos-8-content-provider: &content-provider
             dependencies:
               - openstack-tox-linters
-              - openstack-tox-lower-constraints
         - tripleo-ci-centos-8-scenario004-standalone: &scenario004
             vars: &vars_scen004
               consumer_job: true
@@ -48,7 +44,6 @@
     gate:
       jobs:
         - openstack-tox-linters
-        - openstack-tox-lower-constraints
         - openstack-tox-docs: *tripleo-docs
         - tripleo-ci-centos-8-content-provider: *content-provider
         - tripleo-ci-centos-8-scenario004-standalone: *scenario004
