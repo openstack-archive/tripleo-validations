@@ -2,8 +2,6 @@
 ansi2html
 ansible
 docker
-# https://github.com/sqlalchemy/dogpile.cache/issues/178
-dogpile.cache>=0.6.5,<0.9.1  # MIT
 jinja2>=2.8.0,<3
 molecule>=3.0,<3.1
 pytest
