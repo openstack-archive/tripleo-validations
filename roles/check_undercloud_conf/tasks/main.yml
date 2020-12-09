@@ -15,15 +15,18 @@
 # under the License.
 
 
-# "check_undercloud_conf" tasks
-- name: Get the path of tripleo undercloud config file
-  become: true
-  hiera:
-    name: "tripleo_undercloud_conf_file"
+- name: Ensure we get needed facts
+  setup:
+    gather_subset:
+      - '!all'
+      - '!any'
+      - '!min'
+      - env
 
-- name: "Retrieve {{ tripleo_undercloud_conf_file }} content"
+# "check_undercloud_conf" tasks
+- name: "Retrieve {{ ansible_env.HOME }}/undercloud.conf content"
   slurp:
-    src: "{{ tripleo_undercloud_conf_file }}"
+    src: "{{ ansible_env.HOME }}/undercloud.conf"
   register: uc_conf_content
 
 - name: Store all properties and file type properties
@@ -43,7 +46,7 @@
 
 - name: Get value from conf file
   validations_read_ini:
-    path: "{{ tripleo_undercloud_conf_file }}"
+    path: "{{ ansible_env.HOME }}/undercloud.conf"
     section: DEFAULT
     key: "{{ item }}"
   register: conf_values
@@ -58,7 +61,7 @@
 - name: fail if location doesn't exist
   fail:
     msg: >-
-      File configured in {{ tripleo_undercloud_conf_file }} {{ item.item.item }}
+      File configured in {{ ansible_env.HOME }}/undercloud.conf {{ item.item.item }}
       does not exist
   when: not item.stat.exists
   loop: "{{ file_prop_stat.results }}"
