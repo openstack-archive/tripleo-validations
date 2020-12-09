@@ -5,14 +5,17 @@
       Panko has been deprecated since the Train Release.
       The 'ceilometerdb-size' validation is now considered as deprecated too.
 
-- name: Get the path of tripleo undercloud config file
-  become: true
-  hiera:
-    name: "tripleo_undercloud_conf_file"
+- name: Ensure we get needed facts
+  setup:
+    gather_subset:
+      - '!all'
+      - '!any'
+      - '!min'
+      - env
 
 - name: Check if telemetry services are enabled
   validations_read_ini:
-    path: "{{ tripleo_undercloud_conf_file }}"
+    path: "{{ ansible_env.HOME }}/undercloud.conf"
     section: DEFAULT
     key: enable_telemetry
   register: enable_telemetry
