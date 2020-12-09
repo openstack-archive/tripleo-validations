@@ -1,13 +1,16 @@
 ---
-- name: Get the path of tripleo undercloud config file
-  become: true
-  hiera:
-    name: "tripleo_undercloud_conf_file"
+- name: Ensure we get needed facts
+  setup:
+    gather_subset:
+      - '!all'
+      - '!any'
+      - '!min'
+      - env
 
 - name: Get the local_subnet name from the undercloud_conf file
   become: true
   validations_read_ini:
-    path: "{{ tripleo_undercloud_conf_file }}"
+    path: "{{ ansible_env.HOME }}/undercloud.conf"
     section: DEFAULT
     key: local_subnet
     ignore_missing_file: true
@@ -16,7 +19,7 @@
 - name: Get gateway value from the undercloud.conf file
   become: true
   validations_read_ini:
-    path: "{{ tripleo_undercloud_conf_file }}"
+    path: "{{ ansible_env.HOME }}/undercloud.conf"
     section: "{% if local_subnet.value %}{{ local_subnet.value }}{% else %}ctlplane-subnet{% endif %}"
     key: gateway
     ignore_missing_file: true
@@ -25,7 +28,7 @@
 - name: Get local_ip value from the undercloud.conf file
   become: true
   validations_read_ini:
-    path: "{{ tripleo_undercloud_conf_file }}"
+    path: "{{ ansible_env.HOME }}/undercloud.conf"
     section: DEFAULT
     key: local_ip
     ignore_missing_file: true
