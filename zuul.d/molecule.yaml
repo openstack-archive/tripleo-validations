@@ -54,14 +54,6 @@
     voting: false
 - job:
     files:
-    - ^roles/ceilometerdb_size/.*
-    name: tripleo-validations-centos-8-molecule-ceilometerdb_size
-    parent: tripleo-validations-centos-8-base
-    vars:
-      tripleo_validations_role_name: ceilometerdb_size
-    voting: false
-- job:
-    files:
     - ^roles/neutron_sanity_check/.*
     name: tripleo-validations-centos-8-molecule-neutron_sanity_check
     parent: tripleo-validations-centos-8-base
