@@ -129,6 +129,12 @@
                   - pre-ceph
                   - post-ceph
               {{ role_name | replace('-', '_') }}_debug: false
+                  - pre-update
+                  - pre-update-prepare
+                  - pre-update-run
+                  - pre-update-converge
+                  - post-update
+              validation_{{ _role_name }}_debug: false
             roles:
               - {{ role_name }}
         dest: "playbooks/{{ role_name }}.yaml"
