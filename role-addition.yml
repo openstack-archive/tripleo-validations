@@ -130,6 +130,11 @@
                   - post-overcloud-converge
                   - pre-ceph
                   - post-ceph
+                  - pre-update
+                  - pre-update-prepare
+                  - pre-update-run
+                  - pre-update-converge
+                  - post-update
               validation_{{ _role_name }}_debug: false
             roles:
               - validation_{{ _role_name }}
