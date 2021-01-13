@@ -272,9 +272,9 @@ def check_allocation_pools_pairing(filedata, pools):
             errors.append('Invalid IP network: {}'.format(network))
             continue
 
-        for range in pool_objs:
+        for address_range in pool_objs:
             # Check if pool is included in subnet
-            if range not in subnet_obj:
+            if address_range not in subnet_obj:
                 errors.append('Allocation pool {} {} outside of subnet'
                               ' {}: {}'.format(poolitem,
                                                pooldata,
@@ -283,8 +283,8 @@ def check_allocation_pools_pairing(filedata, pools):
                 break
 
             # Check for overlapping pools
-            for other in [r for r in pool_objs if r != range]:
-                if range.first in other or range.last in other:
+            for other in [r for r in pool_objs if r != address_range]:
+                if address_range.first in other or address_range.last in other:
                     errors.append('Some pools in {} are overlapping.'.format(
                                   poolitem))
                     break
