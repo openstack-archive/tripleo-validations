@@ -20,35 +20,17 @@
   gather_facts: false
 
   tasks:
-    - name: install hiera
-      package:
-        name: hiera
-
-    - name: create hiera tree
-      file:
-        path: /etc/puppet
-        state: directory
-
-    - name: populate hiera.yaml
-      copy:
-        dest: /etc/puppet/hiera.yaml
-        content: |
-          :backends:
-            - yaml
-          :yaml:
-            :datadir: "/etc/puppet/"
-          :hierarchy:
-            - "common"
-
-    - name: populate hiera content
-      copy:
-        dest: /etc/puppet/common.yaml
-        content: |
-          tripleo_undercloud_conf_file: /undercloud.conf
+    - name: Ensure we get needed facts
+      setup:
+        gather_subset:
+          - '!all'
+          - '!any'
+          - '!min'
+          - env
 
     - name: populate undercloud.conf
       copy:
-        dest: /undercloud.conf
+        dest: "{{ ansible_env.HOME }}/undercloud.conf"
         content: |
           [ctlplane-subnet]
-          gateway = 8.8.8.8
+          gateway = 0.0.0.0

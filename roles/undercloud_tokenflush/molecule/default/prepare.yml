@@ -18,8 +18,15 @@
 - name: Prepare
   hosts: all
   gather_facts: false
-
   tasks:
+    - name: Ensure we get needed facts
+      setup:
+        gather_subset:
+          - '!all'
+          - '!any'
+          - '!min'
+          - env
+
     - name: install hiera
       package:
         name: hiera
@@ -38,14 +45,7 @@
           :yaml:
             :datadir: "/etc/puppet/"
           :hierarchy:
-            - "common"
             - "service_configs"
-
-    - name: populate hiera content
-      copy:
-        dest: /etc/puppet/common.yaml
-        content: |
-          tripleo_undercloud_conf_file: /undercloud.conf
 
     - name: populate service config content
       copy:
@@ -55,7 +55,7 @@
 
     - name: populate undercloud.conf
       copy:
-        dest: /undercloud.conf
+        dest: "{{ ansible_env.HOME }}/undercloud.conf"
         content: |
           [DEFAULT]
           container_cli = podman
