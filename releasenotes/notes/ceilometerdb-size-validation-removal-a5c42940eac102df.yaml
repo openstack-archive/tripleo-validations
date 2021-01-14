@@ -1,0 +1,5 @@
+---
+others:
+  - |
+    The ceilometerdb-size is deprecated since the Train cycle and it's now time
+    to retire it.
