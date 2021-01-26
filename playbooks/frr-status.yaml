@@ -1,0 +1,14 @@
+---
+- hosts: all
+  vars:
+    metadata:
+      name: FRR Daemons Status Check
+      description: |
+        Runs 'show watchfrr' and checks for any non-operational daemon.
+
+        A failed status post-deployment indicates at least one enabled FRR
+        daemon is not operational.
+      groups:
+        - post-deployment
+  roles:
+    - frr_status

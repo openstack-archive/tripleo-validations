@@ -1,0 +1,44 @@
+---
+# Copyright 2021 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+
+- name: Prepare
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Populate successful podman CLI
+      copy:
+        dest: /usr/bin/podman
+        mode: 0755
+        content: |
+          #!/bin/bash
+          action="$1"
+          shift
+          container="$3"
+          shift
+          command="$@"
+
+          case $container in
+            'frr')
+              echo 'watchfrr global phase: Idle'
+              echo '  zebra                Up'
+              echo '  bgpd                 Up'
+              ;;
+            *)
+              echo "Unknown container ${container}"
+              ;;
+          esac
