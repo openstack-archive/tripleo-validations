@@ -88,6 +88,13 @@ def _parse_config():
               'variable missing or --os-cloud option is not set, '
               'unable to proceed.', file=sys.stderr)
         sys.exit(1)
+    if (configs.static_yaml_inventory or configs.list) and configs.host:
+        print(
+            "ERROR: can't list (--list) all hosts or generate an inventory "
+            "(--static-yaml-inventory) while looking for a specific host "
+            "(--host)"
+        )
+        sys.exit(1)
     if configs.auth_url:
         if '/v2.0' in configs.auth_url:
             configs.auth_url = configs.auth_url.replace('/v2.0', '/v3')
@@ -216,7 +223,9 @@ def main():
             if configs.debug:
                 traceback.print_exc()
             sys.exit(1)
-    elif configs.static_yaml_inventory:
+    elif configs.host:
+        print(json.dumps(inventory.host()))
+    if configs.static_yaml_inventory:
         try:
             inventory.write_static_inventory(configs.static_yaml_inventory)
         except Exception as e:
@@ -225,8 +234,6 @@ def main():
             if configs.debug:
                 traceback.print_exc()
             sys.exit(1)
-    elif configs.host:
-        print(json.dumps(inventory.host()))
     sys.exit(0)
 
 
