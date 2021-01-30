@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    Introducing the overcloud_service_status role. This role will hit the
+    overcloud API for nova and cinder, retrieve the services and will trig a
+    failure if one of these services are either down or deprecated.
+    The original intent was to validate that nova-consoleauth was deleted after
+    an update to RHOSP16.

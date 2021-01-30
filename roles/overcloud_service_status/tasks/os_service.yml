@@ -1,0 +1,82 @@
+---
+# Copyright 2021 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+- name: Extracting the endpoint url
+  set_fact:
+    endpoint: "{{ catalog.endpoints|selectattr('interface', 'eq', 'admin')|first }}"
+  loop: "{{ auth_token.json.token.catalog }}"
+  loop_control:
+    loop_var: catalog
+  when: catalog.name == os_service
+
+- fail:
+    msg: "No endpoint found for {{ os_service }} interface admin in catalog"
+  when: endpoint is not defined
+
+- name: Get services
+  uri:
+    url: "{{ endpoint.url }}/os-services"
+    method: GET
+    headers:
+      Accept: application/json
+      X-Auth-Token: "{{ auth_token.x_subject_token }}"
+    return_content: true
+    status_code: 200
+  register: os_services
+
+- name: Verifying deprecated services are absent
+  assert:
+    that:
+      - service[0].binary != service[1]
+    fail_msg: "{{ service[0].binary }} should be removed on {{ service[0].host }}"
+  loop: "{{ os_services.json.services | product(overcloud_deprecated_services[os_service]) | list }}"
+  loop_control:
+    loop_var: service
+  when: os_service in overcloud_deprecated_services
+  register: deprecated_services_output
+  ignore_errors: true
+
+- name: Verifying all services are up
+  assert:
+    that:
+      - (service.state == "up" and service.status == "enabled") or service.status == "disabled"
+    fail_msg: "{{ service.binary }} on {{ service.host }} is problematic (service state is {{ service.state }} while it's {{ service.status }})"
+  loop: "{{ os_services.json.services }}"
+  loop_control:
+    loop_var: service
+  register: down_services_output
+  ignore_errors: true
+
+- name: Asserted failure
+  fail:
+    msg: |
+        At least one of the assertion failed.
+        {% if 'failed' in deprecated_services_output %}
+          {% for service in deprecated_services_output.results %}
+            {% if service.failed %}
+        {{ service.msg }}
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+        {% if 'failed' in down_services_output %}
+          {% for service in down_services_output.results %}
+            {% if service.failed %}
+        {{ service.msg }}
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+
+  when: "'failed' in deprecated_services_output or 'failed' in down_services_output"
