@@ -27,11 +27,14 @@ except AttributeError:
 
 from glanceclient import client as glance_client
 from heatclient import client as heat_client
+from heatclient import exc as heat_exc
 from ironicclient import client as ironic_client
 from keystoneauth1.identity import generic as ks_id
 from keystoneauth1 import session as ks_session
 from novaclient import client as nova_client
 from swiftclient.client import Connection
+from swiftclient import exceptions as swiftexceptions
+from tripleo_validations import constants
 
 
 def get_auth_session(auth_variables):
@@ -59,11 +62,11 @@ def get_auth_session(auth_variables):
 
 
 def get_swift_client(auth_variables):
-    return Connection(preauthurl=auth_variables.get('undercloud_swift_url'),
-                      preauthtoken=auth_variables.get('os_auth_token'),
-                      retries=10,
-                      starting_backoff=3,
-                      max_backoff=120)
+    return Connection(authurl=auth_variables.get('auth_url'),
+                      user=auth_variables.get('username'),
+                      key=auth_variables.get('password'),
+                      auth_version='3',
+                      tenant_name=auth_variables.get('project_name'))
 
 
 def get_nova_client(auth_variables):
@@ -83,6 +86,22 @@ def get_ironic_client(auth_variables):
         1,
         session=get_auth_session(auth_variables)
     )
+
+
+def list_plan_and_stack(hclient, swiftclient):
+    try:
+        stacks = [s.stack_name for s in hclient.stacks.list()]
+    except heat_exc.HTTPNotFound:
+        return None
+    try:
+        plan_list = []
+        for ac in swiftclient.get_account()[1]:
+            container = swiftclient.get_container(ac['name'])[0]
+            if constants.TRIPLEO_META_USAGE_KEY in container.keys():
+                plan_list.append(ac['name'])
+    except swiftexceptions.ClientException:
+        return None
+    return list(set(stacks).intersection(list(plan_list)))
 
 
 def filtered(obj):
