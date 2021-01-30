@@ -1,0 +1,12 @@
+---
+- name: Prepare
+  hosts: all
+
+  tasks:
+  - name: Copy http_server.py
+    copy:
+      src: ../scripts/http_server.py
+      dest: /
+
+  - name: "Start http_server.py scenario {{ molecule_yml.scenario.name }}"
+    shell: cd /; nohup python3 /http_server.py --scenario {{ molecule_yml.scenario.name }} > http_server.log 2>&1 &

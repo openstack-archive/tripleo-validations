@@ -1,0 +1,48 @@
+---
+# Copyright 2021 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+- name: Geting a system scoped Keystone token
+  no_log: "{{ not overcloud_service_status_debug | bool }}"
+  uri:
+    url: "{{ overcloud_keystone_url | urlsplit('scheme') }}://{{ overcloud_keystone_url | urlsplit('netloc') }}/v3/auth/tokens"
+    method: POST
+    body_format: json
+    body:
+      auth:
+        identity:
+          methods:
+            - password
+          password:
+            user:
+              password: "{{ overcloud_admin_password }}"
+              name: admin
+              domain:
+                id: default
+        scope:
+          project:
+            name: admin
+            domain:
+              name: Default
+    return_content: true
+    status_code: 201
+  register: auth_token
+  when: overcloud_keystone_url|default('')
+
+- name: Checking openstack services
+  include_tasks: tasks/os_service.yml
+  loop: "{{ overcloud_service_api }}"
+  loop_control:
+    loop_var: os_service
