@@ -1,0 +1,33 @@
+---
+- name: Ensure we get needed facts
+  setup:
+    gather_subset:
+      - '!all'
+      - '!any'
+      - '!min'
+      - env
+
+- name: Block for FRR daemon status checks
+  when: "'frr' in enabled_services"
+  block:
+    - name: Set container_cli fact from the inventory
+      set_fact:
+        container_cli: "{{ hostvars[inventory_hostname].container_cli |default('podman', true) }}"
+      when: container_cli is not defined
+
+    - name: Check FRR daemon statuses
+      become: true
+      command: "{{ container_cli }} exec -u root frr vtysh -c 'show watchfrr'"
+      changed_when: false
+      register: watchfrr_return
+
+    - name: Detect down FRR daemons
+      set_fact:
+        has_errors: "{{ watchfrr_return.stdout_lines
+                        | select('search', '(Down)')
+                        | list | length | int > 0 }}"
+
+    - name: Fail when at least one enabled FRR daemon is down
+      fail:
+        msg: "{{ watchfrr_return.stdout_lines }}"
+      when: has_errors

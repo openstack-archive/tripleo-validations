@@ -10,6 +10,7 @@
       - tripleo-validations-centos-8-molecule-controller_token
       - tripleo-validations-centos-8-molecule-controller_ulimits
       - tripleo-validations-centos-8-molecule-ctlplane_ip_range
+      - tripleo-validations-centos-8-molecule-frr_status
       - tripleo-validations-centos-8-molecule-image_serve
       - tripleo-validations-centos-8-molecule-nova_status
       - tripleo-validations-centos-8-molecule-nova_svirt
@@ -32,6 +33,7 @@
       - tripleo-validations-centos-8-molecule-controller_token
       - tripleo-validations-centos-8-molecule-controller_ulimits
       - tripleo-validations-centos-8-molecule-ctlplane_ip_range
+      - tripleo-validations-centos-8-molecule-frr_status
       - tripleo-validations-centos-8-molecule-nova_status
       - tripleo-validations-centos-8-molecule-nova_svirt
       - tripleo-validations-centos-8-molecule-package_version
@@ -217,6 +219,13 @@
     parent: tripleo-validations-centos-8-base
     vars:
       tripleo_validations_role_name: ctlplane_ip_range
+- job:
+    files:
+    - ^roles/frra_status/.*
+    name: tripleo-validations-centos-8-molecule-frr_status
+    parent: tripleo-validations-centos-8-base
+    vars:
+      tripleo_validations_role_name: frr_status
 - job:
     files:
     - ^roles/repos/.*

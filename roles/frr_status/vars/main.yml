@@ -1,0 +1,7 @@
+---
+metadata:
+  name: FRR status check
+  description: >
+    Runs 'show watchfrr' and checks for any non-operational daemon.
+  groups:
+    - post-deployment
