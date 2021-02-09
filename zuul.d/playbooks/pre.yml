@@ -23,6 +23,12 @@
       become: true
       changed_when: false
 
+    - name: Ensure a recent version of pip is installed in virtualenv
+      pip:
+        name: "pip>=19.1.1"
+        virtualenv: "{{ ansible_user_dir }}/test-python"
+        virtualenv_command: "{{ ensure_pip_virtualenv_command }}"
+
     - name: Setup test-python
       pip:
         requirements: "{{ ansible_user_dir }}/{{ zuul.project.src_dir }}/molecule-requirements.txt"
