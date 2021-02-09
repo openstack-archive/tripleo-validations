@@ -25,6 +25,7 @@ DEFAULT_METADATA = {
 
 
 def get_validation_metadata(validation, key):
+    """Returns metadata dictionary"""
     try:
         return validation['vars']['metadata'][key]
     except KeyError:
@@ -32,11 +33,11 @@ def get_validation_metadata(validation, key):
 
 
 def get_include_role(validation):
+    """Returns Included Role"""
     try:
         if 'tasks' in validation:
             return validation['tasks'][0]['include_role']['name']
-        else:
-            return validation['roles'][0]
+        return validation['roles'][0]
     except KeyError:
         return list()
 
@@ -50,6 +51,7 @@ def get_remaining_metadata(validation):
 
 
 def get_validation_parameters(validation):
+    """Returns parameters"""
     try:
         return {k: v for k, v in validation['vars'].items()
                 if k != 'metadata'}
@@ -58,6 +60,7 @@ def get_validation_parameters(validation):
 
 
 def build_summary(group, validations):
+    """Creates validations documentation contents by group"""
     entries = [
         "* :ref:`{}`: {}".format(group + '_' + validation['id'],
                                  validation['name'])
@@ -73,7 +76,29 @@ def format_dict(my_dict):
                     for key, value in my_dict.items()])
 
 
-def build_detail(group, validations):
+def role_doc_entry(role_name, local_roles):
+    """Generates Documentation entry
+
+    If the included role isn't hosted on tripleo-validations, we point to the
+    validations-common role documentation. Otherwise, it generates a classical
+    local toctree.
+    """
+    local_role_doc = (".. toctree::\n\n"
+                      "   roles/role-{}".format(role_name))
+    doc_base_url = "https://docs.openstack.org/validations-common/latest/roles"
+    external_role = \
+        ("- `{role} <{baseurl}/role-{role}.html>`_ "
+         "from `openstack/validations-common "
+         "<https://opendev.org/openstack/validations-common>`_"
+         "".format(role=role_name,
+                   baseurl=doc_base_url))
+
+    if role_name not in local_roles:
+        return external_role
+    return local_role_doc
+
+
+def build_detail(group, validations, local_roles):
     entries = ['{}\n{}\n'.format(group, len(group) * '=')]
     entries = entries + [
         """.. _{label}:
@@ -92,10 +117,7 @@ def build_detail(group, validations):
 
 Role documentation
 
-.. toctree::
-
-   roles/role-{roles}
-
+{roledoc}
 """
         .format(label=(group + '_' + validation['id']),
                 title=validation['id'],
@@ -105,7 +127,8 @@ Role documentation
                 groups=', '.join(validation['groups']),
                 hosts=validation['hosts'],
                 parameters=format_dict(validation['parameters']),
-                roles=validation['roles']
+                roles=validation['roles'],
+                roledoc=role_doc_entry(validation['roles'], local_roles)
                 )
         for validation in validations]
     with open('doc/source/validations-{}-details.rst'.format(group), 'w') as f:
@@ -155,9 +178,16 @@ def get_groups():
     return groups, contents
 
 
+def get_local_roles(path):
+    """Returns a list of local Ansible Roles"""
+    return next(os.walk(path))[1]
+
+
 def setup(app):
     group_name, group_info = get_groups()
     build_groups_detail(group_info)
+
+    local_roles = get_local_roles(os.path.abspath('roles'))
 
     validations = []
     for validation_path in sorted(glob('playbooks/*.yaml')):
@@ -182,5 +212,5 @@ def setup(app):
         validations_in_group = [validation for validation
                                 in validations
                                 if group in validation['groups']]
-        build_detail(group, validations_in_group)
+        build_detail(group, validations_in_group, local_roles)
         build_summary(group, validations_in_group)

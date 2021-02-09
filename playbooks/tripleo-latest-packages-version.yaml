@@ -1,0 +1,21 @@
+---
+- hosts: undercloud
+  pre_tasks:
+    - name: Fact gathering
+      setup:
+        gather_subset:
+          - '!all'
+          - '!min'
+          - python
+  vars:
+    metadata:
+      name: Check if latest version of TripleO packages is installed
+      description: |
+        Make sure a list of TripleO packages are at its latest version
+        before starting an upgrade.
+      groups:
+        - pre-upgrade
+    packages_list:
+      - "python{{ ansible_python.version.major }}-tripleoclient"
+  roles:
+    - check_latest_packages_version
