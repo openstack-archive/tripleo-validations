@@ -6,6 +6,15 @@ parseable: true
 quiet: false
 rulesdir:
     - .ansible-lint_rules/
+
+# Mock modules or roles in order to pass ansible-playbook --syntax-check
+mock_modules:
+  - hiera
+  - validations_read_ini
+  - warn
+mock_roles:
+  - check_latest_packages_version
+
 skip_list:
     # Lines should be no longer than 120 chars.
     - '204'
