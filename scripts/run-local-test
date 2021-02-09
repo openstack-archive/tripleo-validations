@@ -48,7 +48,7 @@ sudo touch /etc/ci/mirror_info.sh
 "${PYTHON_EXEC}" -m virtualenv --system-site-packages "${HOME}/test-python"
 
 # Run bindep
-"${HOME}/test-python/bin/pip" install pip setuptools bindep --upgrade
+"${HOME}/test-python/bin/pip" install "pip>=19.1.1" setuptools bindep --upgrade
 "${PROJECT_DIR}/scripts/bindep-install"
 
 # Install local requirements
