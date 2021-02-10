@@ -238,6 +238,7 @@ class AnsibleAutoPluginDirective(Directive):
                     )
                 )
 
+                default_playbook = [molecule_path, test, 'converge.yml']
                 provisioner_data = molecule_conf.get('provisioner')
                 if provisioner_data:
                     inventory = provisioner_data.get('inventory')
@@ -248,12 +249,13 @@ class AnsibleAutoPluginDirective(Directive):
                                 section_title='Molecule Inventory'
                             )
                         )
+                    try:
+                        converge = provisioner_data['playbooks']['converge']
+                        default_playbook = default_playbook[:-1] + [converge]
+                    except KeyError:
+                        pass
 
-                molecule_playbook_path = os.path.join(
-                    molecule_path,
-                    test,
-                    'converge.yml'
-                )
+                molecule_playbook_path = os.path.join(*default_playbook)
                 with open(molecule_playbook_path) as f:
                     molecule_playbook = yaml.safe_load(f.read())
                 molecule_section.append(
