@@ -1,0 +1,217 @@
+---
+- name: Initialize validation message list
+  set_fact:
+    validation_msg: []
+    pmd_isolated: true
+
+# Gets applied PMD cpus list
+- name: Get OVS DPDK PMD cores mask value
+  become: true
+  register: pmd_cpu_mask
+  command: ovs-vsctl --no-wait get Open_vSwitch . other_config:pmd-cpu-mask
+  changed_when: false
+
+- name: Check OVS DPDK PMD cores thread siblings
+  become: true
+  pmd_threads_siblings_check:
+    pmd_cpu_mask: "{{ pmd_cpu_mask.stdout }}"
+  register: pmd_cpus_list
+
+- name: Set PMD cpus
+  set_fact:
+    pmd_cpus: "{{ pmd_cpus_list.pmd_cpus_list }}"
+  when: pmd_cpus_list.pmd_cpus_list is defined
+
+# Validates datapath's are mixed or not.
+- name: Verify system and netdev datapath's are not mixed on compute node
+  block:
+    - name: Check bridge datapath type
+      become: true
+      shell: "ovs-vsctl list bridge | grep datapath_type"
+      register: bridge_data_path_type
+
+    - name: Check if any datapath type is netdev
+      set_fact:
+        datapath_type_list: "{{ bridge_data_path_type.stdout.split('\n') }}"
+      when: "{{ 'netdev' in bridge_data_path_type.stdout }}"
+
+    - name: Check if all the datapath type netdev
+      set_fact:
+        validation_msg: "{{ validation_msg }} + {{ ['Mixed system and netdev datapath's on the same compute node.'] }}"
+      when: "{{ not 'netdev' in datapath }}"
+      loop: "{{ datapath_type_list }}"
+      loop_control:
+        loop_var: datapath
+
+- name: Get DPDK NIC's NUMA info
+  become: true
+  get_dpdk_nics_numa_info:
+    dpdk_mapping_file: /var/lib/os-net-config/dpdk_mapping.yaml
+  register: dpdk_nics_numa
+
+- name: Set DPDK NIC's NUMA info
+  set_fact:
+    dpdk_nics_numa_info: "{{ dpdk_nics_numa.dpdk_nics_numa_info }}"
+  when:
+    - dpdk_nics_numa is defined
+
+- name: Get nova_libvirt_launcher Process
+  become: true
+  shell: |-
+    ps -Leaf | grep nova_libvirt_launcher.sh | grep -v pts | awk '{printf "%s", $2}'
+  register: nova_libvirt_launcher
+
+- name: Get nova libvirt namespace processes
+  become: true
+  shell: |-
+    pgrep --ns {{ nova_libvirt_launcher.stdout }}
+  register: nova_libvirt_proceses
+
+- name: Update nova libvirt namespace processes pid
+  set_fact:
+    nova_libvirt_proceses_pid: "{{ nova_libvirt_proceses.stdout.split('\n') | join('|') }}"
+
+- name: Get nova libvirt launch processes id
+  become: true
+  shell: |-
+    ps -Leaf | grep -E '{{ nova_libvirt_proceses_pid }}' | grep -v pts | awk '{printf "%s\n", $4}'
+  register: nova_libvirt_launch_pids
+
+- name: Update nova libvirt launch processes pid
+  set_fact:
+    nova_lib_launch_proceses_pid: "{{ nova_libvirt_launch_pids.stdout.split('\n') }}"
+
+- name: Check pmd cpus used in any other processes
+  become: true
+  check_other_processes_pmd_usage:
+    pmd_cpus: "{{ pmd_cpus | list }}"
+    exclude_processes_pid: "{{ nova_lib_launch_proceses_pid | list }}"
+  register: pmd_threads_usage
+
+- name: Update validation message if any PMD threads usage by other processes message
+  set_fact:
+    validation_msg: "{{ validation_msg }} + {{ pmd_threads_usage.messages }}"
+  when:
+    - pmd_threads_usage.pmd_interrupts
+
+# Validates PMD cpus are isolated or not.
+- name: Check PMD cores should be isolated
+  become: true
+  shell: "cat /proc/cmdline"
+  register: kernel_args
+
+- name: Get isolcpus using kernel args
+  set_fact:
+    isol_cpus: "{{ kernel_arg.split('=')[1] }}"
+  when: "{{ 'isolcpus' == kernel_arg.split('=')[0] }}"
+  loop: "{{ kernel_args.stdout.split(' ') }}"
+  loop_control:
+    loop_var: kernel_arg
+
+- name: Convert isolcpus range list into number list
+  convert_range_to_numbers_list:
+    range_list: "{{ isol_cpus }}"
+  register: isol_cpus_list
+
+- name: check PMD threads isolated or not
+  set_fact:
+    pmd_isolated: false
+  when: "{{ not pmd_thread | int in isol_cpus_list.number_list }}"
+  loop: "{{ pmd_cpus }}"
+  loop_control:
+    loop_var: pmd_thread
+
+- name: Set message if pmd threads are not isolated
+  set_fact:
+    validation_msg: "{{ validation_msg }} + ['PMD threads are not isolated.']"
+  when:
+    - not pmd_isolated
+
+# Validates any interuppts happened on isolcpus list.
+- name: Set isol cpus required columns
+  set_fact:
+    cpu_columns_format: "{{ (cpu_columns_format | default('')) + '%s,' }}"
+    cpu_columns: "{{ (cpu_columns | default('')) + '$'+ ((cpu | int + 2) | string) + ',' }}"
+  loop: "{{ isol_cpus_list.number_list | list }}"
+  loop_control:
+    loop_var: cpu
+
+- name: Update cpu columns in required format
+  set_fact:
+    cpu_columns_format: "{{ cpu_columns_format | regex_replace(',$', '') }}"
+    cpu_columns: "{{ cpu_columns | regex_replace(',$', '') }}"
+
+- name: Check interrupts on isolcpus list
+  become: true
+  shell: |-
+    cat /proc/interrupts | awk '{printf "%s-{{ cpu_columns_format }}\n", $1,{{ cpu_columns }} }' | grep -v [A-Za-z]
+  register: isolcpus_interrupts
+
+- name: Isol CPU's interrupts
+  set_fact:
+    validation_msg: "{{ validation_msg }} + {{ ['Interrupts exist in Isol cpus ' + ( isol_cpus_list.number_list | join(',')) +':  ' + interrupts_line ] }}"
+  when: "{{ 'CPU' not in interrupts_line and interrupts_line.split('-')[1].replace('0', '').split(',') is any }}"
+  loop: "{{ isolcpus_interrupts.stdout.split('\n') }}"
+  loop_control:
+    loop_var: interrupts_line
+
+- name: Get list of dpdk ports
+  become: true
+  shell: "ovs-appctl dpctl/show | grep 'dpdk: configured'"
+  register: ovs_dpdk_ports
+
+- name: Get list of dpdk ports name
+  set_fact:
+    dpdk_ports: "{{ dpdk_ports | default([]) }} + {{ [dpdk_port_line.split(': ')[1].split(' ')[0]] }}"
+  loop: "{{ ovs_dpdk_ports.stdout.split('\n') }}"
+  loop_control:
+    loop_var: dpdk_port_line
+
+- name: Get DPDK NIC's PCI addresses
+  set_fact:
+    dpdk_pci_list: |-
+      {{ (dpdk_pci_list | default([])) }} + {{ [dpdk_nic_info.pci] }}
+  loop: "{{ dpdk_nics_numa_info }}"
+  loop_control:
+    loop_var: dpdk_nic_info
+
+- name: Check pci addresses bandwidth
+  vars:
+    pci: "{{ dpdk_pci }}"
+    dpdk_ports_list: "{{ dpdk_ports }}"
+  include_tasks: check_nfv_pci_address.yml
+  loop: "{{ dpdk_pci_list }}"
+  loop_control:
+    loop_var: dpdk_pci
+
+# validates the NFV instances on OvS DPDK node.
+- name: Set container_cli fact from the inventory
+  set_fact:
+    container_cli: "{{ hostvars[inventory_hostname].container_cli | default('podman', true) }}"
+  when: container_cli is not defined
+
+- name: Get instances list on node
+  become: true
+  shell: >-
+    "{{ container_cli }}" exec -u root nova_libvirt virsh list --all | awk 'NR > 2 { printf $1 "\n"}'
+  register: instances_list
+
+- name: Get instances id list
+  set_fact:
+    vm_list: "{{ instances_list.stdout.split('\n') }}"
+
+# Validate all the instances using instances xml
+- name: Loop on all instances and validate xml
+  include_tasks: check_nfv_instances.yml
+  when: "{{ vm_id }}"
+  loop: "{{ vm_list }}"
+  loop_control:
+    loop_var: vm_id
+
+# Prints all the validation errors if found.
+- name: Validation errors
+  fail:
+    msg: "Failed NFV zero packet loss rules:\n{{ validation_msg | join('\n') }}"
+  when:
+    - validation_msg is defined
+    - validation_msg | length > 0
