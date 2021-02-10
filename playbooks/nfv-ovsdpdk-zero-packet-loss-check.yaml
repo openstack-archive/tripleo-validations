@@ -1,0 +1,14 @@
+---
+- hosts: "{{ compute_ovsdpdk_rolename | default('ComputeOvsDpdk') }}"
+  vars:
+    metadata:
+      name: NFV OvS DPDK Zero Packet Loss Validations
+      description: |
+        Run `check-nfv-ovsdpdk-zero-packet-loss` on the compute ovsdpdk nodes
+        to find out the issues with NFV OvS Dpdk configuration.
+        The tool expects all the configuration files that are passed.
+      groups:
+        - post-deployment
+
+  roles:
+    - check_nfv_ovsdpdk_zero_packet_loss

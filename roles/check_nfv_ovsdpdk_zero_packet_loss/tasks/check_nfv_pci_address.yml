@@ -1,0 +1,26 @@
+---
+- name: Initialize PCI bandwidth default value
+  set_fact:
+    pci_bw: 1
+
+- name: Check pci addresses bandwidth
+  become: true
+  shell: "lspci -s {{ pci }} -vvnn | grep -i width"
+  register: pci_bandwidth
+
+- name: Compute bandwidth on pci address
+  set_fact:
+    pci_bw: "{{ pci_bw | int * ((bw_param.split(' ')[1] | replace('x', '')) | replace('GT/s', '') | int) }}"
+  when: "{{ 'Speed' in bw_param or 'Width' in bw_param }}"
+  loop: "{{ pci_bandwidth.stdout.split('\n')[0].split(', ') }}"
+  loop_control:
+    loop_var: bw_param
+
+- name: Get interface bandwidth
+  vars:
+    dpdk_pci_bw: "{{ pci_bw }}"
+    dpdk_port_name: "{{ dpdk_port }}"
+  include_tasks: validate_dpdk_port_bandwidth.yml
+  loop: "{{ dpdk_ports_list }}"
+  loop_control:
+    loop_var: dpdk_port
