@@ -1,0 +1,21 @@
+---
+- name: Get DPDK port bandwidth
+  become: true
+  shell: "ovs-vsctl list interface {{ dpdk_port_name }} | grep -e link_speed= -e dpdk-devargs="
+  register: dpdk_port_bw
+
+- name: Check dpdk port matching pci or not
+  set_fact:
+    inf_bw: "{{ dpdk_port_param.split('=')[1] | replace('Gbps', '') }}"
+  when: "{{ (dpdk_port_bw is defined) and (pci in dpdk_port_bw.stdout) and ('link_speed=' in dpdk_port_param) }}"
+  loop: "{{ dpdk_port_bw.stdout.split(', ') }}"
+  loop_control:
+    loop_var: dpdk_port_param
+
+- name: Update invalid bandwidth validation message
+  set_fact:
+    validation_msg: "{{ validation_msg }} + {{ ['PCI bandwidth configured less than interface link speed.'] }}"
+  when:
+    - dpdk_port_bw is defined
+    - pci in dpdk_port_bw.stdout
+    - inf_bw | int > dpdk_pci_bw | int
