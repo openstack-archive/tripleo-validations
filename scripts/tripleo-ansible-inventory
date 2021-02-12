@@ -128,8 +128,9 @@ def write_static_inventory(inventory_file_path, inventory):
 
 def main():
     configs = _parse_config()
+    auth_variables = {}
     if configs.auth_url:
-        auth_variables = {
+        auth_variables.update({
             'auth_url': configs.auth_url,
             'username': configs.username,
             'project_name': configs.project_name,
@@ -137,13 +138,13 @@ def main():
             'password': configs.password,
             'cacert': configs.cacert,
             'timeout': 30
-        }
+        })
     elif configs.os_cloud:
         config = os_client_config.OpenStackConfig()
         for cloud in config.get_all_clouds():
             if cloud.name == configs.os_cloud:
                 try:
-                    auth_variables = {
+                    auth_variables.update({
                         'auth_url': cloud.config['auth'].get('auth_url'),
                         'username': cloud.config['auth'].get('username'),
                         'project_name':
@@ -153,7 +154,7 @@ def main():
                         'password': cloud.config['auth'].get('password'),
                         'cacert': cloud.config.get('cacert'),
                         'timeout': cloud.config.get('api_timeout')
-                    }
+                    })
                 except KeyError:
                     raise KeyError("Missing values in clouds.yaml format")
     else:
