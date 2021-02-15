@@ -53,6 +53,13 @@
         - ceph_health.stdout != 'HEALTH_OK'
         - not fail_on_ceph_health_err|default(true)|bool
 
+    - name: Fail if ceph health is HEALTH_WARN
+      fail:
+        msg: Ceph is in {{ ceph_health.stdout }} state.
+      when:
+        - ceph_health.stdout == 'HEALTH_WARN'
+        - fail_on_ceph_health_warn|default(false)|bool
+
     - name: Fail if ceph health is HEALTH_ERR
       fail:
         msg: Ceph is in {{ ceph_health.stdout }} state.
