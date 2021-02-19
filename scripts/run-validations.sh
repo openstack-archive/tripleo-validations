@@ -71,7 +71,7 @@ fi
 
 VALIDATIONS_BASEDIR=${VALIDATIONS_BASEDIR:="/usr/share/openstack-tripleo-validations"}
 
-VAL=$(find $VALIDATIONS_BASEDIR/playbooks -type f -regex ".*playbooks\/${VALIDATION}\.y[a]?ml")
+VAL=$(find -H $VALIDATIONS_BASEDIR/playbooks -type f -regex ".*playbooks\/${VALIDATION}\.y[a]?ml")
 if [[ -z ${VAL} ]]; then
     echo "The ${VALIDATION} validation doesn't exist"
     exit 1
