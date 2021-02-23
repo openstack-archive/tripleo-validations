@@ -2,6 +2,7 @@
 val_working_dir: "{{ working_dir }}"
 validation_log_dir: "/var/log/validations"
 validation_environment: "{{ job.environment_type|default('undercloud') }}"
+tripleo_inventory: "tripleo-ansible-inventory.yaml"
 # Passing default to component, allow to run the role outside of CI
 component: "{{ job.component|default(None) }}"
 # both commands can be used:
