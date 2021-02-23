@@ -13,7 +13,7 @@
   register: run_validation_list
   shell: |
     export OS_CLOUD={{ validation_environment }}
-    {{ validation_command }} run --validation {{ item }} > validation_{{ item }}.log 2>&1
+    {{ validation_command }} run --validation {{ item }} --static-inventory {{ val_working_dir }}/{{ tripleo_inventory }} > validation_{{ item }}.log 2>&1
   when:
     - run_from_list|bool
   loop: "{{ validations_list[component] }}"
