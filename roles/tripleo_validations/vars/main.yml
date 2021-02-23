@@ -2,15 +2,14 @@
 validations_list:
   compute:
     - nova-status
-    - nova-svirt
   network:
-    - neutron-sanity-check
+    - undercloud-neutron-sanity-check
   validation:
     - check-ram
     - check-cpu
     - 512e
   tripleo:
-    - undercloud-disk-space
+    - undercloud-process-count
 validations_group:
   compute:
     - compute
