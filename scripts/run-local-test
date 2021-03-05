@@ -15,16 +15,25 @@
 # under the License.
 
 
-## Shell Opts ----------------------------------------------------------------
-
-set -o pipefail
-set -xeuo
+## Functions -----------------------------------------------------------------
+function usage {
+    echo "Usage: ROLE_NAME=ROLE_NAME ${0##*/} or ${0##*/} ROLE_NAME"
+}
 
 ## Vars ----------------------------------------------------------------------
 
 export PROJECT_DIR="$(dirname $(readlink -f ${BASH_SOURCE[0]}))/../"
+if [ "${ROLE_NAME}x" = "x" -a "${1}x" = "x" ]; then
+    usage;
+    exit 2
+fi
 export ROLE_NAME="${ROLE_NAME:-$1}"
 export TRIPLEO_JOB_ANSIBLE_ARGS=${TRIPLEO_JOB_ANSIBLE_ARGS:-""}
+
+## Shell Opts ----------------------------------------------------------------
+
+set -o pipefail
+set -xeuo
 
 ## Main ----------------------------------------------------------------------
 
