@@ -47,6 +47,9 @@ sudo touch /etc/ci/mirror_info.sh
 # Create a virtual env
 "${PYTHON_EXEC}" -m virtualenv --system-site-packages "${HOME}/test-python"
 
+# Activate a virtual env
+PS1="[\u@\h \W]\$" source "${HOME}/test-python/bin/activate"
+
 # Run bindep
 "${HOME}/test-python/bin/pip" install "pip>=19.1.1" setuptools bindep --upgrade
 "${PROJECT_DIR}/scripts/bindep-install"
@@ -61,7 +64,6 @@ fi
                               -r "${PROJECT_DIR}/molecule-requirements.txt"
 
 # Run local test
-PS1="[\u@\h \W]\$" source "${HOME}/test-python/bin/activate"
 source "${PROJECT_DIR}/ansible-test-env.rc"
 export ANSIBLE_ROLES_PATH="${ANSIBLE_ROLES_PATH}:${HOME}/zuul-jobs/roles"
 ansible-playbook -i "${PROJECT_DIR}/tests/hosts.ini" \
