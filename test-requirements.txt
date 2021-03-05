@@ -15,3 +15,7 @@ reno>=3.1.0 # Apache-2.0
 netaddr>=0.7.18 # BSD
 pre-commit # MIT
 stestr>=3.0.1 # Apache-2.0
+mock>=4.0.3 # BSD
+requests-mock>=1.8.0 # Apache-2.0
+python-tripleoclient>=15.0.0 # Apache-2.0
+osc-lib>=2.3.0 # Apache-2.0
