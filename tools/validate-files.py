@@ -22,7 +22,7 @@ def exit_usage():
 
 
 def validate_library_file(file_path):
-    with open(file_path) as f:
+    with open(file_path, encoding='utf-8') as f:
         file_content = f.read()
         if 'DOCUMENTATION = ' not in file_content \
                 or 'EXAMPLES = ' not in file_content:

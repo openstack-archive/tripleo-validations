@@ -14,3 +14,4 @@ testtools>=2.2.0 # MIT
 reno>=3.1.0 # Apache-2.0
 netaddr>=0.7.18 # BSD
 pre-commit # MIT
+stestr>=3.0.1 # Apache-2.0
