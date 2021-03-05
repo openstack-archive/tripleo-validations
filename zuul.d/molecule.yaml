@@ -51,6 +51,9 @@
 - job:
     files:
     - ^roles/collect_flavors_and_verify_profiles/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-collect_flavors_and_verify_profiles
     parent: tripleo-validations-centos-8-base
     vars:
@@ -59,6 +62,9 @@
 - job:
     files:
     - ^roles/neutron_sanity_check/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-neutron_sanity_check
     parent: tripleo-validations-centos-8-base
     vars:
@@ -67,6 +73,9 @@
 - job:
     files:
     - ^roles/node_health/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-node_health
     parent: tripleo-validations-centos-8-base
     vars:
@@ -75,6 +84,9 @@
 - job:
     files:
     - ^roles/nova_event_callback/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-nova_event_callback
     parent: tripleo-validations-centos-8-base
     vars:
@@ -83,6 +95,9 @@
 - job:
     files:
     - ^roles/ovs_dpdk_pmd/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-ovs_dpdk_pmd
     parent: tripleo-validations-centos-8-base
     vars:
@@ -91,6 +106,9 @@
 - job:
     files:
     - ^roles/pacemaker_status/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-pacemaker_status
     parent: tripleo-validations-centos-8-base
     vars:
@@ -99,6 +117,9 @@
 - job:
     files:
     - ^roles/stack_health/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-stack_health
     parent: tripleo-validations-centos-8-base
     vars:
@@ -107,6 +128,9 @@
 - job:
     files:
     - ^roles/switch_vlans/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-switch_vlans
     parent: tripleo-validations-centos-8-base
     vars:
@@ -115,6 +139,9 @@
 - job:
     files:
     - ^roles/tls_everywhere/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-tls_everywhere
     parent: tripleo-validations-centos-8-base
     vars:
@@ -123,6 +150,9 @@
 - job:
     files:
     - ^roles/undercloud_process_count/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-undercloud_process_count
     parent: tripleo-validations-centos-8-base
     vars:
@@ -131,6 +161,9 @@
 - job:
     files:
     - ^roles/openstack_endpoints/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-openstack_endpoints
     parent: tripleo-validations-centos-8-base
     vars:
@@ -139,6 +172,9 @@
 - job:
     files:
     - ^roles/openshift_on_openstack/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-openshift_on_openstack
     parent: tripleo-validations-centos-8-base
     vars:
@@ -147,6 +183,9 @@
 - job:
     files:
     - ^roles/node_disks/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-node_disks
     parent: tripleo-validations-centos-8-base
     vars:
@@ -155,6 +194,9 @@
 - job:
     files:
     - ^roles/container_status/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-container_status
     parent: tripleo-validations-centos-8-base
     vars:
@@ -163,6 +205,9 @@
 - job:
     files:
     - ^roles/healthcheck_service_status/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-healthcheck_service_status
     parent: tripleo-validations-centos-8-base
     vars:
@@ -171,6 +216,9 @@
 - job:
     files:
     - ^roles/ironic_boot_configuration/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-ironic_boot_configuration
     parent: tripleo-validations-centos-8-base
     vars:
@@ -179,6 +227,9 @@
 - job:
     files:
     - ^roles/mysql_open_files_limit/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-mysql_open_files_limit
     parent: tripleo-validations-centos-8-base
     vars:
@@ -187,6 +238,9 @@
 - job:
     files:
     - ^roles/network_environment/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-network_environment
     parent: tripleo-validations-centos-8-base
     vars:
@@ -195,6 +249,9 @@
 - job:
     files:
     - ^roles/dhcp_validations/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-dhcp_validations
     parent: tripleo-validations-centos-8-base
     vars:
@@ -203,6 +260,9 @@
 - job:
     files:
     - ^roles/controller_token/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-controller_token
     parent: tripleo-validations-centos-8-base
     vars:
@@ -210,6 +270,9 @@
 - job:
     files:
     - ^roles/controller_ulimits/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-controller_ulimits
     parent: tripleo-validations-centos-8-base
     vars:
@@ -217,6 +280,9 @@
 - job:
     files:
     - ^roles/ctlplane_ip_range/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-ctlplane_ip_range
     parent: tripleo-validations-centos-8-base
     vars:
@@ -224,6 +290,9 @@
 - job:
     files:
     - ^roles/frra_status/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-frr_status
     parent: tripleo-validations-centos-8-base
     vars:
@@ -231,6 +300,9 @@
 - job:
     files:
     - ^roles/repos/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-repos
     parent: tripleo-validations-centos-8-base
     vars:
@@ -238,6 +310,9 @@
 - job:
     files:
     - ^roles/undercloud_debug/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-undercloud_debug
     parent: tripleo-validations-centos-8-base
     vars:
@@ -245,6 +320,9 @@
 - job:
     files:
     - ^roles/nova_status/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-nova_status
     parent: tripleo-validations-centos-8-base
     vars:
@@ -252,6 +330,9 @@
 - job:
     files:
     - ^roles/image_serve/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-image_serve
     parent: tripleo-validations-centos-8-base
     vars:
@@ -260,6 +341,9 @@
 - job:
     files:
     - ^roles/check_network_gateway/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-check_network_gateway
     parent: tripleo-validations-centos-8-base
     vars:
@@ -267,6 +351,9 @@
 - job:
     files:
     - ^roles/undercloud_heat_purge_deleted/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-undercloud_heat_purge_deleted
     parent: tripleo-validations-centos-8-base
     vars:
@@ -274,6 +361,9 @@
 - job:
     files:
     - ^roles/undercloud_tokenflush/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-undercloud_tokenflush
     parent: tripleo-validations-centos-8-base
     vars:
@@ -281,6 +371,9 @@
 - job:
     files:
     - ^roles/rabbitmq_limits/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-rabbitmq_limits
     parent: tripleo-validations-centos-8-base
     vars:
@@ -288,6 +381,9 @@
 - job:
     files:
     - ^roles/stonith_exists/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-stonith_exists
     parent: tripleo-validations-centos-8-base
     vars:
@@ -295,6 +391,9 @@
 - job:
     files:
     - ^roles/ceph/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-ceph
     parent: tripleo-validations-centos-8-base
     vars:
@@ -302,6 +401,9 @@
 - job:
     files:
     - ^roles/system_encoding/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-system_encoding
     parent: tripleo-validations-centos-8-base
     vars:
@@ -309,6 +411,9 @@
 - job:
     files:
     - ^roles/nova_svirt/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-nova_svirt
     parent: tripleo-validations-centos-8-base
     vars:
@@ -316,6 +421,9 @@
 - job:
     files:
     - ^roles/package_version/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-package_version
     parent: tripleo-validations-centos-8-base
     vars:
@@ -323,6 +431,9 @@
 - job:
     files:
     - ^roles/check_kernel_version/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-check_kernel_version
     parent: tripleo-validations-centos-8-base
     vars:
@@ -330,6 +441,9 @@
 - job:
     files:
     - ^roles/check_rhsm_version/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-check_rhsm_version
     parent: tripleo-validations-centos-8-base
     vars:
@@ -337,6 +451,9 @@
 - job:
     files:
     - ^roles/check_undercloud_conf/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-check_undercloud_conf
     parent: tripleo-validations-centos-8-base
     vars:
@@ -344,6 +461,9 @@
 - job:
     files:
     - ^roles/overcloud_service_status/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
     name: tripleo-validations-centos-8-molecule-overcloud_service_status
     parent: tripleo-validations-centos-8-base
     vars:

@@ -86,7 +86,10 @@
                   "name": new_job_name,
                   "parent": "tripleo-validations-centos-8-base",
                   "files": [
-                    "^roles/validation_" ~ _role_name ~ "/.*"
+                    "^roles/validation_" ~ _role_name ~ "/.*",
+                    "^tests/prepare-test-host.yml",
+                    "^ci/playbooks/pre.yml",
+                    "^ci/playbooks/run.yml"
                   ],
                   "vars": {
                     "tripleo_validations_role_name": "validation_" ~ _role_name
