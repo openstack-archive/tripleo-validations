@@ -14,6 +14,11 @@
 
 import collections
 
+try:
+    from unittest import mock
+except ImportError:
+    import mock
+
 from tripleo_validations.tests import base
 from tripleo_validations import utils
 
@@ -118,3 +123,40 @@ class TestGetNested(base.TestCase):
         self.assertEqual(
             utils.get_nested(resources, 'foo', PATH[:])[0],
             'old')
+
+
+class TestGetAuthSession(base.TestCase):
+    """Tests for tripleo_validations.utils.get_auth_session function.
+    """
+
+    @mock.patch('keystoneauth1.session.Session')
+    @mock.patch('keystoneauth1.identity.generic.Token')
+    def test_get_auth_session_token(self, mock_token, mock_session):
+
+        fake_auth_vars = {
+            'auth_url': 'http://www.fizz.bar/auth',
+            'username': 'buzz',
+            'project_name': 'project_foo',
+            'os_auth_token': 'token',
+            'password': 'password',
+            'cacert': 'fizz_buzz_cert',
+            'timeout': '999'
+        }
+
+        utils.get_auth_session(fake_auth_vars)
+
+    @mock.patch('keystoneauth1.session.Session')
+    @mock.patch('keystoneauth1.identity.generic.Password')
+    def test_get_auth_session_password(self, mock_pass, mock_session):
+
+        fake_auth_vars = {}
+
+        utils.get_auth_session(fake_auth_vars)
+
+    @mock.patch('keystoneauth1.session.Session')
+    @mock.patch('keystoneauth1.identity.generic.Password')
+    def test_get_auth_session_empty_vars(self, mock_pass, mock_session):
+
+        fake_auth_vars = {}
+
+        utils.get_auth_session(fake_auth_vars)
