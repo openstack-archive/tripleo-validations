@@ -8,5 +8,7 @@
       groups:
         - post-upgrade
         - pre-upgrade
+        - post-update
+        - pre-update
   roles:
     - undercloud_service_status

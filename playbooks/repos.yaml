@@ -12,5 +12,6 @@
         Detect if there are any unwanted repositories (such as EPEL) enabled.
       groups:
         - pre-upgrade
+        - pre-update
   roles:
     - repos
