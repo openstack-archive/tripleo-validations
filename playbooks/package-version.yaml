@@ -11,6 +11,12 @@
         - post-deployment
         - pre-upgrade
         - post-upgrade
+        - pre-update
+        - pre-system-upgrade
+        - pre-undercloud-upgrade
+        - pre-overcloud-prepare
+        - pre-overcloud-upgrade
+        - pre-overcloud-converge
         - pre-ceph
         - post-ceph
     package_version_debug: false
