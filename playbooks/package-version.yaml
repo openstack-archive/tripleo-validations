@@ -10,6 +10,7 @@
         - prep
         - pre-deployment
         - pre-upgrade
+        - pre-update
         - pre-system-upgrade
         - pre-undercloud-upgrade
         - pre-overcloud-prepare
