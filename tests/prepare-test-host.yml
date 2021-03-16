@@ -44,11 +44,9 @@
         mode: "0700"
 
     - name: Create ssh key pair
-      user:
-        name: "{{ ansible_user }}"
-        generate_ssh_key: true
-        ssh_key_bits: 2048
-        ssh_key_file: "{{ ansible_user_dir }}/.ssh/id_rsa"
+      openssh_keypair:
+        path: "{{ ansible_user_dir }}/.ssh/id_rsa"
+        size: 2048
 
     - name: Slurp pub key
       slurp:
