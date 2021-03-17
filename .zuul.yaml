@@ -30,7 +30,7 @@
               - ^molecule-requirements.txt
               - ^requirements.txt
               - ^README.rst
-        - tripleo-ci-centos-8-content-provider: &content-provider
+        - tripleo-ci-centos-8-content-provider:
             dependencies:
               - openstack-tox-linters
         - tripleo-ci-centos-8-scenario004-standalone: &scenario004
@@ -45,7 +45,7 @@
       jobs:
         - openstack-tox-linters
         - openstack-tox-docs: *tripleo-docs
-        - tripleo-ci-centos-8-content-provider: *content-provider
+        - tripleo-ci-centos-8-content-provider
         - tripleo-ci-centos-8-scenario004-standalone: *scenario004
 
     promote:
