@@ -12,6 +12,13 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
+
+"""This sub module provides various data structures and functions
+useful for automated testing. Additional helpers should be placed here
+if at all possible. This should help with reduction of redundancy and
+isolation of potentially problematic testing code.
+"""
+
 import sys
 try:
     from unittest import mock
@@ -126,3 +133,29 @@ MOCK_NODES = [
 MOCK_PROFILE_FLAVORS = {
     'fooflavor': (MOCK_FLAVORS['ok'], 1),
 }
+
+
+UUIDs = [
+    '13c319a4-7704-4b44-bb2e-501951879f96',
+    '8201bb8e-be20-4a97-bcf4-91bcf7eeff86',
+    'cc04effd-6bac-45ba-a0dc-83e6cd2c589d',
+    'cbb12140-a088-4646-a873-73eeb055ccc2'
+]
+
+
+def node_helper(node_id, kernel_id, ram_id, arch=None, platform=None):
+
+    node = {
+        "uuid": node_id,
+        "driver_info": {
+            "deploy_kernel": kernel_id,
+            "deploy_ramdisk": ram_id,
+        },
+        "properties": {},
+        "extra": {},
+    }
+    if arch:
+        node["properties"]["cpu_arch"] = arch
+    if platform:
+        node["extra"]["tripleo_platform"] = platform
+    return node
