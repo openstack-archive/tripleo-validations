@@ -1,0 +1,70 @@
+---
+# Tripleo-validations uses a shared molecule configuration file to avoid
+# repetition. That configuration file is located at the repository level
+# ({REPO}/.config/molecule/config.yml) and defines all the default values for
+# all the molecule.yml files across all the roles. By default, the role-addition
+# process will produce an empty molecule.yml inheriting this config.yml file.
+#
+# Any key defined in the role molecule.yml file will override values from this
+# config.yml file.
+#
+# IMPORTANT: if you want to override the default values set here in this file,
+# you will have to redefine them completely in your molecule.yml (at the role
+# level) and add your extra configuration!
+#
+# For instance, if you need to add an extra package in your ubi8 container, you
+# will have to add the entire "platforms" key into your molecule.yml file and
+# add your package name in the pkg_extras key.
+#
+# No merge will happen between your molecule.yml and this config.yml
+# files. That's why you will have to redefine them completely.
+
+driver:
+  name: podman
+
+log: true
+
+platforms:
+  - name: ubi8
+    hostname: ubi8
+    image: ubi8/ubi-init
+    registry:
+      url: registry.access.redhat.com
+    dockerfile: Dockerfile
+    pkg_extras: python*-setuptools python*-pyyaml
+    volumes:
+      - /etc/ci/mirror_info.sh:/etc/ci/mirror_info.sh:ro
+    privileged: true
+    environment: &env
+      http_proxy: "{{ lookup('env', 'http_proxy') }}"
+      https_proxy: "{{ lookup('env', 'https_proxy') }}"
+    ulimits: &ulimit
+      - host
+
+provisioner:
+  name: ansible
+  inventory:
+    hosts:
+      all:
+        hosts:
+          ubi8:
+            ansible_python_interpreter: /usr/bin/python3
+  log: true
+  options:
+    vvv: true
+  env:
+    ANSIBLE_STDOUT_CALLBACK: yaml
+    ANSIBLE_ROLES_PATH: "${ANSIBLE_ROLES_PATH}:${HOME}/zuul-jobs/roles"
+    ANSIBLE_LIBRARY: "${ANSIBLE_LIBRARY:-/usr/share/ansible/plugins/modules}"
+
+scenario:
+  test_sequence:
+    - destroy
+    - create
+    - prepare
+    - converge
+    - verify
+    - destroy
+
+verifier:
+  name: testinfra
