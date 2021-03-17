@@ -11,15 +11,16 @@
           files:
           - ^doc/.*
           - ^README.rst
-      - tripleo-ci-centos-8-content-provider
+      - tripleo-ci-centos-8-content-provider:
+          dependencies:
+            - openstack-tox-linters
       - tripleo-ci-centos-8-scenario004-standalone: &scenario004
           vars:
             consumer_job: true
             build_container_images: false
             tags:
               - standalone
-          dependencies: &deps
-            - openstack-tox-linters
+          dependencies:
             - tripleo-ci-centos-8-content-provider
           files:
             - ^roles/ceph.*$
