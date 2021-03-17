@@ -1,27 +1,9 @@
 ---
+# inherits tripleo-validations/.config/molecule/config.yml
+# To override default values, please take a look at the config.yml.
+
 driver:
   name: podman
-
-log: true
-
-platforms:
-  - name: ubi8
-    hostname: ubi8
-    image: ubi8/ubi-init
-    registry:
-      url: registry.access.redhat.com
-    dockerfile: Dockerfile
-    pkg_extras: python*-setuptools
-    privileged: true
-    volumes:
-      - /etc/ci/mirror_info.sh:/etc/ci/mirror_info.sh:ro
-      - /etc/pki/rpm-gpg:/etc/pki/rpm-gpg
-      - /opt/yum.repos.d:/etc/yum.repos.d:rw
-    environment: &env
-      http_proxy: "{{ lookup('env', 'http_proxy') }}"
-      https_proxy: "{{ lookup('env', 'https_proxy') }}"
-    ulimits: &ulimit
-      - host
 
 provisioner:
   name: ansible
@@ -39,16 +21,5 @@ provisioner:
   log: true
   env:
     ANSIBLE_STDOUT_CALLBACK: yaml
+    ANSIBLE_ROLES_PATH: "${ANSIBLE_ROLES_PATH}:${HOME}/zuul-jobs/roles"
     ANSIBLE_LIBRARY: "${ANSIBLE_LIBRARY:-/usr/share/ansible/plugins/modules}"
-
-scenario:
-  test_sequence:
-    - destroy
-    - create
-    - prepare
-    - converge
-    - verify
-    - destroy
-
-verifier:
-  name: testinfra
