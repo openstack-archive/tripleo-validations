@@ -87,25 +87,6 @@
               * hard nproc 4096
             dest: /etc/security/limits.d/containers.conf
 
-        - name: Install epel-release
-          package:
-            name: epel-release
-            state: present
-
-        - name: Be sure to enable epel repo
-          become: true
-          command: >-
-            dnf config-manager --set-enabled epel
-          args:
-            warn: false
-
-        - name: Copy repos directory to opt workspace
-          copy:
-            src: /etc/yum.repos.d
-            dest: /opt/
-            remote_src: true
-            mode: "0777"
-
         - name: Reset ssh connection
           meta: reset_connection
   tasks:

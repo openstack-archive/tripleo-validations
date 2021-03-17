@@ -48,6 +48,12 @@
       args:
         creates: "roles/{{ _role_name }}"
 
+    - name: Create link to the common Dockerfile
+      file:
+        src: ../../../../.config/molecule/Dockerfile
+        dest: roles/validation_{{ _role_name }}/molecule/default/Dockerfile
+        state: link
+
     - name: Read zuul molecule file
       slurp:
         src: zuul.d/molecule.yaml

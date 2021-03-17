@@ -174,6 +174,15 @@ class AnsibleAutoPluginDirective(Directive):
                 os.path.basename(role)
             )
         )
+
+        abspath_role = os.path.dirname(os.path.abspath(role))
+        molecule_shared_file = os.path.join(os.path.dirname(abspath_role),
+                                            ".config/molecule/config.yml")
+
+        if os.path.exists(molecule_shared_file):
+            with open(molecule_shared_file) as msf:
+                molecule_defaults = yaml.safe_load(msf.read())
+
         defaults_file = os.path.join(role, 'defaults', 'main.yml')
         if os.path.exists(defaults_file):
             with open(defaults_file) as f:
@@ -226,6 +235,9 @@ class AnsibleAutoPluginDirective(Directive):
                 with open(molecule_file) as f:
                     molecule_conf = yaml.safe_load(f.read())
 
+                if not molecule_conf:
+                    molecule_conf = molecule_defaults
+
                 molecule_section.append(
                     self._yaml_section(
                         to_yaml_data=molecule_conf,
@@ -234,7 +246,16 @@ class AnsibleAutoPluginDirective(Directive):
                 )
 
                 default_playbook = [molecule_path, test, 'converge.yml']
-                provisioner_data = molecule_conf.get('provisioner')
+
+                provisioner_data = None
+                # Now that we use a shared molecule configuration file, the
+                # molecule.yml file in the role scenarios could be empty or
+                # contains only overriding keys.
+                if molecule_conf:
+                    provisioner_data = molecule_conf.get('provisioner')
+                else:
+                    provisioner_data = molecule_defaults.get('provisioner')
+
                 if provisioner_data:
                     inventory = provisioner_data.get('inventory')
                     if inventory:
