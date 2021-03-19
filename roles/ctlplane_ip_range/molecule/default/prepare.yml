@@ -20,6 +20,11 @@
   gather_facts: false
 
   tasks:
+    - name: install python netaddr library
+      package:
+        name: python*-netaddr
+        state: installed
+
     - name: install hiera
       package:
         name: hiera

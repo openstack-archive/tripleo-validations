@@ -249,6 +249,7 @@
     parent: tripleo-validations-centos-8-base
     vars:
       tripleo_validations_role_name: image_serve
+    voting: false
 - job:
     files:
     - ^roles/check_network_gateway/.*
