@@ -1,7 +1,13 @@
 [run]
 branch = True
-source = tripleo-validations
+source =
+    tripleo_validations
+    library
+    lookup_plugins
 omit = tripleo-validations/openstack/*
 
 [report]
 ignore_errors = True
+omit =
+    tripleo_validations/tests/*
+    tests/*
