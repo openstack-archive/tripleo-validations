@@ -21,9 +21,91 @@ Tests for `ceph_pools_pg_protection` module.
 
 import library.ceph_pools_pg_protection as validation
 from tripleo_validations.tests import base
+from tripleo_validations.tests import fakes
+
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 
 
 class TestCephPoolsPgProtection(base.TestCase):
+
+    def test_module_init(self):
+        module_attributes = dir(validation)
+
+        required_attributes = [
+            'DOCUMENTATION',
+            'EXAMPLES'
+        ]
+
+        self.assertTrue(set(required_attributes).issubset(module_attributes))
+
+    @mock.patch(
+        'library.ceph_pools_pg_protection.run_module')
+    def test_module_main(self, mock_run_module):
+
+        validation.main()
+
+        mock_run_module.assert_called_once()
+
+    @mock.patch(
+        'library.ceph_pools_pg_protection.simulate_pool_creation',
+        return_value={'failed': False})
+    @mock.patch(
+        'library.ceph_pools_pg_protection.yaml_safe_load',
+        return_value={'options': 'bar'})
+    @mock.patch(
+        'library.ceph_pools_pg_protection.AnsibleModule')
+    def test_run_module_sim_success(self, mock_module,
+                                    mock_yaml_safe_load,
+                                    mock_simulate_pool_creation):
+
+        mock_exit_json = mock.MagicMock()
+
+        mock_module.return_value = mock.MagicMock(
+            check_mode=False,
+            exit_json=mock_exit_json)
+
+        validation.run_module()
+
+        mock_yaml_safe_load.assert_called_once()
+
+        mock_module.assert_called_once_with(
+            argument_spec='bar',
+            supports_check_mode=False
+        )
+
+        mock_exit_json.assert_called_once()
+
+    @mock.patch(
+        'library.ceph_pools_pg_protection.simulate_pool_creation',
+        return_value={'failed': True, 'msg': 'fizz'})
+    @mock.patch(
+        'library.ceph_pools_pg_protection.yaml_safe_load',
+        return_value={'options': 'bar'})
+    @mock.patch(
+        'library.ceph_pools_pg_protection.AnsibleModule')
+    def test_run_module_sim_failed(self, mock_module,
+                                   mock_yaml_safe_load,
+                                   mock_simulate_pool_creation):
+
+        mock_exit_json = mock.MagicMock()
+
+        mock_module.return_value = mock.MagicMock(
+            check_mode=False,
+            exit_json=mock_exit_json)
+
+        validation.run_module()
+
+        mock_yaml_safe_load.assert_called_once()
+
+        mock_module.assert_called_once_with(
+            argument_spec='bar',
+            supports_check_mode=False
+        )
+
+        mock_exit_json.assert_called_once()
 
     def test_check_pg_num_enough_osds(self):
         '''Test adding one more pool to the existing pools with 36 OSDs'''
