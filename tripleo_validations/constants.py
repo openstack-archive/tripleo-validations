@@ -13,27 +13,6 @@
 #   under the License.
 #
 
-import os
-
-DEFAULT_VALIDATIONS_BASEDIR = "/usr/share/ansible"
-DEFAULT_VALIDATIONS_LEGACY_BASEDIR = "/usr/share/openstack-tripleo-validations"
-
-VALIDATIONS_LOG_BASEDIR = '/var/log/validations'
-
-ANSIBLE_VALIDATION_DIR = (
-    os.path.join(DEFAULT_VALIDATIONS_LEGACY_BASEDIR, 'playbooks')
-    if os.path.exists(os.path.join(DEFAULT_VALIDATIONS_LEGACY_BASEDIR,
-                                   'playbooks'))
-    else "/usr/share/ansible/validation-playbooks"
-    )
-
-
-VALIDATION_GROUPS_INFO = (
-        '/usr/share/ansible/groups.yaml'
-        if os.path.exists('/usr/share/ansible/groups.yaml')
-        else os.path.join(DEFAULT_VALIDATIONS_LEGACY_BASEDIR, 'groups.yaml')
-        )
-
 # TRIPLEO_META_USAGE_KEY is inserted into metadata for containers created in
 # Swift via SwiftPlanStorageBackend to identify them from other containers
 TRIPLEO_META_USAGE_KEY = 'x-container-meta-usage-tripleo'
