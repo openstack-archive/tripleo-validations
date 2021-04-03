@@ -3,6 +3,7 @@
     check:
       jobs:
       - tripleo-validations-centos-8-molecule-ceph
+      - tripleo-validations-centos-8-molecule-check_for_dangling_images
       - tripleo-validations-centos-8-molecule-check_network_gateway
       - tripleo-validations-centos-8-molecule-check_rhsm_version
       - tripleo-validations-centos-8-molecule-check_undercloud_conf
@@ -24,6 +25,7 @@
     gate:
       jobs:
       - tripleo-validations-centos-8-molecule-ceph
+      - tripleo-validations-centos-8-molecule-check_for_dangling_images
       - tripleo-validations-centos-8-molecule-check_network_gateway
       - tripleo-validations-centos-8-molecule-check_rhsm_version
       - tripleo-validations-centos-8-molecule-check_uc_hostname
@@ -344,3 +346,13 @@
     parent: tripleo-validations-centos-8-base
     vars:
       tripleo_validations_role_name: check_uc_hostname
+- job:
+    files:
+    - ^roles/check_for_dangling_images/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
+    name: tripleo-validations-centos-8-molecule-check_for_dangling_images
+    parent: tripleo-validations-centos-8-base
+    vars:
+      tripleo_validations_role_name: check_for_dangling_images
