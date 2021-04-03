@@ -2,11 +2,11 @@
 - project-template:
     check:
       jobs:
-      - tripleo-validations-centos-8-molecule-system_encoding
       - tripleo-validations-centos-8-molecule-ceph
       - tripleo-validations-centos-8-molecule-check_network_gateway
       - tripleo-validations-centos-8-molecule-check_rhsm_version
       - tripleo-validations-centos-8-molecule-check_undercloud_conf
+      - tripleo-validations-centos-8-molecule-check_uc_hostname
       - tripleo-validations-centos-8-molecule-controller_token
       - tripleo-validations-centos-8-molecule-controller_ulimits
       - tripleo-validations-centos-8-molecule-ctlplane_ip_range
@@ -17,27 +17,28 @@
       - tripleo-validations-centos-8-molecule-rabbitmq_limits
       - tripleo-validations-centos-8-molecule-repos
       - tripleo-validations-centos-8-molecule-stonith_exists
+      - tripleo-validations-centos-8-molecule-system_encoding
       - tripleo-validations-centos-8-molecule-tls_everywhere
       - tripleo-validations-centos-8-molecule-undercloud_debug
       - tripleo-validations-centos-8-molecule-undercloud_heat_purge_deleted
       - tripleo-validations-centos-8-molecule-undercloud_tokenflush
     gate:
       jobs:
-      - tripleo-validations-centos-8-molecule-system_encoding
       - tripleo-validations-centos-8-molecule-ceph
       - tripleo-validations-centos-8-molecule-check_network_gateway
       - tripleo-validations-centos-8-molecule-check_rhsm_version
+      - tripleo-validations-centos-8-molecule-check_uc_hostname
       - tripleo-validations-centos-8-molecule-check_undercloud_conf
       - tripleo-validations-centos-8-molecule-controller_token
       - tripleo-validations-centos-8-molecule-controller_ulimits
       - tripleo-validations-centos-8-molecule-ctlplane_ip_range
-      - tripleo-validations-centos-8-molecule-image_serve
       - tripleo-validations-centos-8-molecule-nova_status
       - tripleo-validations-centos-8-molecule-nova_svirt
       - tripleo-validations-centos-8-molecule-package_version
       - tripleo-validations-centos-8-molecule-rabbitmq_limits
       - tripleo-validations-centos-8-molecule-repos
       - tripleo-validations-centos-8-molecule-stonith_exists
+      - tripleo-validations-centos-8-molecule-system_encoding
       - tripleo-validations-centos-8-molecule-tls_everywhere
       - tripleo-validations-centos-8-molecule-undercloud_debug
       - tripleo-validations-centos-8-molecule-undercloud_heat_purge_deleted
@@ -338,3 +339,14 @@
     parent: tripleo-validations-centos-8-base
     vars:
       tripleo_validations_role_name: check_undercloud_conf
+
+- job:
+    files:
+      - ^roles/check_uc_hostname/.*
+      - ^tests/prepare-test-host.yml
+      - ^ci/playbooks/pre.yml
+      - ^ci/playbooks/run.yml
+    name: tripleo-validations-centos-8-molecule-check_uc_hostname
+    parent: tripleo-validations-centos-8-base
+    vars:
+      tripleo_validations_role_name: check_uc_hostname
