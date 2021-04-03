@@ -1,0 +1,13 @@
+---
+- hosts: undercloud
+  gather_facts: false
+  vars:
+    metadata:
+      name: Check for podman dangling images
+      description: |
+        Make sure before update we do not have any dangling images.
+      groups:
+        - pre-update
+    check_for_dangling_images_debug: false
+  roles:
+    - check_for_dangling_images
