@@ -1,0 +1,72 @@
+---
+# Copyright 2020 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+- name: Ensure we get needed facts
+  setup:
+    gather_subset:
+      - '!all'
+      - '!any'
+      - '!min'
+      - env
+
+- name: Check undercloud.conf
+  stat:
+    path: "{{ check_uc_hostname_undercloud }}"
+  register: stat_result_uc_hostname_undercloud
+
+- name: Check containers-prepare-parameter
+  stat:
+    path: "{{ check_uc_hostname_containers }}"
+  register: stat_result_uc_hostname_containers
+
+- name: Fail if one of those files is missing
+  fail:
+    msg: |
+      The following configuration file(s) is/are missing:
+      {% if not stat_result_uc_hostname_undercloud.stat.exists %}
+      - "{{ check_uc_hostname_undercloud }}"
+      {% endif %}
+      {% if not stat_result_uc_hostname_containers.stat.exists %}
+      - "{{ check_uc_hostname_containers }}"
+      {% endif %}
+  when: not stat_result_uc_hostname_undercloud.stat.exists or not stat_result_uc_hostname_containers.stat.exists
+
+- when:
+    - stat_result_uc_hostname_undercloud.stat.exists
+    - stat_result_uc_hostname_containers.stat.exists
+  block:
+    - name: Get undercloud_public_host value from undercloud.conf file
+      validations_read_ini:
+        path: "{{ check_uc_hostname_undercloud }}"
+        section: DEFAULT
+        key: undercloud_public_host
+      register: uc_hostname_undercloud
+
+    - name: Get DockerInsecureRegistryAddress value from containers file
+      set_fact:
+        uc_hostname_containers: "{{ item.split(':')[0] }}"
+      with_items: "{{ (lookup('template', '{{ check_uc_hostname_containers }}')
+        | from_yaml).parameter_defaults.DockerInsecureRegistryAddress
+        | list
+        | first }}"
+
+    - name: Verify UC hostnames match
+      fail:
+        msg: |
+          The UC hostnames from undercloud.conf and containers-prepare-parameter.yaml must match
+          UC hostname from undercloud.conf is {{ uc_hostname_undercloud.value }}
+          UC hostname from containers-prepare-parameter.yaml is {{ uc_hostname_containers }}
+      failed_when: uc_hostname_undercloud.value != uc_hostname_containers
