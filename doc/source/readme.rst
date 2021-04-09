@@ -381,7 +381,7 @@ When running it, it should output something like this::
 If you run into an issue where the validation isn't found, it may be because the
 run-validations.sh script is searching for it in the path where the packaging
 installs validations.  For development, export an environment variable named
-VALIDATIONS_BASEDIR with the value of base bath of your git repo.::
+VALIDATIONS_BASEDIR with the value of base path of your git repo.::
 
     cd /path/to/git/repo
     export VALIDATIONS_BASEDIR=$(pwd)
