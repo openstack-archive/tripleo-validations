@@ -1,0 +1,6 @@
+---
+others:
+  - |
+    Several services were retired and are no longer in use. Therefore it is
+    pointless to check for their associated processes. The retired services
+    are, in alphabetical order: mistral, nova-compute, swift and zaqar.
