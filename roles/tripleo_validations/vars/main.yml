@@ -6,7 +6,6 @@ validations_list:
   network:
     - neutron-sanity-check
   validation:
-    - check-ram
     - check-cpu
     - 512e
   tripleo:
