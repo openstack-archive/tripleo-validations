@@ -12,6 +12,7 @@
         to the Neutron services.
 
       groups:
+        - backup-and-restore
         - post-deployment
 
   roles:
