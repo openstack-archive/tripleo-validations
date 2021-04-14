@@ -26,6 +26,7 @@
           - '!any'
           - '!min'
           - env
+
     - name: populate undercloud.conf
       copy:
         dest: "{{ ansible_env.HOME }}/undercloud.conf"

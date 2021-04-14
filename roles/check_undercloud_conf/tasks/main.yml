@@ -14,6 +14,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+
 - name: Ensure we get needed facts
   setup:
     gather_subset:
@@ -21,6 +22,7 @@
       - '!any'
       - '!min'
       - env
+
 # "check_undercloud_conf" tasks
 - name: "Retrieve {{ ansible_env.HOME }}/undercloud.conf content"
   slurp:
