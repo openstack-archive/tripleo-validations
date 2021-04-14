@@ -12,6 +12,7 @@
 
         This validation fails if pacemaker service is found failed or inactive.
       groups:
+        - backup-and-restore
         - post-deployment
   roles:
     - pacemaker_status

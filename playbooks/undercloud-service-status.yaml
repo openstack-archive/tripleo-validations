@@ -6,6 +6,7 @@
       description: >
         Check undercloud status before running a stack update - especially minor update and major upgrade.
       groups:
+        - backup-and-restore
         - post-upgrade
         - pre-upgrade
         - post-update

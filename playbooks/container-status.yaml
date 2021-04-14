@@ -6,6 +6,7 @@
       description: >
         Detect failed containers and raise an error.
       groups:
+        - backup-and-restore
         - pre-upgrade
         - pre-update
         - post-deployment

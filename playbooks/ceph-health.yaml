@@ -8,6 +8,7 @@
         and prints a debug message.
 
       groups:
+        - backup-and-restore
         - post-deployment
         - post-ceph
     tripleo_delegate_to: "{{ groups['ceph_mon'] | default([]) }}"
