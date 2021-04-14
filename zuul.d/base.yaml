@@ -13,3 +13,12 @@
       - ci/playbooks/run.yml
     timeout: 1800
     voting: true
+
+- job:
+    name: tripleo-ci-centos-8-standalone-tv-validation
+    parent: tripleo-ci-centos-8-standalone
+    vars:
+      featureset: '052'
+      validate_services: true
+      enable_validation: true
+      component: validation
