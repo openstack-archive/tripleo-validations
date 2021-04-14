@@ -47,6 +47,7 @@ Existing validations:
    validations-pre-update-run-details
    validations-pre-update-converge-details
    validations-post-update-details
+   validations-backup-and-restore-details
 
 
 Indices and tables
