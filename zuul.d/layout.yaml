@@ -1,7 +1,6 @@
 ---
 - project:
     templates:
-      - tripleo-multinode-container-minimal-pipeline
       - openstack-python3-victoria-jobs
       - tripleo-validations-molecule-jobs
       - release-notes-jobs-python3
@@ -18,20 +17,23 @@
         - tripleo-ci-centos-8-content-provider:
             dependencies:
               - openstack-tox-linters
-        - tripleo-ci-centos-8-scenario004-standalone: &scenario004
-            vars: &vars_scen004
+        - tripleo-ci-centos-8-standalone-tv-validation:
+            vars: &consumer_vars
               consumer_job: true
               build_container_images: false
-            dependencies: &deps
+              remove_tags:
+                - build
+            dependencies:
               - tripleo-ci-centos-8-content-provider
-            files:
-              - ^roles/ceph.*$
     gate:
       jobs:
         - openstack-tox-linters
         - openstack-tox-docs: *tripleo-docs
         - tripleo-ci-centos-8-content-provider
-        - tripleo-ci-centos-8-scenario004-standalone: *scenario004
+        - tripleo-ci-centos-8-standalone-tv-validation:
+            vars: *consumer_vars
+            dependencies:
+              - tripleo-ci-centos-8-content-provider
 
     promote:
       jobs:
