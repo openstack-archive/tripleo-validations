@@ -1,0 +1,15 @@
+---
+- job:
+    description: Base tripleo-validations job
+    name: tripleo-validations-centos-8-base
+    nodeset: centos-8
+    parent: base
+    success-url: "reports.html"
+    failure-url: "reports.html"
+    pre-run:
+      - tests/prepare-test-host.yml
+      - ci/playbooks/pre.yml
+    run:
+      - ci/playbooks/run.yml
+    timeout: 1800
+    voting: true
