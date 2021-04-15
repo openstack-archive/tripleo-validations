@@ -42,6 +42,12 @@ Existing validations:
    validations-post-overcloud-converge-details
    validations-pre-ceph-details
    validations-post-ceph-details
+   validations-pre-update-details
+   validations-pre-update-prepare-details
+   validations-pre-update-run-details
+   validations-pre-update-converge-details
+   validations-post-update-details
+
 
 Indices and tables
 ==================
