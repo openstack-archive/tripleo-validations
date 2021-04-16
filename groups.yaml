@@ -80,3 +80,23 @@ post-ceph:
   - description: >-
       Validations to run on overcloud after deploying OpenStack
       with Ceph.
+pre-update:
+  - description: >-
+      Validations which should be run to validate your OpenStack
+      deployment before you update it.
+pre-update-prepare:
+  - description: >-
+      Validations which should be run to verify undercloud
+      updated correctly.
+pre-update-run:
+  - description: >-
+      Validations which should be run to verify image and registration
+      of the overcloud nodes.
+pre-update-converge:
+  - description: >-
+      Validations which should be run to verfiy containers and
+      services are ready for pre-deployment.
+post-update:
+  - description: >-
+      Validations which should be run to validate your OpenStack
+      deployment after you update it.
