@@ -1,0 +1,46 @@
+---
+- name: Verify required properties
+  lineinfile:
+    name: "{{ ansible_env.HOME }}/undercloud.conf"
+    regexp: "^{{ item }}\\s*=.*$"
+    state: absent
+  check_mode: true
+  register: uc_conf
+  loop: "{{ required_params }}"
+
+- name: "Fail if parameter not present in {{ ansible_env.HOME }}/undercloud.conf"
+  fail:
+    msg: >-
+      Property {{ item.item }} is required in
+      {{ ansible_env.HOME }}/undercloud.conf
+  failed_when: not item.changed
+  loop: "{{ uc_conf.results }}"
+
+- name: Check deprecated parameters
+  vars:
+    common_deprecated: "{{ uc_conf_props | intersect(deprecated_params) }}"
+  fail:
+    msg: >-
+      Parameters {{ common_deprecated | join(', ') }} are deprecated for
+      {{ ansible_env.HOME }}/undercloud.conf
+  when:
+    - common_deprecated is defined
+    - common_deprecated|length > 0
+
+- name: Get hw_types from conf file
+  validations_read_ini:
+    path: "{{ ansible_env.HOME }}/undercloud.conf"
+    section: DEFAULT
+    key: enabled_hardware_types
+  register: hw_types
+
+- name: Check deprecated drivers
+  vars:
+    hw_types_common: "{{ hw_types.value.split(',')|intersect(unsupported_drivers) }}"
+  fail:
+    msg: >-
+      Hardware type(s) {{ hw_types_common | join(', ') }}
+      are not supported any more
+  when:
+    - "'enabled_hardware_types' in uc_conf_props"
+    - hw_types_common|length > 0
