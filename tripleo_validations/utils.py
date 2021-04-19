@@ -21,8 +21,9 @@ from glanceclient import client as glance_client
 from heatclient import client as heat_client
 from heatclient import exc as heat_exc
 from ironicclient import client as ironic_client
-from keystoneauth1.identity import generic as ks_id
 from keystoneauth1 import session as ks_session
+from keystoneauth1.exceptions import catalog as catalog_exc
+from keystoneauth1.identity import generic as ks_id
 from novaclient import client as nova_client
 from swiftclient.client import Connection
 from swiftclient import exceptions as swiftexceptions
@@ -83,7 +84,7 @@ def get_ironic_client(auth_variables):
 def list_plan_and_stack(hclient, swiftclient):
     try:
         stacks = [s.stack_name for s in hclient.stacks.list()]
-    except heat_exc.HTTPNotFound:
+    except (heat_exc.HTTPNotFound, catalog_exc.EndpointNotFound):
         return None
     try:
         plan_list = []
