@@ -35,3 +35,22 @@ class TestGlanceImages(base.TestCase):
 
     def setUp(self):
         super(TestGlanceImages, self).setUp()
+
+    def test_module_init(self):
+        """Verifying that the lookup plugin is instantiated properly.
+        """
+
+        lookup = plugin.LookupModule()
+
+        module_attributes = dir(plugin)
+        required_attributes = [
+            'DOCUMENTATION',
+            'EXAMPLES'
+        ]
+
+        self.assertTrue(set(required_attributes).issubset(module_attributes))
+
+        self.assertIsInstance(plugin.DOCUMENTATION, str)
+        self.assertIsInstance(plugin.EXAMPLES, str)
+
+        self.assertIn('run', dir(lookup))
