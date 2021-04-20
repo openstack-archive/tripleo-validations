@@ -1,0 +1,56 @@
+---
+- name: Gather the HAProxy configuration
+  become: true
+  tripleo_haproxy_conf:
+    path: "{{ haproxy_config_file }}"
+
+- name: Check the HAProxy configuration
+  fail:
+    msg: >-
+      {% if haproxy_conf.global.maxconn|int < global_maxconn_min %}
+      - [FAILED] 'global maxconn' value check
+        * Current value: {{ haproxy_conf.global.maxconn }}, Recommended value: > {{ global_maxconn_min }}
+      {% else %}
+      - [PASSED] 'global maxconn' value check
+      {% endif %}
+      {% if haproxy_conf.defaults.maxconn|int < defaults_maxconn_min %}
+      - [FAILED] 'defaults maxconn' value check
+        * Current value: {{ haproxy_conf.defaults.maxconn }}, Recommended Value: > {{ defaults_maxconn_min }}
+      {% else %}
+      - [PASSED] 'defaults maxconn' value check
+      {% endif %}
+      {% if haproxy_conf.defaults['timeout queue'] != defaults_timeout_queue %}
+      - [FAILED] 'timeout queue' option in 'defaults' check
+        * Current value: {{ haproxy_conf.defaults['timeout queue'] }}
+        * Recommended value: {{ defaults_timeout_queue }}
+      {% else %}
+      - [PASSED] 'timeout queue' option in 'defaults' check
+      {% endif %}
+      {% if haproxy_conf.defaults['timeout client'] != defaults_timeout_client %}
+      - [FAILED] 'timeout client' option in 'defaults' check
+        * Current value: {{ haproxy_conf.defaults['timeout client'] }}
+        * Recommended value: {{ defaults_timeout_client }}
+      {% else %}
+      - [PASSED] 'timeout client' option in 'defaults' check
+      {% endif %}
+      {% if haproxy_conf.defaults['timeout server'] != defaults_timeout_server %}
+      - [FAILED] 'timeout server' option in 'defaults' check
+        * Current value: {{ haproxy_conf.defaults['timeout server'] }}
+        * Recommended value: {{ defaults_timeout_server }}
+      {% else %}
+      - [PASSED] 'timeout server' option in 'defaults' check
+      {% endif %}
+      {% if haproxy_conf.defaults['timeout check'] != defaults_timeout_check %}
+      - [FAILED] 'timeout check' option in 'defaults' check
+        * Current value: {{ haproxy_conf.defaults['timeout check'] }}
+        * Recommended value: {{ defaults_timeout_check }}
+      {% else %}
+      - [PASSED] 'timeout check' option in 'defaults' check
+      {% endif %}
+  failed_when: >
+    (haproxy_conf.global.maxconn|int < global_maxconn_min) or
+    (haproxy_conf.defaults.maxconn|int < defaults_maxconn_min) or
+    (haproxy_conf.defaults['timeout queue'] != defaults_timeout_queue) or
+    (haproxy_conf.defaults['timeout client'] != defaults_timeout_client) or
+    (haproxy_conf.defaults['timeout server'] != defaults_timeout_server) or
+    (haproxy_conf.defaults['timeout check'] != defaults_timeout_check)
