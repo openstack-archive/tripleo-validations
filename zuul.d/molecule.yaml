@@ -20,6 +20,7 @@
         - tripleo-validations-centos-8-molecule-stonith_exists
         - tripleo-validations-centos-8-molecule-system_encoding
         - tripleo-validations-centos-8-molecule-tls_everywhere
+        - tripleo-validations-centos-8-molecule-tripleo_haproxy
         - tripleo-validations-centos-8-molecule-undercloud_debug
         - tripleo-validations-centos-8-molecule-undercloud_heat_purge_deleted
         - tripleo-validations-centos-8-molecule-undercloud_tokenflush
@@ -44,6 +45,7 @@
         - tripleo-validations-centos-8-molecule-stonith_exists
         - tripleo-validations-centos-8-molecule-system_encoding
         - tripleo-validations-centos-8-molecule-tls_everywhere
+        - tripleo-validations-centos-8-molecule-tripleo_haproxy
         - tripleo-validations-centos-8-molecule-undercloud_debug
         - tripleo-validations-centos-8-molecule-undercloud_heat_purge_deleted
         - tripleo-validations-centos-8-molecule-undercloud_tokenflush
@@ -492,3 +494,13 @@
     parent: tripleo-validations-centos-8-base
     vars:
       tripleo_validations_role_name: compute_tsx
+- job:
+    files:
+      - ^roles/tripleo_haproxy/.*
+      - ^tests/prepare-test-host.yml
+      - ^ci/playbooks/pre.yml
+      - ^ci/playbooks/run.yml
+    name: tripleo-validations-centos-8-molecule-tripleo_haproxy
+    parent: tripleo-validations-centos-8-base
+    vars:
+      tripleo_validations_role_name: tripleo_haproxy
