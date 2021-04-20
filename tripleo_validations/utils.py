@@ -99,7 +99,7 @@ def list_plan_and_stack(hclient, swiftclient):
                 plan_list.append(ac['name'])
     except swiftexceptions.ClientException:
         return None
-    return list(set(stacks).intersection(list(plan_list)))
+    return list(set(stacks).union(plan_list))
 
 
 def filtered(obj):
