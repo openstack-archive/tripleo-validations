@@ -133,7 +133,7 @@
 
 - name: Set fact for IdM/FreeIPA host entry
   set_fact:
-    host_entry: "{{ ansible_fqdn }}@{{ ipa_realm.value }}"
+    host_entry: "{{ ansible_facts['fqdn'] }}@{{ ipa_realm.value }}"
   when: ipa_conf_stat.stat.exists
 
 - name: Set fact for IdM/FreeIPA host principal
