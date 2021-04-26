@@ -23,7 +23,7 @@
 #   This playbook contains the following parameters
 #   - tls_everywhere_check_dns_aci - which determines if we want to check
 #     for the DNS ACI.  This defaults to true.
-#   - tls_everywhere_undercloud_fqdn - which defaults to ansible_fqdn
+#   - tls_everywhere_undercloud_fqdn - which defaults to ansible_facts['fqdn']
 
 - name: check if undercloud is an ipa client
   stat:
@@ -34,7 +34,7 @@
   when: ipa_default_conf.stat.exists
   vars:
     check_dns_aci: "{{ tls_everywhere_check_dns_aci | default(True)}}"
-    undercloud_fqdn: "{{ tls_everywhere_undercloud_fqdn | default(ansible_fqdn) }}"
+    undercloud_fqdn: "{{ tls_everywhere_undercloud_fqdn | default(ansible_facts['fqdn']) }}"
     ipa_server_aci_check_failures: []
     fail_1: >-
       The IPA server does not have the required ACI to allow host
