@@ -30,6 +30,7 @@
             dependencies:
               - tripleo-ci-centos-8-content-provider
         - openstack-tox-py36
+        - openstack-tox-py39
     gate:
       jobs:
         - openstack-tox-linters
@@ -40,6 +41,7 @@
             dependencies:
               - tripleo-ci-centos-8-content-provider
         - openstack-tox-py36
+        - openstack-tox-py39
 
     promote:
       jobs:
