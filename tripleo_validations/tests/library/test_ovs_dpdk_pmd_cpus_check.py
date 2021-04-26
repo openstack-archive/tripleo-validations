@@ -14,26 +14,26 @@
 # under the License.
 
 try:
-    from unittest.mock import MagicMock
-    from unittest.mock import patch
+    from unittest import mock
 except ImportError:
-    from mock import MagicMock
-    from mock import patch
+    import mock
+
+from tripleo_validations.tests import base
+from tripleo_validations.tests import fakes
 
 import library.ovs_dpdk_pmd_cpus_check as validation
-from tripleo_validations.tests import base
 
 
 class TestOvsDpdkPmdCpusCheck(base.TestCase):
 
     def setUp(self):
         super(TestOvsDpdkPmdCpusCheck, self).setUp()
-        self.module = MagicMock()
+        self.module = mock.MagicMock()
 
-    @patch('library.ovs_dpdk_pmd_cpus_check.'
-           'get_nodes_cores_info')
-    @patch('library.ovs_dpdk_pmd_cpus_check.'
-           'get_cpus_list_from_mask_value')
+    @mock.patch('library.ovs_dpdk_pmd_cpus_check.'
+                'get_nodes_cores_info')
+    @mock.patch('library.ovs_dpdk_pmd_cpus_check.'
+                'get_cpus_list_from_mask_value')
     def test_validate_valid_pmd_cpus(self, mock_pmd_cpus, mock_cpus):
         mock_pmd_cpus.return_value = '0,1'
         mock_cpus.return_value = (
@@ -49,10 +49,10 @@ class TestOvsDpdkPmdCpusCheck(base.TestCase):
         self.module.exit_json.assert_called_with(
             msg="PMD CPU's configured correctly.")
 
-    @patch('library.ovs_dpdk_pmd_cpus_check.'
-           'get_nodes_cores_info')
-    @patch('library.ovs_dpdk_pmd_cpus_check.'
-           'get_cpus_list_from_mask_value')
+    @mock.patch('library.ovs_dpdk_pmd_cpus_check.'
+                'get_nodes_cores_info')
+    @mock.patch('library.ovs_dpdk_pmd_cpus_check.'
+                'get_cpus_list_from_mask_value')
     def test_validate_invalid_pmd_cpus(self, mock_pmd_cpus, mock_cpus):
         mock_pmd_cpus.return_value = '0,2'
         mock_cpus.return_value = (

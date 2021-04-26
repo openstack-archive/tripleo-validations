@@ -14,7 +14,14 @@
 
 import collections
 
+try:
+    from unittest import mock
+except ImportError:
+    import mock
+
 from tripleo_validations.tests import base
+from tripleo_validations.tests import fakes
+
 from tripleo_validations import utils
 
 PATH = [

@@ -13,9 +13,15 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+try:
+    from unittest import mock
+except ImportError:
+    import mock
+
+from tripleo_validations.tests import base
+from tripleo_validations.tests import fakes
 
 import library.network_environment as validation
-from tripleo_validations.tests import base
 
 
 class TestNicConfigs(base.TestCase):

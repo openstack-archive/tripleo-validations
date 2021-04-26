@@ -12,7 +12,13 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+try:
+    from unittest import mock
+except ImportError:
+    import mock
+
 from tripleo_validations.tests import base
+from tripleo_validations.tests import fakes
 
 from library.node_disks import _get_smallest_disk
 from library.node_disks import _has_root_device_hints
