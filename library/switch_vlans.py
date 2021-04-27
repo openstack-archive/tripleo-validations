@@ -74,7 +74,7 @@ def open_network_environment_files(netenv_path, template_files):
 
     try:
         network_data = yaml_safe_load(template_files[netenv_path])
-    except Exception as e:
+    except IOError as e:
         return ({}, {}, ["Can't open network environment file '{}': {}"
                          .format(netenv_path, e)])
     nic_configs = []
@@ -87,7 +87,7 @@ def open_network_environment_files(netenv_path, template_files):
                 nic_configs.append((
                     nic_name, nic_config_path,
                     yaml_safe_load(template_files[nic_config_path])))
-            except Exception as e:
+            except IOError as e:
                 errors.append(
                     "Can't open the resource '{}' reference file '{}': {}"
                     .format(nic_name, nic_config_path, e))

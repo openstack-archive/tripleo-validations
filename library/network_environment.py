@@ -76,7 +76,7 @@ def open_network_environment_files(netenv_path, template_files):
 
     try:
         network_data = yaml_safe_load(template_files[netenv_path])
-    except Exception as e:
+    except IOError as e:
         return ({}, {}, ["Can't open network environment file '{}': {}"
                          .format(netenv_path, e)])
     nic_configs = []
@@ -89,7 +89,7 @@ def open_network_environment_files(netenv_path, template_files):
                 nic_configs.append((
                     nic_name, nic_config_path,
                     yaml_safe_load(template_files[nic_config_path])))
-            except Exception as e:
+            except IOError as e:
                 errors.append(
                     "Can't open the resource '{}' reference file '{}': {}"
                     .format(nic_name, nic_config_path, e))
@@ -254,7 +254,7 @@ def check_allocation_pools_pairing(filedata, pools):
                 pool_objs.append(netaddr.IPRange(
                     netaddr.IPAddress(dict_range['start']),
                     netaddr.IPAddress(dict_range['end'])))
-            except Exception:
+            except (ValueError, TypeError, KeyError, netaddr.AddrFormatError):
                 errors.append("Invalid format of the IP range in {}: {}"
                               .format(poolitem, dict_range))
                 continue
@@ -268,7 +268,7 @@ def check_allocation_pools_pairing(filedata, pools):
             errors.append('The {} CIDR is not specified for {}.'
                           .format(subnet_item, poolitem))
             continue
-        except Exception:
+        except (netaddr.AddrFormatError, ValueError):
             errors.append('Invalid IP network: {}'.format(network))
             continue
 
@@ -323,7 +323,7 @@ def check_static_ip_pool_collision(static_ips, pools):
             try:
                 ip_range = netaddr.IPRange(allocation_range['start'],
                                            allocation_range['end'])
-            except Exception:
+            except (netaddr.AddrFormatError, TypeError, KeyError):
                 errors.append("Invalid format of the IP range in {}: {}"
                               .format(pool_name, allocation_range))
                 continue
@@ -398,7 +398,7 @@ def check_static_ip_in_cidr(networks, static_ips):
     for name, cidr in six.iteritems(networks):
         try:
             network_ranges[name] = netaddr.IPNetwork(cidr)
-        except Exception:
+        except (netaddr.AddrFormatError, ValueError):
             errors.append("Network '{}' has an invalid CIDR: '{}'"
                           .format(name, cidr))
     for role, services in six.iteritems(static_ips):
@@ -514,7 +514,7 @@ def main():
     try:
         warnings = validate_node_pool_size(plan_env_path, ip_pools_path,
                                            template_files)
-    except Exception as e:
+    except IOError as e:
         errors.append("{}".format(e))
 
     if errors:
