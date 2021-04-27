@@ -16,14 +16,14 @@
 
 - name: Extracting the endpoint url
   set_fact:
-    endpoint: "{{ catalog.endpoints|selectattr('interface', 'eq', 'admin')|first }}"
+    endpoint: "{{ catalog.endpoints|selectattr('interface', 'eq', 'public')|first }}"
   loop: "{{ auth_token.json.token.catalog }}"
   loop_control:
     loop_var: catalog
   when: catalog.name == os_service
 
 - fail:
-    msg: "No endpoint found for {{ os_service }} interface admin in catalog"
+    msg: "No endpoint found for {{ os_service }} interface public in catalog"
   when: endpoint is not defined
 
 - name: Get services
