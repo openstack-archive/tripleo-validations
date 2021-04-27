@@ -14,5 +14,12 @@
         - post-upgrade
         - post-overcloud-upgrade
         - post-overcloud-converge
+    overcloud_service_status_debug: false
+    overcloud_service_api:
+      - nova
+      - cinderv3
+    overcloud_deprecated_services:
+      nova:
+        - nova-consoleauth
   roles:
     - overcloud_service_status
