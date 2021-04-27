@@ -1,36 +1,39 @@
 - project:
     templates:
-    - tripleo-multinode-container-minimal-pipeline
-    - openstack-python3-train-jobs
-    - tripleo-validations-molecule-jobs
-    - check-requirements
-    - release-notes-jobs-python3
+      - openstack-python3-train-jobs
+      - tripleo-validations-molecule-jobs
+      - release-notes-jobs-python3
     check:
       jobs:
-      - openstack-tox-linters
-      - tripleo-ci-centos-8-content-provider:
-          dependencies:
-            - openstack-tox-linters
-      - openstack-tox-docs: &tripleo-docs
-          files:
-          - ^doc/.*
-          - ^README.rst
-      - tripleo-ci-centos-8-scenario004-standalone: &scenario004
-          vars:
-            consumer_job: true
-            build_container_images: false
-            tags:
-              - standalone
-          dependencies:
-            - tripleo-ci-centos-8-content-provider
-          files:
-            - ^roles/ceph.*$
+        - openstack-tox-linters: &tripleo-linters
+            nodeset: centos-8
+        - openstack-tox-docs: &tripleo-docs
+            files:
+              - ^doc/.*
+              - ^molecule-requirements.txt
+              - ^requirements.txt
+              - ^README.rst
+        - tripleo-ci-centos-8-content-provider:
+            dependencies:
+              - openstack-tox-linters
+        - tripleo-ci-centos-8-standalone-tv-validation:
+            vars: &consumer_vars
+              consumer_job: true
+              build_container_images: false
+              remove_tags:
+                - build
+            dependencies:
+              - tripleo-ci-centos-8-content-provider
     gate:
       jobs:
-      - openstack-tox-linters
-      - tripleo-ci-centos-8-content-provider
-      - openstack-tox-docs: *tripleo-docs
-      - tripleo-ci-centos-8-scenario004-standalone: *scenario004
+        - openstack-tox-linters
+        - openstack-tox-docs: *tripleo-docs
+        - tripleo-ci-centos-8-content-provider
+        - tripleo-ci-centos-8-standalone-tv-validation:
+            vars: *consumer_vars
+            dependencies:
+              - tripleo-ci-centos-8-content-provider
+
     promote:
       jobs:
       - promote-openstack-tox-docs: *tripleo-docs
