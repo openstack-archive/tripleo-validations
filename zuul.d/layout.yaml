@@ -10,6 +10,7 @@
         - openstack-tox-docs: &tripleo-docs
             files:
               - ^doc/.*
+              - ^groups.yaml
               - ^molecule-requirements.txt
               - ^requirements.txt
               - ^README.rst

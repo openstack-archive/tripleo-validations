@@ -56,6 +56,22 @@ the root of the TripleO Validations directory::
           update it.
     ...
 
+And a new entry in the sphinx documentation index::
+
+    $ [vim|emacs] doc/source/index.rst
+    ...
+    Existing validations:
+
+    .. toctree::
+      :maxdepth: 2
+
+      validations-no-op-details
+      validations-prep-details
+      validations-pre-introspection-details
+      validations-pre-deployment-details
+      validations-post-deployment-details
+    ...
+
 Writing Validations
 -------------------
 
