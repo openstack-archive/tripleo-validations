@@ -8,6 +8,10 @@ prep:
   - description: >-
       Validations check the hardware configuration of the Undercloud node and
       should be run before **openstack undercloud install**.
+backup-and-restore:
+  - description: >-
+      Validations which should be run to validate your OpenStack
+      deployment before you backup it and after restore it.
 openshift-on-openstack:
   - description: >-
       Validations which will check that the environment meets the requirements

@@ -113,6 +113,7 @@
                 description: |
                   Write a description of your validations
                 groups:
+                  - backup-and-restore
                   - no-op
                   - prep
                   - pre-introspection

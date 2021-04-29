@@ -6,6 +6,7 @@
       description: |
         Ensures image-serve vhost is configured and httpd is running.
       groups:
+        - backup-and-restore
         - pre-upgrade
         - post-deployment
         - post-upgrade

@@ -6,6 +6,7 @@
       description: |
         Check for failed healthcheck systemd services.
       groups:
+        - backup-and-restore
         - post-deployment
     retries_number: 1
     delay_number: 1
