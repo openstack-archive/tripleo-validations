@@ -123,15 +123,15 @@ class S(BaseHTTPRequestHandler):
                         "endpoints": [
                             {
                                 "url": f"{server_url}:{server_port}/cinder",
-                                "interface": "admin",
+                                "interface": "public",
                             },
                             {
                                 "url": f"{server_url}:{server_port}/cinder",
-                                "interface": "admin",
+                                "interface": "public",
                             },
                             {
                                 "url": f"{server_url}:{server_port}/cinder",
-                                "interface": "admin",
+                                "interface": "public",
                             },
                         ],
                         "name": "cinderv3",
@@ -140,15 +140,15 @@ class S(BaseHTTPRequestHandler):
                         "endpoints": [
                             {
                                 "url": f"{server_url}:{server_port}/nova",
-                                "interface": "admin",
+                                "interface": "public",
                             },
                             {
                                 "url": f"{server_url}:{server_port}/nova",
-                                "interface": "admin",
+                                "interface": "public",
                             },
                             {
                                 "url": f"{server_url}:{server_port}/nova",
-                                "interface": "admin",
+                                "interface": "public",
                             },
                         ],
                         "name": "nova",
