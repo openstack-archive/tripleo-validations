@@ -20,3 +20,13 @@ except ImportError:
 
 sys.modules['uuidutils'] = mock.MagicMock()
 sys.modules['xml.etree'] = mock.MagicMock()
+
+MOCK_CPUS_RET_VALUE = (
+    [0, 1],
+    [{'numa_node': 0, 'thread_siblings': [0, 2], 'cpu': 0},
+        {'numa_node': 0, 'thread_siblings': [4, 6], 'cpu': 4},
+        {'numa_node': 0, 'thread_siblings': [8, 10], 'cpu': 8},
+        {'numa_node': 1, 'thread_siblings': [1, 3], 'cpu': 1},
+        {'numa_node': 1, 'thread_siblings': [5, 7], 'cpu': 5},
+        {'numa_node': 1, 'thread_siblings': [9, 11], 'cpu': 9}
+    ])
