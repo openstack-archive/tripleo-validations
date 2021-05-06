@@ -18,8 +18,11 @@ try:
 except ImportError:
     import mock
 
-import library.check_ironic_boot_config as validation
 from tripleo_validations.tests import base
+from tripleo_validations.tests import fakes
+
+
+import library.check_ironic_boot_config as validation
 
 UUIDs = [
     '13c319a4-7704-4b44-bb2e-501951879f96',

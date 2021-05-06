@@ -19,8 +19,15 @@ test_ip_range
 Tests for `ip_range` module.
 """
 
-import library.ip_range as validation
+try:
+    from unittest import mock
+except ImportError:
+    import mock
+
 from tripleo_validations.tests import base
+from tripleo_validations.tests import fakes
+
+import library.ip_range as validation
 
 
 class TestIPRange(base.TestCase):

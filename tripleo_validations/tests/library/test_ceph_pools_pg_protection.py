@@ -18,15 +18,15 @@ test_ceph_pools_pg_protection
 
 Tests for `ceph_pools_pg_protection` module.
 """
-
-import library.ceph_pools_pg_protection as validation
-from tripleo_validations.tests import base
-from tripleo_validations.tests import fakes
-
 try:
     from unittest import mock
 except ImportError:
     import mock
+
+from tripleo_validations.tests import base
+from tripleo_validations.tests import fakes
+
+import library.ceph_pools_pg_protection as validation
 
 
 class TestCephPoolsPgProtection(base.TestCase):

@@ -12,3 +12,11 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 #
+import sys
+try:
+    from unittest import mock
+except ImportError:
+    import mock
+
+sys.modules['uuidutils'] = mock.MagicMock()
+sys.modules['xml.etree'] = mock.MagicMock()
