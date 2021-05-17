@@ -2,9 +2,6 @@
 # inherits {REPO}/.config/molecule/config.yml
 # To override default values, please take a look at the config.yml.
 
-driver:
-  name: podman
-
 platforms:
   - name: ubi8
     hostname: ubi8
@@ -13,7 +10,7 @@ platforms:
       url: registry.access.redhat.com
     etc_hosts:
       undercloud.ctlplane.mydomain.tld: "127.0.0.1"
-    dockerfile: Dockerfile
+    dockerfile: ../../../../.config/molecule/Dockerfile
     override_command: true
     command: /sbin/init
     privileged: true
