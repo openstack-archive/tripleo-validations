@@ -20,6 +20,9 @@ except ImportError:
 
 sys.modules['uuidutils'] = mock.MagicMock()
 sys.modules['xml.etree'] = mock.MagicMock()
+sys.modules['glanceclient.exc'] = mock.MagicMock()
+sys.modules['ironic_inspector_client'] = mock.MagicMock()
+sys.modules['novaclient.exceptions'] = mock.MagicMock()
 
 MOCK_CPUS_RET_VALUE = (
     [0, 1],
