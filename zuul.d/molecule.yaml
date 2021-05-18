@@ -478,3 +478,13 @@
     parent: tripleo-validations-centos-8-base
     vars:
       tripleo_validations_role_name: check_for_dangling_images
+- job:
+    files:
+      - ^roles/validation_init/.*
+      - ^tests/prepare-test-host.yml
+      - ^ci/playbooks/pre.yml
+      - ^ci/playbooks/run.yml
+    name: tripleo-validations-centos-8-molecule-validation_init
+    parent: tripleo-validations-centos-8-base
+    vars:
+      tripleo_validations_role_name: validation_init

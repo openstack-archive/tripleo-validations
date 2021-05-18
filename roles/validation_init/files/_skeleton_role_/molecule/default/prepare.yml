@@ -14,9 +14,12 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-- name: Create a new role for TripleO-Validations
-  hosts: localhost
-  connection: local
+- name: Prepare
+  hosts: all
   gather_facts: false
-  roles:
-    - validation_init
+  tasks:
+    - name: Add you own tasks to prepare the hosts for your tests
+      debug:
+        msg: >-
+          Installing package(s), create file(s), whatever you need here
+          in this file to prepare your test(s).
