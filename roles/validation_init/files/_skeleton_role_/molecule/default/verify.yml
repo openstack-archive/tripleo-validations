@@ -14,9 +14,11 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-- name: Create a new role for TripleO-Validations
-  hosts: localhost
-  connection: local
+- name: Verify
+  hosts: all
   gather_facts: false
-  roles:
-    - validation_init
+  tasks:
+  # This is an example playbook to execute your ansible tests.
+  - name: Example assertion
+    assert:
+      that: true

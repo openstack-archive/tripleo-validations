@@ -1,0 +1,137 @@
+---
+# Copyright 2021 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+- name: Verify
+  hosts: all
+  gather_facts: false
+  vars:
+    new_role_path: "/tmp/roles/tripleo_skeleton_test"
+    new_zmol_path: "/tmp/zuul.d/molecule.yaml"
+    new_play_path: "/tmp/playbooks/tripleo-skeleton-test.yaml"
+    new_role_doc: "/tmp/doc/source/roles/role-tripleo_skeleton_test.rst"
+  tasks:
+    - name: Check new role directory is present
+      stat:
+        path: "{{ new_role_path }}"
+      register: roles_name_dir
+
+    - assert:
+        that:
+          - roles_name_dir.stat.exists
+          - roles_name_dir.stat.isdir
+        fail_msg: |
+          {{ new_role_path }} role directory doesn't exist.
+        success_msg: |
+          {{ new_role_path }} role directory does exist.
+
+    - name: Read zuul molecule file
+      slurp:
+        src: "{{ new_zmol_path }}"
+      register: molecule_yaml
+
+    - name: Print returned information
+      debug:
+        msg: "{{ molecule_yaml['content'] | b64decode }}"
+
+    - name: Check zuul molecule file content (gate/check definition)
+      lineinfile:
+        path: "{{ new_zmol_path }}"
+        regexp: '^.*- tripleo-validations-centos-8-molecule-skeleton'
+        insertbefore: '^.*name: tripleo-validations-molecule-tripleo_undercloud_conf'
+        line: '      - tripleo-validations-centos-8-molecule-skeleton_test'
+        state: present
+      check_mode: true
+      register: zuul_def
+      failed_when: (zuul_def is changed) or (zuul_def is failed)
+
+    - name: Check zuul molecule file content (job definition)
+      lineinfile:
+        path: "{{ new_zmol_path }}"
+        regexp: '^.*name: tripleo-validations-centos-8-molecule-skeleton'
+        insertbefore: '^.*parent: tripleo-validations-centos-8-base$'
+        line: '    name: tripleo-validations-centos-8-molecule-skeleton_test'
+        state: present
+      check_mode: true
+      register: zuul_job_def
+      failed_when: (zuul_job_def is changed) or (zuul_job_def is failed)
+
+    - name: Check new validation playbook is present
+      stat:
+        path: "{{ new_play_path }}"
+      register: play_name_path
+
+    - assert:
+        that:
+          - play_name_path.stat.exists
+          - play_name_path.stat.isreg
+        fail_msg: |
+          {{ new_play_path }} playbook doesn't exist.
+        success_msg: |
+          {{ new_play_path }} playbook directory does exist.
+
+    - name: Read new playbook file
+      slurp:
+        src: "{{ new_play_path }}"
+      register: playbook_yaml
+
+    - name: Check playbook content for new role
+      lineinfile:
+        path: "{{ new_play_path }}"
+        regexp: '.*- tripleo_skeleton: '
+        insertafter: '^.*roles:$'
+        line: '    - tripleo_skeleton_test'
+        state: present
+      check_mode: true
+      register: include_role
+      failed_when: (include_role is changed) or (include_role is failed)
+
+    - name: Print returned information
+      debug:
+        msg: "{{ playbook_yaml['content'] | b64decode }}"
+
+    - name: Check new role doc is present
+      stat:
+        path: "{{ new_role_doc }}"
+      register: role_doc_file
+
+    - assert:
+        that:
+          - role_doc_file.stat.exists
+          - role_doc_file.stat.isreg
+        fail_msg: |
+          {{ new_role_doc }} playbook doesn't exist.
+        success_msg: |
+          {{ new_role_doc }} playbook directory does exist.
+
+    - name: Read new role documentation file
+      slurp:
+        src: "{{ new_role_doc }}"
+      register: doc_file
+
+    - name: Print returned information
+      debug:
+        msg: "{{ doc_file['content'] | b64decode }}"
+
+    - name: Check role documentation content
+      lineinfile:
+        path: "{{ new_role_doc }}"
+        regexp: '.*:role: '
+        insertafter: '^\.\. ansibleautoplugin::$'
+        line: '  :role: /tmp/roles/tripleo_skeleton_test'
+        state: present
+      check_mode: true
+      register: doc
+      failed_when: (doc is changed) or (doc is failed)

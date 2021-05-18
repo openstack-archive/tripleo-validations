@@ -1,0 +1,62 @@
+---
+# Copyright 2021 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+- name: Converge
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Create new role
+      include_role:
+        name: validation_init
+      vars:
+        validation_init_role_name: skeleton_test
+        validation_init_prefix: "tripleo"
+        validation_init_skeleton_role_dir: "/tmp"
+        validation_init_roles_dir: "/tmp/roles"
+        validation_init_zuuld_molecule: "/tmp/zuul.d/molecule.yaml"
+        validation_init_playbooks_dir: "/tmp/playbooks"
+        validation_init_roles_doc_dir: "/tmp/doc/source/roles"
+
+    - name: Create a new role with the same name
+      block:
+        - name: Run the validation_init role again
+          include_role:
+            name: validation_init
+          vars:
+            validation_init_role_name: skeleton_test
+            validation_init_prefix: "tripleo"
+            validation_init_skeleton_role_dir: "/tmp"
+            validation_init_roles_dir: "/tmp/roles"
+            validation_init_zuuld_molecule: "/tmp/zuul.d/molecule.yaml"
+            validation_init_playbooks_dir: "/tmp/playbooks"
+            validation_init_roles_doc_dir: "/tmp/doc/source/roles"
+
+      rescue:
+        - name: Clear host error
+          meta: clear_host_errors
+
+        - name: Role addition output
+          debug:
+            msg: The Role works! End the playbook run
+
+        - name: End play
+          meta: end_play
+
+    - name: Fail the test
+      fail:
+        msg: |
+          The validation_init role didn't properly detect that the role name was
+          already been taken!
