@@ -423,10 +423,13 @@ will perform the basic tasks noted above.
 .. code-block:: console
 
     $ cd tripleo-validations/
-    $ ansible-playbook -i localhost, role-addition.yml -e role_name=${NEWROLENAME}
+    $ export ANSIBLE_ROLES_PATH="${PWD}/roles"
+    $ ansible-playbook -i localhost, role-addition.yml -e validation_init_role_name=${NEWROLENAME}
 
-When the role is ready for CI, add a **job** entry into the
-`zuul.d/molecule.yaml`.
+The new role will be created in `tripleo-validations/roles/` from a skeleton and one playbook
+will be added in `tripleo-validations/playbooks/`.
+
+It will also add a new **job** entry into the `zuul.d/molecule.yaml`.
 
 .. code-block:: yaml
 
@@ -439,7 +442,7 @@ When the role is ready for CI, add a **job** entry into the
           tripleo_validations_role_name: ${NEWROLENAME}
 
 
-Make sure to add the **job** name into the check and gate section at the top
+And the **job** name will be added into the check and gate section at the top
 of the `molecule.yaml` file.
 
 .. code-block:: yaml
@@ -453,11 +456,13 @@ of the `molecule.yaml` file.
             - tripleo-validations-centos-8-molecule-${NEWROLENAME}
 
 
-Finally add a role documentation file at
+Finally it will add a role documentation file at
 `doc/source/roles/role-${NEWROLENAME}.rst`. This file will need to contain
 a title, a literal include of the defaults yaml and a literal include of
 the molecule playbook, or playbooks, used to test the role, which is noted
 as an "example" playbook.
+
+You will now be able to develop your new validation!
 
 Local testing of new roles
 --------------------------

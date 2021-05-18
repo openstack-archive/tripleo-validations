@@ -14,9 +14,9 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-- name: Create a new role for TripleO-Validations
-  hosts: localhost
-  connection: local
-  gather_facts: false
-  roles:
-    - validation_init
+
+# While options found within the vars/ path can be overridden using extra
+# vars, items within this path are considered part of the role and not
+# intended to be modified.
+
+# All variables within this role should have a prefix of "{{ role_name }}"
