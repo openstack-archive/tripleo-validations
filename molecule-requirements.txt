@@ -2,7 +2,8 @@
 ansi2html
 ansible>=2.8,!=2.8.9,!=2.9.12,<2.10.0
 jinja2>=2.8.0,<3
-molecule>=3.0,<3.1
+molecule>=3.3.1,<4 # MIT
+molecule-podman # MIT
 pytest
 pytest-cov
 pytest-html
