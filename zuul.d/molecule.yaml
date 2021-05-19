@@ -8,6 +8,7 @@
         - tripleo-validations-centos-8-molecule-check_rhsm_version
         - tripleo-validations-centos-8-molecule-check_undercloud_conf
         - tripleo-validations-centos-8-molecule-check_uc_hostname
+        - tripleo-validations-centos-8-molecule-compute_tsx
         - tripleo-validations-centos-8-molecule-controller_token
         - tripleo-validations-centos-8-molecule-controller_ulimits
         - tripleo-validations-centos-8-molecule-ctlplane_ip_range
@@ -31,6 +32,7 @@
         - tripleo-validations-centos-8-molecule-check_rhsm_version
         - tripleo-validations-centos-8-molecule-check_uc_hostname
         - tripleo-validations-centos-8-molecule-check_undercloud_conf
+        - tripleo-validations-centos-8-molecule-compute_tsx
         - tripleo-validations-centos-8-molecule-controller_token
         - tripleo-validations-centos-8-molecule-controller_ulimits
         - tripleo-validations-centos-8-molecule-ctlplane_ip_range
@@ -480,3 +482,13 @@
     parent: tripleo-validations-centos-8-base
     vars:
       tripleo_validations_role_name: validation_init
+- job:
+    files:
+      - ^roles/compute_tsx/.*
+      - ^tests/prepare-test-host.yml
+      - ^ci/playbooks/pre.yml
+      - ^ci/playbooks/run.yml
+    name: tripleo-validations-centos-8-molecule-compute_tsx
+    parent: tripleo-validations-centos-8-base
+    vars:
+      tripleo_validations_role_name: compute_tsx
