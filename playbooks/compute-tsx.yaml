@@ -1,0 +1,31 @@
+---
+- hosts: nova_libvirt
+  gather_facts: false
+  vars:
+    metadata:
+      name: RHEL8.x kernel flag for Compute nodes validation
+      description: |
+        RHEL-8.3 kernel disabled the Intel TSX (Transactional
+        Synchronization Extensions) feature by default as a preemptive
+        security measure, but it breaks live migration from RHEL-7.9
+        (or even RHEL-8.1 or RHEL-8.2) to RHEL-8.3.
+
+        Operators are expected to explicitly define the TSX flag in
+        their KernelArgs for the compute role to prevent live-migration
+        issues during the upgrade process.
+
+        This also impacts upstream CentOS systems.
+      groups:
+        - pre-upgrade
+        - pre-system-upgrade
+        - pre-overcloud-prepare
+        - pre-overcloud-upgrade
+        - pre-overcloud-converge
+        - pre-update
+        - pre-update-prepare
+        - pre-update-run
+        - pre-update-converge
+    compute_tsx_debug: false
+    compute_tsx_warning: false
+  roles:
+    - compute_tsx
