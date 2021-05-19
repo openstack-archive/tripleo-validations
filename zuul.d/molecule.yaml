@@ -60,6 +60,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-ceph
     parent: tripleo-validations-centos-8-base
     vars:
@@ -70,6 +71,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-check_for_dangling_images
     parent: tripleo-validations-centos-8-base
     vars:
@@ -80,6 +82,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-check_network_gateway
     parent: tripleo-validations-centos-8-base
     vars:
@@ -91,6 +94,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-check_rhsm_version
     parent: tripleo-validations-centos-8-base
     vars:
@@ -101,6 +105,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-check_uc_hostname
     parent: tripleo-validations-centos-8-base
     vars:
@@ -111,6 +116,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-check_undercloud_conf
     parent: tripleo-validations-centos-8-base
     vars:
@@ -121,6 +127,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-collect_flavors_and_verify_profiles
     parent: tripleo-validations-centos-8-base
     vars:
@@ -132,6 +139,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-compute_tsx
     parent: tripleo-validations-centos-8-base
     vars:
@@ -142,6 +150,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-container_status
     parent: tripleo-validations-centos-8-base
     vars:
@@ -153,6 +162,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-controller_token
     parent: tripleo-validations-centos-8-base
     vars:
@@ -163,6 +173,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-controller_ulimits
     parent: tripleo-validations-centos-8-base
     vars:
@@ -173,6 +184,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-ctlplane_ip_range
     parent: tripleo-validations-centos-8-base
     vars:
@@ -183,6 +195,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-dhcp_validations
     parent: tripleo-validations-centos-8-base
     vars:
@@ -194,6 +207,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-healthcheck_service_status
     parent: tripleo-validations-centos-8-base
     vars:
@@ -205,6 +219,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-image_serve
     parent: tripleo-validations-centos-8-base
     vars:
@@ -216,6 +231,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-ironic_boot_configuration
     parent: tripleo-validations-centos-8-base
     vars:
@@ -227,6 +243,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-mysql_open_files_limit
     parent: tripleo-validations-centos-8-base
     vars:
@@ -238,6 +255,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-network_environment
     parent: tripleo-validations-centos-8-base
     vars:
@@ -249,6 +267,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-neutron_sanity_check
     parent: tripleo-validations-centos-8-base
     vars:
@@ -260,6 +279,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-node_disks
     parent: tripleo-validations-centos-8-base
     vars:
@@ -271,6 +291,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-node_health
     parent: tripleo-validations-centos-8-base
     vars:
@@ -282,6 +303,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-nova_event_callback
     parent: tripleo-validations-centos-8-base
     vars:
@@ -293,6 +315,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-nova_status
     parent: tripleo-validations-centos-8-base
     vars:
@@ -303,6 +326,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-nova_svirt
     parent: tripleo-validations-centos-8-base
     vars:
@@ -313,6 +337,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-openshift_on_openstack
     parent: tripleo-validations-centos-8-base
     vars:
@@ -324,6 +349,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-openstack_endpoints
     parent: tripleo-validations-centos-8-base
     vars:
@@ -346,6 +372,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-overcloud_service_status
     parent: tripleo-validations-centos-8-base
     vars:
@@ -356,6 +383,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-ovs_dpdk_pmd
     parent: tripleo-validations-centos-8-base
     vars:
@@ -367,6 +395,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-pacemaker_status
     parent: tripleo-validations-centos-8-base
     vars:
@@ -378,6 +407,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-package_version
     parent: tripleo-validations-centos-8-base
     vars:
@@ -388,6 +418,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-rabbitmq_limits
     parent: tripleo-validations-centos-8-base
     vars:
@@ -398,6 +429,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-repos
     parent: tripleo-validations-centos-8-base
     vars:
@@ -408,6 +440,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-stack_health
     parent: tripleo-validations-centos-8-base
     vars:
@@ -419,6 +452,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-stonith_exists
     parent: tripleo-validations-centos-8-base
     vars:
@@ -429,6 +463,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-switch_vlans
     parent: tripleo-validations-centos-8-base
     vars:
@@ -440,6 +475,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-system_encoding
     parent: tripleo-validations-centos-8-base
     vars:
@@ -450,6 +486,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-tls_everywhere
     parent: tripleo-validations-centos-8-base
     vars:
@@ -461,6 +498,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-tripleo_haproxy
     parent: tripleo-validations-centos-8-base
     vars:
@@ -471,6 +509,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-undercloud_debug
     parent: tripleo-validations-centos-8-base
     vars:
@@ -481,6 +520,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-undercloud_heat_purge_deleted
     parent: tripleo-validations-centos-8-base
     vars:
@@ -491,6 +531,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-undercloud_process_count
     parent: tripleo-validations-centos-8-base
     vars:
@@ -502,6 +543,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-undercloud_tokenflush
     parent: tripleo-validations-centos-8-base
     vars:
@@ -512,6 +554,7 @@
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml
     - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
     name: tripleo-validations-centos-8-molecule-validation_init
     parent: tripleo-validations-centos-8-base
     vars:
