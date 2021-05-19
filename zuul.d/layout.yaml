@@ -14,6 +14,10 @@
               - ^molecule-requirements.txt
               - ^requirements.txt
               - ^README.rst
+              - ^tripleo_validations/.*
+              - ^roles/.*
+              - ^playbooks/.*
+              - ^library/.*
         - tripleo-ci-centos-8-content-provider:
             dependencies:
               - openstack-tox-linters
