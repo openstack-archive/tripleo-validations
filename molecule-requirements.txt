@@ -2,7 +2,8 @@
 ansi2html>=1.5.0 # LGPLv3+
 ansible>=2.8,!=2.8.9,!=2.9.12,<2.10.0  # GPLv3+
 jinja2>=2.8.0,<3 # BSD-3-Clause
-molecule>=3.0,<3.1 # MIT
+molecule>=3.3.1,<4 # MIT
+molecule-podman # MIT
 pytest>=5.3.0 # MIT
 pytest-cov>=2.9.0,<2.10.0 # MIT
 pytest-html>=2.1.1 # MPL 2.0
