@@ -3,6 +3,7 @@
     templates:
       - tripleo-validations-molecule-jobs
       - release-notes-jobs-python3
+      - check-requirements
     check:
       jobs:
         - openstack-tox-linters: &tripleo-linters
