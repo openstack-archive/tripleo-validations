@@ -30,7 +30,7 @@
           include_role:
             name: nova_status
           vars:
-            container_cli: docker
+            container_client: docker
 
       rescue:
         - name: Clear host errors

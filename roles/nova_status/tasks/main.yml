@@ -1,12 +1,22 @@
 ---
-- name: Set container_cli fact from the inventory
+- name: Check for docker cli
+  stat:
+    path: "/var/run/docker.sock"
+  register: check_docker_cli
+  check_mode: false
+
+- name: Set container_client fact
   set_fact:
-    container_cli: "{{ hostvars[inventory_hostname].container_cli | default('podman', true) }}"
-  when: container_cli is not defined
+    container_client: |-
+      {% set container_client = 'podman' %}
+      {%   if check_docker_cli.stat.exists|bool %}
+      {%     set container_client = 'docker' %}
+      {%   endif %}
+      {{ container_client }}
 
 - name: Check nova upgrade status
   become: true
-  command: "{{ container_cli }} exec -u root nova_api nova-status upgrade check"
+  command: "{{ container_client }} exec -u root nova_api nova-status upgrade check"
   changed_when: false
   register: nova_upgrade_check
 
