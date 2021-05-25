@@ -62,11 +62,15 @@ def get_auth_session(auth_variables):
 
 
 def get_swift_client(auth_variables):
-    return Connection(authurl=auth_variables.get('auth_url'),
-                      user=auth_variables.get('username'),
-                      key=auth_variables.get('password'),
-                      auth_version='3',
-                      tenant_name=auth_variables.get('project_name'))
+    password = auth_variables.get('password')
+    if password:
+        return Connection(authurl=auth_variables.get('auth_url'),
+                          user=auth_variables.get('username'),
+                          key=password,
+                          auth_version='3',
+                          tenant_name=auth_variables.get('project_name'))
+    return Connection(preauthurl=auth_variables.get('undercloud_swift_url'),
+                      preauthtoken=auth_variables.get('os_auth_token'))
 
 
 def get_nova_client(auth_variables):
