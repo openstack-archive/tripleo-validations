@@ -1,6 +1,6 @@
-======================
-Role - package_version
-======================
+===============
+package_version
+===============
 
 .. ansibleautoplugin::
   :role: roles/package_version
