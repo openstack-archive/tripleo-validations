@@ -1,6 +1,6 @@
-=========================
-Role - check_rhsm_version
-=========================
+==================
+check_rhsm_version
+==================
 
 .. ansibleautoplugin::
   :role: roles/check_rhsm_version
