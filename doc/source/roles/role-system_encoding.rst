@@ -1,6 +1,6 @@
-======================
-Role - system_encoding
-======================
+===============
+system_encoding
+===============
 
 .. ansibleautoplugin::
   :role: roles/system_encoding
