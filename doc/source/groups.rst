@@ -8,9 +8,10 @@ Adding a new group
 ------------------
 
 To add a new group, you will need to edit the ``groups.yaml`` file located in
-the root of the TripleO Validations directory::
+the root of the TripleO Validations directory:
 
-    $ [vim|emacs] groups.yaml
+.. code-block:: yaml
+
     ...
     pre-update:
       - description: >-
@@ -18,11 +19,12 @@ the root of the TripleO Validations directory::
           update it.
     ...
 
-And a new entry in the sphinx documentation index::
+And a new entry in the sphinx documentation index ``doc/source/index.rst``:
 
-    $ [vim|emacs] doc/source/index.rst
-    ...
-    Existing validations:
+.. code-block:: RST
+
+    Existing validations
+    ====================
 
     .. toctree::
       :maxdepth: 2
