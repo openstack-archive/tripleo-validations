@@ -1,10 +1,20 @@
 ---
-- name: Set oc_container_cli fact for the Overcloud nodes
-  set_fact:
-    oc_container_cli: "{{ hostvars[inventory_hostname].container_cli | default('podman', true) }}"
-  when:
-    - "'overcloud' in group_names"
-    - oc_container_cli is not defined
+- when: "'overcloud' in group_names"
+  block:
+    - name: Check for docker cli
+      stat:
+        path: "/var/run/docker.sock"
+      register: check_docker_cli
+      check_mode: false
+
+    - name: Set oc_container_cli fact for the Overcloud nodes
+      set_fact:
+        oc_container_cli: |-
+          {% set oc_container_cli = 'podman' %}
+          {%   if check_docker_cli.stat.exists|bool %}
+          {%     set oc_container_cli = 'docker' %}
+          {%   endif %}
+          {{ oc_container_cli }}
 
 - when: "'Undercloud' in group_names"
   block:
