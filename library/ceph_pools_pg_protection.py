@@ -16,6 +16,9 @@
 """ceph_pools_pg_protection module
 Used by the ceph-pg validation.
 """
+
+import six
+
 from yaml import safe_load as yaml_safe_load
 from ansible.module_utils.basic import AnsibleModule
 
@@ -154,7 +157,6 @@ def check_pg_num(pool, pg_num, size, num_osds=0, max_pgs_per_osd=200, pools={}):
     #   }
     #   return 0;
     # }
-    import six
     msg = ""
     max_pgs = max_pgs_per_osd * num_osds
     projected = 0
