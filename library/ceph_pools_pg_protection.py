@@ -13,7 +13,9 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations
 # under the License.
-
+"""ceph_pools_pg_protection module
+Used by the ceph-pg validation.
+"""
 from yaml import safe_load as yaml_safe_load
 from ansible.module_utils.basic import AnsibleModule
 
@@ -29,7 +31,16 @@ DOCUMENTATION = '''
 module: ceph_pools_pg_protection
 short_description: Warn if Ceph will not create CephPools based on PG and OSD numbers
 description:
-    - "The Ceph PG overdose protection check (https://ceph.com/community/new-luminous-pg-overdose-protection) is executed by Ceph before a pool is created. If the check does not pass, then the pool is not created. When TripleO deploys Ceph it triggers ceph-ansible which creates the pools that OpenStack needs. This validation runs the same check that the overdose protection uses to determine if the user should update their CephPools, PG count, or number of OSDs. Without this check a deployer may have to wait until after Ceph is running but before the pools are created to realize the deployment will fail."
+    - The Ceph PG overdose protection check (https://ceph.com/community/new-luminous-pg-overdose-protection)
+      is executed by Ceph before a pool is created.
+      If the check does not pass, then the pool is not created.
+    - When TripleO deploys Ceph it triggers ceph-ansible which creates the pools that OpenStack needs.
+    - This validation runs the same check that the overdose protection uses
+      to determine if the user should update their CephPools, PG count, or number of OSDs.
+      Without this check a deployer may have to wait until after Ceph is running,
+      but before the pools are created to realize the deployment will fail.
+    - Used by the ceph-pg validation.
+    - Owned by the "DFG:Storage Squad:Ceph"
 options:
     num_osds:
         description:
@@ -199,6 +210,18 @@ def simulate_pool_creation(num_osds, ceph_pools,
 
 
 def run_module():
+    """This module never changes state of a target system, it only
+    evaluates if inputs will work when Ceph processes then.
+    There shouldn't be anything like the following
+    result['changed'] = True
+
+    This module does not currently have fail options. It should
+    only evaluate input and make result of the evaluation available.
+    So it doesn't currently do anything like the following by design.
+    module.fail_json(msg='Failing for invalid input', **result)
+
+    Exit and pass the key/value results of the simulation
+    """
     # Seed the result dict in the object
     result = dict(
         changed=False,
@@ -228,17 +251,6 @@ def run_module():
         result['message'] = 'Provided CephPools satisfy PG overdose protection'
         result['valid_input'] = True
 
-    # This module never changes state of a target system, it only
-    # evaluates if inputs will work when Ceph processes then.
-    # There shouldn't be anything like the following
-    # result['changed'] = True
-
-    # This module does not currently have fail options. It should
-    # only evaluate input and make result of the evaluation available.
-    # So it doesn't currently do anything like the following by design.
-    # module.fail_json(msg='Failing for invalid input', **result)
-
-    # Exit and pass the key/value results of the simulation
     module.exit_json(**result)
 
 
