@@ -13,7 +13,9 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations
 # under the License.
-
+"""verify_profiles module
+Used by the collect_flavors_and_verify_profiles validation.
+"""
 from ansible.module_utils.basic import AnsibleModule  # noqa
 from yaml import safe_load as yaml_safe_load
 
@@ -23,6 +25,8 @@ module: verify_profiles
 short_description: Check that profiles have enough nodes
 description:
     - Validate that the profiles assigned have enough nodes available.
+    - Used by the collect_flavors_and_verify_profiles
+    - Owned jointly by DFG Compute & DFG Hardware Provisioning
 options:
     nodes:
         required: true
