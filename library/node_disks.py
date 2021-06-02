@@ -13,7 +13,9 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations
 # under the License.
-
+"""node_disks module
+Used by the 'node_disks' validation.
+"""
 
 from ansible.module_utils.basic import AnsibleModule  # noqa
 from yaml import safe_load as yaml_safe_load
@@ -25,6 +27,7 @@ short_description: Check disks, flavors and root device hints
 description:
     - Check if each node has a root device hint set if there is more
       than one disk and compare flavors to disk sizes.
+    - Used by the 'node_disks' validation.
 options:
     nodes:
         required: true
