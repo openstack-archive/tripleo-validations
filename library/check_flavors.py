@@ -13,7 +13,9 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations
 # under the License.
-
+"""check_flavors module
+Used by the collect_flavors_and_verify_profiles validation.
+"""
 from ansible.module_utils.basic import AnsibleModule  # noqa
 from yaml import safe_load as yaml_safe_load
 
@@ -27,6 +29,8 @@ description:
     - Validate that the flavors assigned to roles exist and have the correct
       settings. Right now, that means that boot_option is unset or set to
      'local', or if set to 'netboot', issue a warning.
+    - Used by the collect_flavors_and_verify_profiles
+    - Owned by the 'DFG Compute & DFG Hardware Provisioning'
 options:
     roles_info:
         required: true
