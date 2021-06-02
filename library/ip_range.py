@@ -13,7 +13,9 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+"""ip_range module
+Used by the `ctlplane_ip_range` role.
+"""
 import netaddr
 
 from ansible.module_utils.basic import AnsibleModule
@@ -25,6 +27,8 @@ module: ip_range
 short_description: Check the size of an IP range
 description:
     - Check if the size of an IP range against a minimum value.
+    - Used by the `ctlplane_ip_range` role.
+    - "Owned by the DFG: DF"
 options:
     start:
         required: true
