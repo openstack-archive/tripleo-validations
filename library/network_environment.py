@@ -14,7 +14,9 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations
 # under the License.
-
+"""network_environment module
+Used by the network_environment validation.
+"""
 import collections
 import itertools
 import netaddr
@@ -35,6 +37,8 @@ module: network_environment
 short_description: Validate networking templates
 description:
     - Performs networking-related checks on a set of TripleO templates
+    - Used by the network_environment role.
+    - Owned by the DFG Networking
 options:
     netenv_path:
         required: true
@@ -56,7 +60,10 @@ options:
         description:
             - A list of template files and contents
         type: list
-author: "Tomas Sedovic, Martin André, Florian Fuchs"
+author:
+  - "Tomas Sedovic"
+  - "Martin André"
+  - "Florian Fuchs"
 '''
 
 EXAMPLES = '''
