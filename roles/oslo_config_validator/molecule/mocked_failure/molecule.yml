@@ -1,0 +1,25 @@
+---
+# inherits tripleo-validations/.config/molecule/config.yml
+# To override default values, please take a look at the config.yml.
+
+provisioner:
+  name: ansible
+  playbooks:
+    prepare: ../../resources/playbooks/prepare.yml
+    converge: ../../resources/playbooks/converge.yml
+  inventory:
+    hosts:
+      all:
+        hosts:
+          ubi8:
+            ansible_python_interpreter: /usr/bin/python3
+  log: true
+  env:
+    ANSIBLE_STDOUT_CALLBACK: yaml
+    ANSIBLE_LIBRARY: "${ANSIBLE_LIBRARY:-/usr/share/ansible/plugins/modules}:../../resources/library"
+    MOLECULE_OCV:
+      service_name: nova_compute
+      config_file: etc/nova/nova.conf
+      config_folder: /var/lib/config-data/puppet-generated/nova_libvirt
+      validator_out: |
+        ERROR:root:Houston we've got a problem

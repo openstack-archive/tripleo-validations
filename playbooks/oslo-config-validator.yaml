@@ -1,0 +1,61 @@
+---
+- hosts: all
+  gather_facts: false
+  vars:
+    metadata:
+      name: Openstack services configuration validation
+      description: |
+          This role is intended to leverage the `oslo-config-validator` on each one
+          of the configuration files found on a deployment. The goal is to quickly
+          catch erroneous configurations.
+
+          When called manually, it will also be possible to generate a report
+          returning all the differences between the current configuration and the
+          default configuration
+      groups:
+        - backup-and-restore
+        - post-deployment
+        - post-system-upgrade
+        - post-update
+        - post-upgrade
+    # Debug log level
+    oslo_config_validator_debug: false
+
+    # Comparison report with current settings and default settings
+    oslo_config_validator_report: false
+
+    # Returns all settings with possibly invalid values or simply inexistent
+    # oslo.config uses a typed system for possible values of each settings.
+    # if a setting is not typed correctly, or is non-existent, oslo-config-validator
+    # will trigger an error here.
+    oslo_config_validator_validation: true
+
+    # Returns all settings erroneous values
+    # Developpers have identified some settings that can't have certain values anymore.
+    # This will scan all the config files and return those settings with invalid values.
+    oslo_config_validator_invalid_settings: true
+
+    # This is a temporary folder used when generating reports.
+    # It will be created and deleted if necessary on all the nodes
+    oslo_config_validator_report_path: "/var/tmp/config_validator_report"
+
+    # Whether or not we should archive into a single file the report after creation
+    oslo_config_validator_report_archive: true
+
+    # This is the working folder when running validations. It will be bind mounted
+    # on the validation containers
+    # It will be created and deleted if necessary on all the nodes
+    oslo_config_validator_work_path: "/var/lib/tripleo-config/oslo_config_validator"
+
+    # List of services we want to validate the settings
+    oslo_config_validator_checked_services:
+      - nova
+      - cinder
+      - glance
+      - heat
+      - ironic
+      - placement
+      - neutron
+      - keystone
+  roles:
+    - oslo_config_validator

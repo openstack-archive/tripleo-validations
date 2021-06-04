@@ -1,0 +1,387 @@
+---
+# Copyright 2020 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+
+# All variables intended for modification should place placed in this file.
+
+# All variables within this role should have a prefix of "oslo_config_validator"
+oslo_config_validator_debug: false
+
+# Comparison report with current settings and default settings
+oslo_config_validator_report: false
+
+# Returns all settings with possibly invalid values or simply inexistent
+# oslo.config uses a typed system for possible values of each settings.
+# if a setting is not typed correctly, or is non-existent, oslo-config-validator
+# will trigger an error here.
+oslo_config_validator_validation: true
+
+# This is a temporary folder used when generating reports.
+# It will be created and deleted if necessary on all the nodes
+oslo_config_validator_report_path: "/var/tmp/config_validator_report"
+
+# Whether or not we should archive into a single file the report after creation
+oslo_config_validator_report_archive: true
+
+# This is the working folder when running validations. It will be bind mounted
+# on the validation containers
+# It will be created and deleted if necessary on all the nodes
+oslo_config_validator_work_path: "/var/lib/tripleo-config/oslo_config_validator"
+
+# When running validation, whether or not we should check for invalid settings
+# This adds to the time it takes to complete validation because of the way
+# the validations_read_ini module works.
+oslo_config_validator_invalid_settings: true
+
+
+# These messages are globally ignored and will not trigger a validation failure
+oslo_config_validator_global_ignored_messages:
+  - 'INFO:keyring.backend:Loading.*'
+  - 'WARNING:oslo_config.generator:normalizing group name.*'
+  - 'WARNING:stevedore.named:Could not load .*'
+  - 'WARNING:root:Deprecated opt .*'
+  - 'ERROR:root:quotas/quota_[^\s]+ {{ invalid_setting_regex }}'
+  - '.*Ignoring option because it is part of the excluded patterns. This can be changed with the.*'
+
+# namespace configuration:
+#   We can define configuration for each namespaces.
+#     ignored_messages: list of regexes that, when returned from calling a validation using that
+#                       specific namespace, will be ignore
+#     invalid_settings: list of settings that will trigger a failure if they are set to specific
+#                       values. Separator is meant to split the setting value and checking each
+#                       one of the values individually like nova filters. This is useful to
+#                       validate if deprecated or removed option values are still in use.
+#             keys:
+#               - section: configuration section (ie: DEFAULT)
+#               - option: setting name (ie: debug)
+#               - separator: string delimiter that will be used to convert value to a list
+#               - value_list: List of strings that would be checked against.
+#               - operator: Can be either these values, default being "eq":
+#                   - not: current value should not match exactly any element in value_list
+#                   - lt: current value should be lesser than first element of value_list
+#                   - gt: current value should be greater than first element of value_list
+#                   - eq: current value, if defined, should be equal to one element in value_list
+#
+oslo_config_validator_namespaces_config:
+  - namespace: glance.store
+    ignored_messages:
+      - "ERROR:stevedore.extension:Could not load '(glance.store.)*s3(.Store)*': No module named 'boto3'"
+      # NOTE(dvd): openstack/puppet-glance: https://review.opendev.org/775633
+      #            This setting was removed from puppet registry in Wallaby
+      #            but it was removed from Glance a while ago.
+      - 'ERROR:root:DEFAULT/enable_v1_api {{ invalid_setting_regex }}'
+
+  - namespace: heat.common.config
+    ignored_messages:
+      # NOTE(dvd): openstack/heat fix: https://review.opendev.org/789680
+      #            heat wasn't including its yaql and cache options by default. This is being worked
+      #            on during the Xena cycle and should hopefully be backported down to train.
+      - 'ERROR:root:(yaql|(resource_finder_)*cache)/[^\s]+ {{ invalid_setting_regex }}'
+
+  - namespace: ironic
+    ignored_messages:
+      # NOTE(dvd): openstack/puppet-ironic: https://review.opendev.org/789592
+      #            This setting was removed a while ago but puppet registry was updated only only recently
+      - 'ERROR:root:pxe/ipxe_enabled {{ invalid_setting_regex }}'
+      # NOTE(dvd): openstack/puppet-ironic: https://review.opendev.org/790526
+      #            This setting isn't used in ironic since 2013, it was removed in Xena cycle.
+      - 'ERROR:root:conductor/max_time_interval {{ invalid_setting_regex }}'
+
+  - namespace: keystonemiddleware.auth_token
+    ignored_messages:
+      - >-
+         .*Ignoring missing option "(auth_url|username|password|(user|project)_(domain_)*name)" from group "keystone_authtoken" because the group is known to
+         have incomplete sample config data and thus cannot be validated properly.*
+
+  - namespace: neutron
+    invalid_settings:
+      - section: nova
+        option: tenant_name
+        operator: eq
+        value_list:
+          - service
+      - section: nova
+        option: project_name
+        operator: eq
+        value_list:
+          - service
+      - section: DEFAULT
+        option: notify_nova_on_port_data_changes
+        value_list:
+          - "True"
+      - section: DEFAULT
+        option: notify_nova_on_port_status_changes
+        value_list:
+          - "True"
+
+    ignored_messages:
+      # NOTE(dvd): openstack/neutron: https://review.opendev.org/789648
+      - 'ERROR:root:placement/[^\s]+ {{ invalid_setting_regex }}'
+
+  - namespace: cinder
+    invalid_settings:
+      - section: DEFAULT
+        option: enable_v3_api
+        value_list:
+          - "True"
+    ignored_messages:
+      - 'ERROR:root:DEFAULT/api_paste_config {{ invalid_setting_regex }}'
+
+  - namespace: nova.conf
+    invalid_settings:
+      - section: filter_scheduler
+        option: enabled_filters
+        separator: ","
+        value_list:
+          - ExactCoreFilter
+          - ExactRamFilter
+          - ExactDiskFilter
+          - CoreFilter
+          - RamFilter
+          - DiskFilter
+      - section: DEFAULT
+        option: vif_plugging_timeout
+        operator: lt
+        value_list:
+          - 300
+      - section: DEFAULT
+        option: vif_plugging_timeout
+        value_list:
+          - "True"
+
+    ignored_messages:
+      # NOTE(dvd): openstack/puppet-nova: https://review.opendev.org/789633
+      #            This was erroneously categorized in the DEFAULT section but it should have been
+      #            under the vif_plug_ovs section.
+      - 'ERROR:root:DEFAULT/ovsdb_connection {{ invalid_setting_regex }}'
+      # NOTE(dvd): openstack/os-vif: https://review.opendev.org/789645
+      #            os_vif had no list_opts entrypoint before Xena.
+      - 'ERROR:root:vif_plug_ovs/ovsdb_connection {{ invalid_setting_regex }}'
+      # These settings are used by openstacksdk and not part of oslo_config_opts. They are not taken
+      # into account by oslo-config-(generator|validator)
+      - 'ERROR:root:(cinder|service_user)/region_name {{ invalid_setting_regex }}'
+      # Censoring password
+      - 'WARNING:root:neutron/metadata_proxy_shared_secret sample value is empty but input-file has'
+      # TODO(dvd): Needs to be investigated with TLSe
+      - 'ERROR:root:cache/tls_enabled not found'
+
+# service configuration:
+#   Configuration for each openstack services is stored here
+#     config_files: List of config files with their specific namespaces
+#     default_namespaces: List of namespaces that should be checked against each files
+#     ignored_groups: List of groups that shouldn't be checked. This is passed as --exclude-group
+#                     to the oslo-config-validator command.
+#     opt_data: Some sections are dynamically generated like cinder's backend sections. This will
+#               generate a custom opt_data using the content of template_sections as options for
+#               the list of items in index_key's values. This adds a lot of overhead to the parsing
+#               because we need to spawn an oslo-config-generator to pull out the default yaml
+#               config and build a new data structure from it.
+oslo_config_validator_service_configs:
+  # https://opendev.org/openstack/nova/src/branch/master/etc/nova/nova-config-generator.conf
+  nova:
+    config_files:
+      - path: /etc/nova/nova.conf
+        namespaces: []
+    default_namespaces:
+      - nova.conf
+      - keystonemiddleware.auth_token
+      - oslo.log
+      - oslo.messaging
+      - oslo.policy
+      - oslo.privsep
+      - oslo.service.periodic_task
+      - oslo.service.service
+      - oslo.db
+      - oslo.db.concurrency
+      - oslo.cache
+      - oslo.middleware
+      - oslo.concurrency
+      - osprofiler
+  # https://opendev.org/openstack/cinder/src/branch/master/tools/config/cinder-config-generator.conf
+  cinder:
+    config_files:
+      - path: /etc/cinder/cinder.conf
+        namespaces: []
+    ignored_groups:
+      - nova
+      - service_user
+    opt_data:
+      - index_key:
+          section: DEFAULT
+          option: enabled_backends
+          separator: ","
+        template_section:
+          - backend_defaults
+          - backend
+    default_namespaces:
+      - cinder
+      - keystonemiddleware.auth_token
+      - oslo.log
+      - oslo.messaging
+      - oslo.policy
+      - oslo.privsep
+      - oslo.service.periodic_task
+      - oslo.service.service
+      - oslo.db
+      - oslo.db.concurrency
+      - oslo.middleware
+      - oslo.concurrency
+      - osprofiler
+  # Glance has multiple files
+  # https://opendev.org/openstack/glance/src/branch/master/etc/oslo-config-generator
+  glance:
+    ignored_groups:
+      - ref1
+      - default_backend
+    config_files:
+      - path: /etc/glance/glance-api.conf
+        namespaces: []
+      - path: /etc/glance/glance-cache.conf
+        namespaces: []
+      - path: /etc/glance/glance-image-import.conf
+        namespaces: []
+      - path: /etc/glance/glance-registry.conf
+        namespaces: []
+      - path: /etc/glance/glance-scrubber.conf
+        namespaces: []
+      - path: /etc/glance/glance-swift.conf
+        namespaces: []
+    default_namespaces:
+      - glance
+      - glance.api
+      - glance.store
+      - glance.multi_store
+      - keystonemiddleware.auth_token
+      - oslo.log
+      - oslo.messaging
+      - oslo.policy
+      - oslo.privsep
+      - oslo.service.periodic_task
+      - oslo.service.service
+      - oslo.db
+      - oslo.db.concurrency
+      - oslo.middleware.cors
+      - oslo.middleware.http_proxy_to_wsgi
+  # https://opendev.org/openstack/heat/src/branch/master/config-generator.conf
+  heat:
+    config_files:
+      - path: /etc/heat/heat.conf
+        namespaces: []
+    default_namespaces:
+      - heat.common.config
+      - heat.common.context
+      - heat.common.crypt
+      - heat.engine.clients.os.keystone.heat_keystoneclient
+      - heat.common.wsgi
+      - heat.engine.clients
+      - heat.engine.notification
+      - heat.engine.resources
+      - heat.api.aws.ec2token
+      - keystonemiddleware.auth_token
+      - oslo.messaging
+      - oslo.middleware
+      - oslo.db
+      - oslo.log
+      - oslo.policy
+      - oslo.service.service
+      - oslo.service.periodic_task
+      - oslo.service.sslutils
+  # https://opendev.org/openstack/ironic/src/branch/master/tools/config/ironic-config-generator.conf
+  ironic:
+    config_files:
+      - path: /etc/ironic/ironic.conf
+        namespaces: []
+      - path: /etc/ironic-inspector/inspector.conf
+        namespaces: []
+    default_namespaces:
+      - ironic
+      - ironic_lib.disk_utils
+      - ironic_lib.disk_partitioner
+      - ironic_lib.exception
+      - ironic_lib.mdns
+      - ironic_lib.metrics
+      - ironic_lib.metrics_statsd
+      - ironic_lib.utils
+      - oslo.db
+      - oslo.messaging
+      - oslo.middleware.cors
+      - oslo.middleware.healthcheck
+      - oslo.middleware.http_proxy_to_wsgi
+      - oslo.concurrency
+      - oslo.policy
+      - oslo.log
+      - oslo.reports
+      - oslo.service.service
+      - oslo.service.periodic_task
+      - oslo.service.sslutils
+      - osprofiler
+      - keystonemiddleware.auth_token
+  # https://opendev.org/openstack/placement/src/branch/master/etc/placement/config-generator.conf
+  placement:
+    config_files:
+      - path: /etc/placement/placement.conf
+        namespaces: []
+    default_namespaces:
+      - placement.conf
+      - keystonemiddleware.auth_token
+      - oslo.log
+      - oslo.middleware.cors
+      - oslo.policy
+  # https://opendev.org/openstack/neutron/src/branch/master/etc/oslo-config-generator/neutron.conf
+  neutron:
+    config_files:
+      - path: /etc/neutron/neutron.conf
+        namespaces: []
+      - path: /etc/neutron/plugins/ml2/ml2_conf.ini
+        namespaces: []
+    default_namespaces:
+      - neutron
+      - neutron.agent
+      - neutron.base.agent
+      - neutron.db
+      - neutron.extensions
+      - nova.auth
+      - ironic.auth
+      - placement.auth
+      - oslo.log
+      - oslo.db
+      - oslo.policy
+      - oslo.privsep
+      - oslo.concurrency
+      - oslo.messaging
+      - oslo.middleware.cors
+      - oslo.middleware.http_proxy_to_wsgi
+      - oslo.service.sslutils
+      - oslo.service.wsgi
+      - keystonemiddleware.auth_token
+  # https://opendev.org/openstack/keystone/src/branch/master/config-generator/keystone.conf
+  keystone:
+    config_files:
+      - path: /etc/keystone/keystone.conf
+        namespaces: []
+    default_namespaces:
+      - keystone
+      - oslo.cache
+      - oslo.log
+      - oslo.messaging
+      - oslo.policy
+      - oslo.db
+      - oslo.middleware
+      - oslo.service.sslutils
+      - osprofiler
+
+# Default value for the list of services to check. Default is we check all the services
+oslo_config_validator_checked_services: "{{ oslo_config_validator_service_configs.keys() | list }}"
