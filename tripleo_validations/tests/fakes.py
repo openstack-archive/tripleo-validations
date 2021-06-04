@@ -33,3 +33,69 @@ MOCK_CPUS_RET_VALUE = (
         {'numa_node': 1, 'thread_siblings': [5, 7], 'cpu': 5},
         {'numa_node': 1, 'thread_siblings': [9, 11], 'cpu': 9}
     ])
+
+MOCK_ROLES_INFO = [
+    {
+        'name': 'foo',
+        'flavor': 'bar',
+        'count': 9999}]
+
+MOCK_FLAVORS = {
+    'ok': {
+        'bar': {
+            'keys': {
+                'resources:fizz': 'fizz',
+                'resources:buzz': 'buzz',
+                'resources:DISK_GB': 1,
+                'MEMORY_MB': 10,
+                'VCPU': 100
+            }
+        }
+    },
+    'fail_NOVCPU': {
+        'bar': {
+            'keys': {
+                'resources:fizz': 'fizz',
+                'resources:buzz': 'buzz',
+                'resources:DISK_GB': 1,
+                'MEMORY_MB': 10
+            }
+        }
+    }
+}
+
+MOCK_FLAVORS_CHECK_EXPECTED = {
+    'ok': (
+            {'bar': (
+                ({'keys': {
+                    'resources:fizz': 'fizz',
+                    'resources:buzz': 'buzz',
+                    'resources:DISK_GB': 1,
+                    'MEMORY_MB': 10,
+                    'VCPU': 100
+                }},
+                9999)
+            )},
+            [],
+            [
+                'Flavor bar does not have a custom resource class associated with it',
+                'Flavor bar has to have scheduling based on standard properties disabled by setting resources:VCPU=0 resources:MEMORY_MB=0 resources:DISK_GB=0 in the flavor property'
+            ]
+    ),
+    'fail_NOVCPU': (
+            {'bar': (
+                ({'keys': {
+                    'resources:fizz': 'fizz',
+                    'resources:buzz': 'buzz',
+                    'resources:DISK_GB': 1,
+                    'MEMORY_MB': 10,
+                }},
+                9999)
+            )},
+            [],
+            [
+                'Flavor bar does not have a custom resource class associated with it',
+                'Flavor bar has to have scheduling based on standard properties disabled by setting resources:VCPU=0 resources:MEMORY_MB=0 resources:DISK_GB=0 in the flavor property'
+            ]
+    )
+}
