@@ -1,0 +1,121 @@
+---
+# Copyright 2021 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+# These tasks are wrapping around the oslo-config container creation.
+
+# this shouldn't be necessary once this proposed change has landed
+# and propagated in images
+# https://review.opendev.org/c/openstack/oslo.config/+/790883
+- name: Applying the most dirty patch in tripleo-validation history
+  when:
+    - "'oslo-config-generator' in oslo_command"
+  vars:
+    git_apply: >-
+          git apply --unsafe-paths --directory /usr/lib/python3.*/site-packages/oslo_config/
+          -p2 -C1 --recount /oslo_config_validation/oslo_config_generator.diff | cat
+  block:
+    - name: Generating namespace arguments
+      set_fact:
+        generator_patch: |
+          cat << EOF > /oslo_config_validation/oslo_config_generator.diff
+          diff --git a/oslo_config/generator.py b/oslo_config/generator.py
+          index 9845c81..5dd1044 100644
+          --- a/oslo_config/generator.py
+          +++ b/oslo_config/generator.py
+          @@ -52,6 +52,7 @@
+           import yaml
+
+           from oslo_config import cfg
+          +from oslo_i18n import _message
+           import stevedore.named  # noqa
+
+           LOG = logging.getLogger(__name__)
+          @@ -723,6 +724,18 @@
+               return output_data
+
+
+          +def i18n_representer(dumper, data):
+          +    """oslo_i18n yaml representer
+          +
+          +    Returns a translated to the default locale string for yaml.safe_dump
+          +
+          +    :param dumper: a SafeDumper instance passed by yaml.safe_dump
+          +    :param data: a oslo_i18n._message.Message instance
+          +    """
+          +    serializedData = str(data.translation())
+          +    return dumper.represent_str(serializedData)
+          +
+          +
+           def _output_machine_readable(groups, output_file, conf):
+               """Write a machine readable sample config file
+
+          @@ -736,6 +749,7 @@
+               """
+               output_data = _generate_machine_readable_data(groups, conf)
+               if conf.format_ == 'yaml':
+          +        yaml.SafeDumper.add_representer(_message.Message, i18n_representer)
+                   output_file.write(yaml.safe_dump(output_data,
+                                                    default_flow_style=False))
+               else:
+          EOF
+          {{ git_apply }}
+          {{ oslo_command }}
+
+    - name: Sending over the patched script
+      changed_when: false
+      copy:
+        mode: 0777
+        content: "{{ generator_patch }}"
+        dest: "{{ oslo_config_validator_work_path }}/oslo_config_generator.sh"
+
+    - name: Replacing oslo_command with script
+      set_fact:
+        oslo_command: /oslo_config_validation/oslo_config_generator.sh
+
+- name: Printing oslo-config command
+  when:
+    - oslo_config_validator_debug | bool
+  debug:
+    var: oslo_command
+
+- name: Copying the config file to a temp path
+  changed_when: false
+  copy:
+    mode: 0666
+    remote_src: true
+    src: "{{ config_file.path }}"
+    dest: "{{ oslo_config_validator_work_path }}"
+
+- name: Run oslo-config container
+  podman_container:
+    name: "{{ container_name }}"
+    image: "{{ config_file.image }}"
+    state: started
+    detach: false
+    rm: true
+    user: 0
+    mount: "type=bind,source={{ oslo_config_validator_work_path }},destination=/oslo_config_validation"
+    command: "{{ oslo_command }}"
+  register: container_run
+  failed_when:
+    - not container_run.stderr_lines | default([]) | count
+    - not container_run.stdout_lines | default([]) | count
+
+- name: Printing container run output
+  when:
+    - oslo_config_validator_debug | bool
+  debug:
+    var: container_run

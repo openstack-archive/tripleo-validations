@@ -1,0 +1,97 @@
+---
+# Copyright 2021 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+- name: Generating namespace arguments
+  set_fact:
+    namespace_args: "--namespace {{ config_file.namespaces | join(' --namespace ') }}"
+    container_name: "oslo-config-{{ config_file.service }}-{{ config_file.path | basename }}"
+
+- name: Opt data required
+  when:
+    - config_file.opt_data | count
+  block:
+    - name: Generating oslo-config-generator command for opt_data
+      set_fact:
+        oslo_command: "oslo-config-generator --format yaml {{ namespace_args }}"
+
+    - name: Running container
+      args:
+        apply:
+          become: true
+      include_tasks: container_run.yml
+
+    - name: Saving opt_data datastructure
+      set_fact:
+        opt_data: "{{ container_run.stdout | from_yaml }}"
+
+    - name: Printing opt_data
+      when:
+        - oslo_config_validator_debug | bool
+      debug:
+        var: opt_data
+
+    - name: Generating the new config sections
+      include_tasks: opt_data_format.yml
+      loop: "{{ config_file.opt_data }}"
+      loop_control:
+        loop_var: option_data
+        label: >-
+          {{ option_data.index_key.section }} /
+          {{ option_data.index_key.option }}
+
+    - name: Saving new opt_data content
+      become: true
+      changed_when: false
+      copy:
+        content: "{{ opt_data | to_yaml }}"
+        dest: "{{ oslo_config_validator_work_path }}/opt_data.yaml"
+        mode: 0666
+
+- name: Generate validation command
+  set_fact:
+    oslo_command: >-
+      oslo-config-validator --input-file /oslo_config_validation/{{ config_file.path | basename }}
+      {% if config_file.opt_data | count and opt_data | length %}
+        --opt-data /oslo_config_validation/opt_data.yaml
+      {% else %}
+        {{ namespace_args }}
+      {% endif %}
+      {% if oslo_config_validator_report | bool %} --check-defaults{% endif %}
+      {% if config_file.ignored_groups | count %}
+      --exclude-group {{ config_file.ignored_groups | join(' --exclude-group ') }}
+      {% endif %}
+
+- name: Printing oslo-config-validator command
+  when:
+    - oslo_config_validator_debug | bool
+  debug:
+    var: oslo_command
+
+- name: Running container
+  args:
+    apply:
+      become: true
+  include_tasks: container_run.yml
+
+- name: Saving output to fact
+  set_fact:
+    validated_configs: "{{ validated_configs | default([]) + [{'output': container_run, 'config_file': config_file }] }}"
+
+- name: Printing validated configs
+  when:
+    - oslo_config_validator_debug | bool
+  debug:
+    var: validated_configs

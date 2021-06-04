@@ -1,0 +1,166 @@
+---
+# Copyright 2021 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+# These tasks are meant to reformat the data structure and merge
+# them with the config files found on the nodes as well as running
+# containers.
+
+- name: Generating computed service config
+  set_fact:
+    service_config: >-
+      {% set config_list = [] %}{%
+         for svc in oslo_config_validator_checked_services %}{%
+           set ns = oslo_config_validator_service_configs[svc] %}{%
+           for cf in ns.config_files %}{%
+             set _ = config_list.append({
+                       "path": cf.path,
+                       "service": svc,
+                       "ignored_groups": ns.ignored_groups | default([]),
+                       "opt_data":  ns.opt_data | default([]),
+                       "namespaces": cf.namespaces | union(ns.default_namespaces) | unique
+                     })
+           %}{%
+           endfor
+         %}{%
+         endfor
+      %}{{ config_list }}
+
+- name: Printing computed service config
+  when:
+    - oslo_config_validator_debug | bool
+  debug:
+    var: service_config
+
+- name: podman - Gather facts for all containers
+  become: true
+  podman_container_info:
+  register: containers_facts
+
+- name: Generating config_location dict
+  set_fact:
+    config_locations: >-
+      {% set tmp_config_locations={} %}{%
+         for mount in container.Mounts | selectattr('Source', 'match', '/var/lib/config-data/puppet-generated/[^/]+$') | list
+      %}{%
+           if mount.Source not in config_locations
+      %}{%- set _ = tmp_config_locations.update({mount.Source: {"image": container.Image | default("") }}) -%}{%
+           endif %}{%
+         endfor
+      %}{{ config_locations | combine(tmp_config_locations) }}
+  loop: "{{ containers_facts.containers }}"
+  loop_control:
+    loop_var: container
+    label: "{{ container.Name }}"
+  when:
+    - container.State.Running
+    - container.Mounts | selectattr('Source', 'match', '/var/lib/config-data/puppet-generated/[^/]+$') | list | count
+
+- name: Looking for possible config files
+  find:
+    recurse: true
+    depth: 4
+    excludes:
+      - ".*httpd.*"
+      - "[0-9]+.*"
+      - ".*wsgi"
+    paths: "{{ config_path.key }}"
+    patterns:
+      - ".*({{ oslo_config_validator_service_configs.keys() | list | join('|') }}).*\\.conf$"
+    use_regex: true
+  loop: "{{ dict(config_locations) | dict2items }}"
+  loop_control:
+    loop_var: config_path
+    label: "{{ config_path.key }}"
+  register: found_configs
+
+- name: Printing found configs
+  when:
+    - oslo_config_validator_debug | bool
+  debug:
+    var: found_configs
+
+- name: Building validations and invalidations data structures with real file names
+  when:
+    - result.matched
+  block:
+    - name: Building config validations dict
+      set_fact:
+        config_validations: >-
+          {% set tmp_config_locations = [] %}{%
+             for file in result.files
+          %}{%
+               set svc_config = service_config | selectattr('path', 'contains', file.path | basename) | list
+            %}{%
+               if svc_config | count %}{%
+                 set _ = tmp_config_locations.append({
+                           "path": file.path,
+                           "image": result.config_path.value.image,
+                           "ignored_groups": svc_config.0.ignored_groups,
+                           "namespaces": svc_config.0.namespaces | list,
+                           "opt_data": svc_config.0.opt_data,
+                           "service": svc_config.0.service
+                         })
+            %}{%
+               endif
+          %}{%
+             endfor
+          %}{{ config_validations | default([]) | union(tmp_config_locations) }}
+      loop: "{{ found_configs.results }}"
+      loop_control:
+        loop_var: result
+        label: "{{ result.config_path.key }}"
+
+    - name: Building config invalidations dict
+      set_fact:
+        config_invalidations: >-
+          {% set tmp_config_locations = [] %}{%
+             for file in result.files
+          %}{%
+               set svc_config = service_config | selectattr('path', 'contains', file.path | basename) | list
+            %}{%
+               if svc_config | count %}{%
+                 for ns in svc_config[0].namespaces | list %}{%
+                   set ns_config = oslo_config_validator_namespaces_config |
+                                   selectattr('namespace', 'equalto', ns) |
+                                   selectattr('invalid_settings', 'defined') | list %}{%
+                   if ns_config | count %}{%
+                     set _ = tmp_config_locations.append({
+                               "path": file.path,
+                               "ignored_groups": svc_config[0].ignored_groups,
+                               "service": svc_config[0].service,
+                               "invalid_settings": ns_config[0].invalid_settings
+                             }) %}{%
+                   endif %}{%
+                 endfor %}{%
+               endif %}{%
+             endfor
+          %}{{ config_invalidations | default([]) | union(tmp_config_locations) }}
+      loop: "{{ found_configs.results }}"
+      loop_control:
+        loop_var: result
+        label: "{{ result.config_path.key }}"
+
+- name: Printing config datastructure
+  when:
+    - oslo_config_validator_debug | bool
+  block:
+    - name: Config Validations
+      debug:
+        var: config_validations
+
+    - name: Config Invalidations
+      debug:
+        var: config_invalidations
