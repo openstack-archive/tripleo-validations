@@ -12,9 +12,13 @@ Documentation for the TripleO project can be found `here <https://docs.openstack
 
 Communication
 =============
-* IRC channel ``#tripleo`` at FreeNode
+* IRC channel ``#validation-framework`` at `Libera`_ (For all subject-matters)
+* IRC channel ``#tripleo`` at `OFTC`_ (OpenStack and TripleO discussions)
 * Mailing list (prefix subjects with ``[tripleo][validations]`` for faster responses)
   http://lists.openstack.org/cgi-bin/mailman/listinfo/openstack-discuss
+
+.. _Libera: https://libera.chat/
+.. _OFTC: https://www.oftc.net/
 
 Contacting the Core Team
 ========================
