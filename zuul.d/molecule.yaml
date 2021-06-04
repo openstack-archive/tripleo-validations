@@ -456,6 +456,16 @@
       tripleo_validations_role_name: check_undercloud_conf
 - job:
     files:
+      - ^roles/oslo_config_validator/.*
+      - ^tests/prepare-test-host.yml
+      - ^ci/playbooks/pre.yml
+      - ^ci/playbooks/run.yml
+    name: tripleo-validations-centos-8-molecule-oslo_config_validator
+    parent: tripleo-validations-centos-8-base
+    vars:
+      tripleo_validations_role_name: oslo_config_validator
+- job:
+    files:
       - ^roles/check_uc_hostname/.*
       - ^tests/prepare-test-host.yml
       - ^ci/playbooks/pre.yml

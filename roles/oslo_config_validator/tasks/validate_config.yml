@@ -1,0 +1,68 @@
+---
+# Copyright 2021 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+- name: Making sure work folder is present
+  become: true
+  changed_when: false
+  file:
+    mode: 0777
+    path: "{{ oslo_config_validator_work_path }}"
+    state: directory
+
+- name: Validate configuration
+  include_tasks: validation_command.yml
+  loop: "{{ config_validations }}"
+  loop_control:
+    loop_var: config_file
+    label: "{{ config_file.service }}: {{ config_file.path }}"
+
+- name: Deleting work folder
+  become: true
+  changed_when: false
+  file:
+    path: "{{ oslo_config_validator_work_path }}"
+    state: absent
+
+- name: Preparing and filtering output datastructure
+  when:
+    - validated_configs is defined
+  set_fact:
+    validation_output: >-
+      {% set ignored_patterns = oslo_config_validator_global_ignored_messages %}{%
+         for ns in oslo_config_validator_namespaces_config %}{%
+           if ns.namespace in out.config_file.namespaces %}{%
+             for ignored in ns.ignored_messages %}{%
+               set _ = ignored_patterns.append(ignored) %}{%
+              endfor %}{%
+           endif %}{%
+         endfor %}{%
+         set output = out.output.stderr_lines | union(out.output.stdout_lines) | unique | list | reject('match', ignored_patterns | join("|")) | list %}{%
+         set _ = validation_output.append({
+              "service": out.config_file.service,
+              "config_file": out.config_file.path,
+              "namespaces": out.config_file.namespaces,
+              "output": output,
+              }) %}{{ validation_output }}
+  loop: "{{ validated_configs }}"
+  loop_control:
+    loop_var: out
+    label: "{{ out.config_file.path }}"
+
+- name: Printing validation output
+  when:
+    - oslo_config_validator_debug | bool
+  debug:
+    var: validation_output
