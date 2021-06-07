@@ -1,5 +1,5 @@
 ---
-# Copyright 2020 Red Hat, Inc.
+# Copyright 2021 Red Hat, Inc.
 # All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -15,4 +15,14 @@
 # under the License.
 
 
-# "{{ role_name }}" tasks
+# All variables intended for modification should place placed in this file.
+
+# All variables within this role should have a prefix of "validation_init"
+validation_init_debug: false
+validation_init_prefix: "tripleo"
+validation_init_skeleton_role_dir: "/tmp"
+validation_init_roles_dir: "roles"
+validation_init_zuuld_molecule: "zuul.d/molecule.yaml"
+validation_init_playbooks_dir: "playbooks"
+validation_init_roles_doc_dir: "doc/source/roles"
+validation_init_enabling_ci: true

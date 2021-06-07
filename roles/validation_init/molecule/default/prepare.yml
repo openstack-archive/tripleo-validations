@@ -1,0 +1,96 @@
+---
+# Copyright 2021 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+- name: Prepare
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Install Ansible for getting ansible-galaxy
+      package:
+        name: ansible
+        state: installed
+
+    - name: Create roles directory
+      file:
+        path: /tmp/roles
+        state: directory
+        mode: '0755'
+
+    - name: Create playbooks directory
+      file:
+        path: /tmp/playbooks
+        state: directory
+        mode: '0755'
+
+    - name: Create roles doc directory
+      file:
+        path: /tmp/doc/source/roles
+        state: directory
+        mode: '0755'
+
+    - name: Create zuul.d directory
+      file:
+        path: /tmp/zuul.d/
+        state: directory
+        mode: '0755'
+
+    - name: Copy zuul.d/molecule.yaml
+      copy:
+        dest: /tmp/zuul.d/molecule.yaml
+        content: |
+          ---
+          - project-template:
+              check:
+                jobs:
+                - tripleo-validations-centos-8-molecule-role_one
+                - tripleo-validations-centos-8-molecule-role_two
+                - tripleo-validations-centos-8-molecule-tripleo_undercloud_conf
+              gate:
+                jobs:
+                - tripleo-validations-centos-8-molecule-role_one
+                - tripleo-validations-centos-8-molecule-role_two
+                - tripleo-validations-centos-8-molecule-tripleo_undercloud_conf
+              name: tripleo-validations-molecule-jobs
+          - job:
+              files:
+              - ^roles/role_one/.*
+              - ^tests/prepare-test-host.yml
+              - ^ci/playbooks/pre.yml
+              - ^ci/playbooks/run.yml
+              name: tripleo-validations-centos-8-molecule-role_one
+              parent: tripleo-validations-centos-8-base
+              vars:
+                tripleo_validations_role_name: role_one
+          - job:
+              files:
+              - ^roles/role_two/.*
+              - ^tests/prepare-test-host.yml
+              - ^ci/playbooks/pre.yml
+              - ^ci/playbooks/run.yml
+              name: tripleo-validations-centos-8-molecule-role_two
+              parent: tripleo-validations-centos-8-base
+              vars:
+                tripleo_validations_role_name: role_two
+          - job:
+              files:
+              - ^roles/tripleo_undercloud_conf/.*
+              - ^tests/prepare-test-host.yml
+              - ^ci/playbooks/pre.yml
+              - ^ci/playbooks/run.yml
+              name: tripleo-validations-centos-8-molecule-tripleo_undercloud_conf
+              parent: tripleo-validations-centos-8-base
+              vars:
+                tripleo_validations_role_name: tripleo_undercloud_conf
