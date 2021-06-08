@@ -67,8 +67,8 @@ opts = [
     cfg.StrOpt('ansible_python_interpreter', default=None),
     cfg.BoolOpt('debug', help='Print tracebacks for exceptions'),
     cfg.StrOpt('serial', default=1),
-    cfg.StrOpt('os-cloud', default=None, help=('Provide authentication '
-                                               'with clouds.yaml file.')),
+    cfg.StrOpt('os-cloud', default=os.environ.get('OS_CLOUD'),
+               help=('Provide authentication with clouds.yaml file.')),
 ]
 
 
