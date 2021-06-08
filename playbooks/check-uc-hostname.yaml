@@ -9,7 +9,6 @@
         points to the right UC hostname
       groups:
         - pre-overcloud-upgrade
-        - post-update
     check_uc_hostname_debug: false
   roles:
     - check_uc_hostname
