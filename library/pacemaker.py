@@ -11,7 +11,9 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+"""pacemaker module
+Used by the pacemaker_status validation.
+"""
 from ansible.module_utils.basic import AnsibleModule
 from xml.etree import ElementTree
 from yaml import safe_load as yaml_safe_load
@@ -22,6 +24,8 @@ module: pacemaker
 short_description: Return status from a pacemaker status XML
 description:
     - Return status from a pacemaker status XML
+    - Used by the pacemaker_status validation.
+    - Owned by the DF PIDONE
 options:
     status:
         required: true
