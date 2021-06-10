@@ -14,7 +14,9 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-
+"""icmp_ping module
+Used by `node-health` and `check-network-gateway` roles.
+"""
 from ansible.module_utils.basic import AnsibleModule
 from yaml import safe_load as yaml_safe_load
 
@@ -25,6 +27,8 @@ short_description: ICMP ping remote hosts
 requirements: [ ping ]
 description:
     - Check host connectivity with ICMP ping.
+    - Used by `node-health` and `check-network-gateway` roles.
+    - Owned by the DFG:DF and DFG:Networking
 options:
     host:
         required: true
