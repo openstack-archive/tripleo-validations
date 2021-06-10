@@ -18,9 +18,17 @@
 # All variables intended for modification should place placed in this file.
 
 # All variables within this role should have a prefix of "compute_tsx"
+
+# Debugging mode - Whether or not to print the computed variables during execution
 compute_tsx_debug: false
+
+# If set to `true` it will not return a failure, but will simply print the failure
 compute_tsx_warning: false
+
+# Variable used when this validation is called by tripleo-heat-templates
 compute_tsx_kernel_args: ""
+
+# Information message to be printed in warning/failure mode
 compute_tsx_information_msg: |
   For more information on why we must explicitly define the TSX flag, please visit:
   https://access.redhat.com/solutions/6036141
