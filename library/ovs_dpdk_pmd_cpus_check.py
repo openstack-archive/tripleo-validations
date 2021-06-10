@@ -13,7 +13,9 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+"""ovs_dpdk_pmd_cpus_check module
+Used by the ovs_dpdk_pmd validation.
+"""
 from ansible.module_utils.basic import AnsibleModule
 from yaml import safe_load as yaml_safe_load
 
@@ -23,6 +25,8 @@ module: OVS DPDK PMD CPU's check
 short_description: Run PMD CPU's from all the NUMA nodes check
 description:
     - Run PMD CPU's from all the NUMA nodes check
+    - Used by ovs_dpdk_pmd validation.
+    - Owned by the DFG:NFV Integration
 options:
     pmd_cpu_mask:
         required: true
