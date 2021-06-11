@@ -7,10 +7,10 @@
     success-url: "reports.html"
     failure-url: "reports.html"
     pre-run:
-    - tests/prepare-test-host.yml
-    - zuul.d/playbooks/pre.yml
+      - tests/prepare-test-host.yml
+      - zuul.d/playbooks/pre.yml
     run:
-    - zuul.d/playbooks/run.yml
+      - zuul.d/playbooks/run.yml
     timeout: 1800
     voting: true
 
