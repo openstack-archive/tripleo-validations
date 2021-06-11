@@ -18,35 +18,215 @@
 - name: Converge
   hosts: all
   tasks:
-    - name: Test working
+    - name: Working 1 - openstack one entry in list
+      copy:
+        dest: /usr/bin/openstack
+        mode: 0755
+        content: |
+          #!/bin/bash
+          echo "{"
+          echo "  \"parameters\": {},"
+          echo "  \"parameter_defaults\": {"
+          echo "    \"DockerInsecureRegistryAddress\": ["
+          echo "      \"undercloud-0.ctlplane.redhat.local:8787\""
+          echo "    ]"
+          echo "  }"
+          echo "}"
+
+    - name: Working 1 - hiera one entry in list
+      copy:
+        dest: /usr/bin/hiera
+        mode: 0755
+        content: |
+          #!/bin/bash
+          echo [\"undercloud-0.ctlplane.redhat.local\"]
+          exit 0
+
+    - name: Test Working 1
+      include_role:
+        name: check_uc_hostname
+      vars:
+        check_uc_hostname_inventory_host: ubi8
+
+    - name: Working 2 - openstack multiple entry in list
+      copy:
+        dest: /usr/bin/openstack
+        mode: 0755
+        content: |
+          #!/bin/bash
+          echo "{"
+          echo "  \"parameters\": {},"
+          echo "  \"parameter_defaults\": {"
+          echo "    \"DockerInsecureRegistryAddress\": ["
+          echo "      \"undercloud-0.ctlplane.redhat.local:8787\","
+          echo "      \"undercloud-1.ctlplane.redhat.local:8787\","
+          echo "      \"undercloud-2.ctlplane.redhat.local:8787\""
+          echo "    ]"
+          echo "  }"
+          echo "}"
+
+
+    - name: Working 2 - hiera multiple entry in list
+      copy:
+        dest: /usr/bin/hiera
+        mode: 0755
+        content: |
+          #!/bin/bash
+          echo "["
+          echo "  \"undercloud-0.ctlplane.redhat.local\","
+          echo "  \"undercloud-1.ctlplane.redhat.local\","
+          echo "  \"undercloud-2.ctlplane.redhat.local\""
+          echo "]"
+          exit 0
+
+    - name: Test Working 2
+      include_role:
+        name: check_uc_hostname
+      vars:
+        check_uc_hostname_inventory_host: ubi8
+
+    - name: Working 3 - openstack multiple entry in list
+      copy:
+        dest: /usr/bin/openstack
+        mode: 0755
+        content: |
+          #!/bin/bash
+          echo "{"
+          echo "  \"parameters\": {},"
+          echo "  \"parameter_defaults\": {"
+          echo "    \"DockerInsecureRegistryAddress\": ["
+          echo "      \"undercloud-0.ctlplane.redhat.local:8787\","
+          echo "      \"redhat.registry.io:8787\","
+          echo "      \"mysuper-registry.io\","
+          echo "    ]"
+          echo "  }"
+          echo "}"
+
+    - name: Working 3 - hiera single entry in list
+      copy:
+        dest: /usr/bin/hiera
+        mode: 0755
+        content: |
+          #!/bin/bash
+          echo "["
+          echo "  \"undercloud-0.ctlplane.redhat.local\","
+          echo "]"
+          exit 0
+
+    - name: Test Working 3
+      include_role:
+        name: check_uc_hostname
+      vars:
+        check_uc_hostname_inventory_host: ubi8
+
+    - name: Working 4 - openstack multiple entry in list
+      copy:
+        dest: /usr/bin/openstack
+        mode: 0755
+        content: |
+          #!/bin/bash
+          echo "{"
+          echo "  \"parameters\": {},"
+          echo "  \"parameter_defaults\": {"
+          echo "    \"DockerInsecureRegistryAddress\": ["
+          echo "      \"BROKENCLOUD-0.ctlplane.redhat.local:8787\","
+          echo "      \"redhat.registry.io:8787\","
+          echo "      \"mysuper-registry.io\","
+          echo "    ]"
+          echo "  }"
+          echo "}"
+
+    - name: Working 4 - we do not fail if hiera returns empty list
+      copy:
+        dest: /usr/bin/hiera
+        mode: 0755
+        content: |
+          #!/bin/bash
+          echo "[]"
+          exit 0
+
+    - name: Test Working 4
+      include_role:
+        name: check_uc_hostname
+      vars:
+        check_uc_hostname_inventory_host: ubi8
+
+    - name: Failing 1 - we fail if DockerInsecureRegistryAddress is not found
+      copy:
+        dest: /usr/bin/openstack
+        mode: 0755
+        content: |
+          #!/bin/bash
+          echo "{"
+          echo "  \"parameters\": {},"
+          echo "  \"parameter_defaults\": {"
+          echo "  }"
+          echo "}"
+
+    - name: Failing 1 - hiera no entry found
+      copy:
+        dest: /usr/bin/hiera
+        mode: 0755
+        content: |
+          #!/bin/bash
+          exit 0
+
+    - name: Failing 1
       block:
         - include_role:
             name: check_uc_hostname
           vars:
-            check_uc_hostname_undercloud: "/tmp/undercloud.conf"
-            check_uc_hostname_containers: "/tmp/containers-prepare-parameter.yaml"
-
-    - name: Test failing
-      block:
-        - name: populate undercloud.conf
-          copy:
-            dest: "/tmp/undercloud.conf"
-            content: |
-              [DEFAULT]
-              undercloud_public_host = 192.168.24.2
-
-        - include_role:
-            name: check_uc_hostname
-          vars:
-            check_uc_hostname_undercloud: "/tmp/undercloud.conf"
-            check_uc_hostname_containers: "/tmp/containers-prepare-parameter.yaml"
+            check_uc_hostname_inventory_host: ubi8
 
       rescue:
         - name: Clear host errors
           meta: clear_host_errors
 
         - debug:
-            msg: The validation works! End the playbook run
+            msg: The validation Case Failing 1 works! Continuing playbook run...
+
+    - name: Failing 2 - openstack multiple entry in list
+      copy:
+        dest: /usr/bin/openstack
+        mode: 0755
+        content: |
+          #!/bin/bash
+          echo "{"
+          echo "  \"parameters\": {},"
+          echo "  \"parameter_defaults\": {"
+          echo "    \"DockerInsecureRegistryAddress\": ["
+          echo "      \"BROKENCLOUD-0.ctlplane.redhat.local:8787\","
+          echo "      \"redhat.registry.io:8787\","
+          echo "      \"mysuper-registry.io\","
+          echo "    ]"
+          echo "  }"
+          echo "}"
+
+
+    - name: Failing 2 - hiera single entry in list
+      copy:
+        dest: /usr/bin/hiera
+        mode: 0755
+        content: |
+          #!/bin/bash
+          echo "["
+          echo "  \"undercloud-0.ctlplane.redhat.local\","
+          echo "]"
+          exit 0
+
+    - name: Failing 2
+      block:
+        - include_role:
+            name: check_uc_hostname
+          vars:
+            check_uc_hostname_inventory_host: ubi8
+
+      rescue:
+        - name: Clear host errors
+          meta: clear_host_errors
+
+        - debug:
+            msg: The validation Case Failing 2 works! Ending playbook run
 
         - name: End play
           meta: end_play
