@@ -1,3 +1,4 @@
+---
 - project:
     templates:
       - openstack-python3-ussuri-jobs
@@ -36,4 +37,4 @@
 
     promote:
       jobs:
-      - promote-openstack-tox-docs: *tripleo-docs
+        - promote-openstack-tox-docs: *tripleo-docs
