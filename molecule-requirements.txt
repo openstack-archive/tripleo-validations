@@ -1,12 +1,12 @@
 # this is required for the molecule jobs
-ansi2html
-ansible>=2.8,!=2.8.9,!=2.9.12,<2.10.0
-jinja2>=2.8.0
+ansi2html # LGPLv3+
+ansible>=2.8,!=2.8.9,!=2.9.12,<2.10.0  # GPLv3+
+jinja2>=2.8.0 # BSD-3-Clause
 molecule>=3.3.1,<4 # MIT
 molecule-podman # MIT
-pytest
-pytest-cov
-pytest-html
-pytest-xdist
+pytest # MIT
+pytest-cov # MIT
+pytest-html # Mozilla Public License 2.0
+pytest-xdist # MIT
 selinux  # MIT
 lxml # BSD
