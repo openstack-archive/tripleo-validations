@@ -14,4 +14,4 @@ os-net-config>=7.1.0 # Apache-2.0
 oslo.utils>=3.40.2 # Apache-2.0
 six>=1.11.0 # MIT
 tripleo-common>=7.1.0 # Apache-2.0
-setuptools>=50.3.0
+setuptools>=50.3.0 # MIT
