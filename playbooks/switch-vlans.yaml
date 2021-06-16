@@ -12,6 +12,15 @@
         not on a particular switch port.
       groups:
         - pre-deployment
+      categories:
+        - networking
+        - vlans
+        - lldp
+        - introspection
+        - baremetal
+        - provisioning
+      products:
+        - tripleo
     network_environment_path: environments/network-environment.yaml
     ironic_inspector_conf_file: "/var/lib/config-data/puppet-generated/ironic_inspector/etc/ironic-inspector/inspector.conf"
   roles:

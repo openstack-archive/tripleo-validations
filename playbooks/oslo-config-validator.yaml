@@ -18,6 +18,17 @@
         - post-system-upgrade
         - post-update
         - post-upgrade
+      categories:
+        - undercloud
+        - overcloud
+        - oslo
+        - compute
+        - storage
+        - baremetal
+        - networking
+        - identity
+      products:
+        - tripleo
     # Debug log level
     oslo_config_validator_debug: false
 

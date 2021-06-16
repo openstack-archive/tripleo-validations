@@ -7,6 +7,14 @@
         Check node disk numbers and sizes and whether root device hints are set.
       groups:
         - pre-deployment
+      categories:
+        - baremetal
+        - provisioning
+        - compute
+        - introspection
+        - undercloud
+      products:
+        - tripleo
     ironic_conf_file: "/var/lib/config-data/puppet-generated/ironic/etc/ironic/ironic.conf"
   roles:
     - node_disks

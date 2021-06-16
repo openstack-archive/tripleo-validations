@@ -8,5 +8,11 @@
       groups:
         - pre-deployment
         - pre-upgrade
+      categories:
+        - baremetal
+        - provisioning
+        - undercloud
+      products:
+        - tripleo
   roles:
     - ironic_boot_configuration

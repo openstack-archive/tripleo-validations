@@ -11,5 +11,13 @@
         https://access.redhat.com/documentation/en/red-hat-openstack-platform/8/paged/director-installation-and-usage/86-fencing-the-controller-nodes
       groups:
         - post-deployment
+      categories:
+        - ha
+        - clustering
+        - os
+        - system
+      products:
+        - tripleo
+        - pacemaker
   roles:
     - stonith_exists

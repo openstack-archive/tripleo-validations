@@ -10,6 +10,13 @@
         is not a good thing.
       groups:
         - pre-deployment
+      categories:
+        - compute
+        - networking
+        - telemetry
+        - baremetal
+      products:
+        - tripleo
     debug_check: "True"
   roles:
     - undercloud_debug

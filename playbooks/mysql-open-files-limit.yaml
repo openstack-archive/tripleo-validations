@@ -11,6 +11,14 @@
         https://access.redhat.com/solutions/1598733
       groups:
         - post-deployment
+      categories:
+        - database
+        - overcloud
+        - controller
+      products:
+        - tripleo
+        - mysql
+        - galera
     min_open_files_limit: 16384
   roles:
     - mysql_open_files_limit

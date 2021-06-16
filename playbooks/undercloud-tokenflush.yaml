@@ -9,6 +9,13 @@
         the keystone token_flush crontab has been set up.
       groups:
         - pre-introspection
+      categories:
+        - os
+        - system
+        - identity
+        - cron
+      products:
+        - tripleo
     cron_check: "keystone-manage token_flush"
   roles:
     - undercloud_tokenflush

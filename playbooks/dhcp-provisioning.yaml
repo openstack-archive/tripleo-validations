@@ -13,6 +13,13 @@
         are any.
       groups:
         - pre-deployment
+      categories:
+        - networking
+        - dhcp
+        - undercloud
+        - undercloud-config
+      products:
+        - tripleo
   tasks:
     - include_role:
         name: dhcp_validations

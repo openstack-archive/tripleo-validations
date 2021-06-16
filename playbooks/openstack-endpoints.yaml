@@ -13,5 +13,11 @@
         - post-upgrade
         - pre-update
         - post-update
+      categories:
+        - ui
+        - connectivity
+        - undercloud
+      products:
+        - tripleo
   roles:
     - openstack_endpoints

@@ -19,6 +19,15 @@
       groups:
         - pre-upgrade
         - pre-update
+      categories:
+        - security
+        - tls-everywhere
+        - identity
+        - dns
+        - kerberos
+      products:
+        - tripleo
+        - freeipa
   tasks:
     - include_role:
         name: tls_everywhere

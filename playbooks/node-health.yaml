@@ -8,5 +8,13 @@
         scale-up or an upgrade.
       groups:
         - pre-upgrade
+      categories:
+        - icmp
+        - compute
+        - baremetal
+        - provisioning
+        - undercloud
+      products:
+        - tripleo
   roles:
     - node_health

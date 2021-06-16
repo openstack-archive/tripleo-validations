@@ -8,6 +8,10 @@
         required for an OpenShift deployment on top of OpenStack.
       groups:
         - openshift-on-openstack
+      categories:
+        - networking
+      products:
+        - tripleo
   tasks:
     - include_role:
         name: openshift_on_openstack

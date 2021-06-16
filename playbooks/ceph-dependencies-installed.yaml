@@ -8,6 +8,11 @@
       groups:
         - pre-deployment
         - pre-ceph
+      categories:
+        - storage
+      products:
+        - tripleo
+        - ceph
     fail_without_deps: true
     tripleo_delegate_to: "{{ groups['allovercloud'] | default([]) }}"
     packages:

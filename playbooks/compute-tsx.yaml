@@ -25,6 +25,16 @@
         - pre-update-prepare
         - pre-update-run
         - pre-update-converge
+      categories:
+        - os
+        - kernel
+        - system
+        - tsx
+      products:
+        - tripleo
+        - rhel
+        - centos
+        - intel
     compute_tsx_debug: false
     compute_tsx_warning: false
   roles:
