@@ -105,6 +105,24 @@
               - pre-update-run
               - pre-update-converge
               - post-update
+            categories:
+              - networking
+              - compute
+              - baremetal
+              - provisioning
+              - database
+              - os
+              - system
+              - packaging
+              - kernel
+              - security
+              - webserver
+              - storage
+              - ha
+              - clustering
+              - undercloud-config
+            products:
+              - tripleo
           {{ validation_init_prefix }}_{{ _role_name }}_debug: false
         roles:
           - {{ validation_init_prefix }}_{{ _role_name }}

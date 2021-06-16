@@ -93,6 +93,65 @@ groups.  Here is, for example, how to have a validation be part of the
         - pre-deployment
         - hardware
 
+The validations can be categorized by technical domain and can belong to one or
+multiple categories. The categorization is depending on what the validation is
+checking on the hosts. For example, if a validation checks some networking
+related configuration and needs to get configuration items from the
+undercloud.conf file, you will have to put `networking` and `undercloud-config` in
+the ``categories`` metadata key:
+
+.. code-block:: yaml
+
+    metadata:
+      groups:
+        - pre-deployment
+        - hardware
+      categories:
+        - networking
+        - undercloud-config
+
+.. note::
+
+    The ``categories`` are not restricted to a list as for the ``groups``
+    present in the ``groups.yaml`` file, but it could be for example:
+
+    * ``networking``
+    * ``compute``
+    * ``baremetal``
+    * ``provisioning``
+    * ``database``
+    * ``os``
+    * ``system``
+    * ``packaging``
+    * ``kernel``
+    * ``security``
+    * ``tls-everywhere``
+    * ``dns``
+    * ``dhcp``
+    * ``dnsmasq``
+    * ``webserver``
+    * ``storage``
+    * ``ha``
+    * ``clustering``
+    * ``undercloud-config``
+    * etc ...
+
+The validations should be linked to a product. Every validations hosted in
+``tripleo-validations`` should get at least ``tripleo`` in the ``products``
+metadata key:
+
+.. code-block:: yaml
+
+    metadata:
+      groups:
+        - pre-deployment
+        - hardware
+      categories:
+        - networking
+        - undercloud-config
+      products:
+        - tripleo
+
 ``roles`` include the Ansible role, which contains all the tasks to run,
 associated to this validation. Each task is a YAML dictionary that must at
 minimum contain a name and a module to use.  Module can be any module that ships
@@ -282,6 +341,12 @@ in there:
           groups:
             - prep
             - pre-introspection
+          categories:
+            - os
+            - system
+            - ram
+          products:
+            - tripleo
 
 
 The ``hosts`` key will tell which server should the validation run on. The
@@ -299,7 +364,7 @@ the same indentation as ``hosts`` and ``vars``:
 .. code-block:: yaml
 
     roles:
-    - undercloud-ram
+      - undercloud-ram
 
 Now let's create the ``undercloud-ram`` Ansible role which will contain the
 necessary task(s) for checking if the Undercloud has the mininum amount of RAM
@@ -417,6 +482,8 @@ the ``vars`` section:
           name: ...
           description: ...
           groups: ...
+          categories: ...
+          products: ...
         minimum_ram_gb: 16
 
 Make sure it's on the same indentation level as ``metadata``.
