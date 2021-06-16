@@ -9,6 +9,11 @@
         points to the right UC hostname
       groups:
         - pre-overcloud-upgrade
+      categories:
+        - container
+        - undercloud-config
+      products:
+        - tripleo
     check_uc_hostname_debug: false
   roles:
     - check_uc_hostname

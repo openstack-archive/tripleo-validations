@@ -7,6 +7,13 @@
         Make sure the rabbitmq file descriptor limits are set to reasonable values.
       groups:
         - post-deployment
+      categories:
+        - container
+        - messaging
+        - broker
+      products:
+        - tripleo
+        - rabbitmq
     min_fd_limit: 16384
   roles:
     - rabbitmq_limits

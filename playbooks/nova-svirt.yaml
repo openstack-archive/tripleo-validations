@@ -9,5 +9,11 @@
       groups:
         - post-deployment
         - post-upgrade
+      categories:
+        - compute
+        - selinux
+        - security
+      products:
+        - tripleo
   roles:
     - nova_svirt

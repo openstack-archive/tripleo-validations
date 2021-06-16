@@ -9,5 +9,11 @@
       groups:
         - pre-upgrade
         - post-upgrade
+      categories:
+        - orchestration
+        - healthcheck
+        - stack
+      products:
+        - tripleo
   roles:
     - stack_health

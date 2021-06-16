@@ -9,6 +9,12 @@
         - pre-deployment
         - pre-upgrade
         - pre-update
+      categories:
+        - os
+        - system
+        - encoding
+      products:
+        - tripleo
     system_encoding_debug: false
   roles:
     - system_encoding

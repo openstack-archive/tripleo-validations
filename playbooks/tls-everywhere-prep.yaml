@@ -8,6 +8,15 @@
         to register to IdM as a client as part of undercloud-install.
       groups:
         - prep
+      categories:
+        - security
+        - tls-everywhere
+        - identity
+        - dns
+        - kerberos
+      products:
+        - tripleo
+        - freeipa
   tasks:
     - include_role:
         name: tls_everywhere

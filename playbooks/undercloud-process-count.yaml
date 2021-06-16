@@ -10,6 +10,11 @@
         to crashes due to OOMKiller.
       groups:
         - pre-deployment
+      categories:
+        - os
+        - system
+      products:
+        - tripleo
     max_process_count: 8
   roles:
     - undercloud_process_count

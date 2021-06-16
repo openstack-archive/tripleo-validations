@@ -11,6 +11,14 @@
       groups:
         - pre-undercloud-upgrade
         - pre-overcloud-upgrade
+      categories:
+        - rhel
+        - os
+        - system
+        - subscription_management
+      products:
+        - tripleo
+        - rhsm
     check_rhsm_version_debug: false
   roles:
     - check_rhsm_version

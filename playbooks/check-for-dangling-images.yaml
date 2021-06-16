@@ -8,6 +8,10 @@
         Make sure before update we do not have any dangling images.
       groups:
         - pre-update
+      categories:
+        - container
+      products:
+        - tripleo
     check_for_dangling_images_debug: false
   roles:
     - check_for_dangling_images
