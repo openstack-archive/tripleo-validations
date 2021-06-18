@@ -1,0 +1,180 @@
+---
+# Copyright 2021 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+- name: Check for role name
+  fail:
+    msg: >-
+      The required variable `role_name` is undefined. Check your settings.
+  when:
+    - validation_init_role_name is undefined
+
+- name: Ensure role name is not empty
+  fail:
+    msg: >-
+      The required variable `role_name` is empty. Check your settings.
+  when:
+    - validation_init_role_name is defined
+    - validation_init_role_name == ''
+
+- name: Normalize the role name
+  set_fact:
+    _role_name: "{{ validation_init_role_name | replace('-', '_' ) }}"
+    dashed_role_name: "{{ validation_init_role_name | replace('_', '-') }}"
+
+- name: Copy Skeleton role directory
+  copy:
+    src: _skeleton_role_
+    dest: "{{ validation_init_skeleton_role_dir }}/"
+    mode: '0755'
+
+- name: Check if the role name is available
+  stat:
+    path: "{{ validation_init_roles_dir }}/{{ validation_init_prefix }}_{{ _role_name }}"
+  register: new_roles_name_dir
+
+- name: Fail if the new role name already exists in roles directory
+  assert:
+    that:
+      - not new_roles_name_dir.stat.exists|bool
+    fail_msg: |
+      {{ validation_init_prefix }}_{{ _role_name }} role does already exist :(
+    success_msg: |
+      {{ validation_init_prefix }}_{{ _role_name }} role doesn't exist! :)
+
+- name: Create role
+  command: >-
+    ansible-galaxy init
+    --role-skeleton={{ validation_init_skeleton_role_dir }}/_skeleton_role_
+    --init-path="{{ validation_init_roles_dir }}/"
+    {{ validation_init_prefix }}_{{ _role_name }}
+  args:
+    creates: "{{ validation_init_roles_dir }}/{{ validation_init_prefix }}_{{ _role_name }}"
+
+- name: Create overcloud deploy script
+  template:
+    src: README.md.j2
+    dest: "{{ validation_init_roles_dir }}/{{ validation_init_prefix }}_{{_role_name }}/README.md"
+
+- name: Create the playbook
+  copy:
+    content: |
+      ---
+      - hosts: undercloud
+        gather_facts: false
+        vars:
+          metadata:
+            name: Brief and general description of the validation
+            description: |
+              The complete description of this validation should be here
+            groups:
+              - backup-and-restore
+              - no-op
+              - prep
+              - pre-introspection
+              - pre-deployment
+              - post-deployment
+              - openshift-on-openstack
+              - pre-upgrade
+              - post-upgrade
+              - pre-system-upgrade
+              - post-system-upgrade
+              - pre-undercloud-upgrade
+              - post-undercloud-upgrade
+              - pre-overcloud-prepare
+              - post-overcloud-prepare
+              - pre-overcloud-upgrade
+              - post-overcloud-upgrade
+              - pre-overcloud-converge
+              - post-overcloud-converge
+              - pre-ceph
+              - post-ceph
+              - pre-update
+              - pre-update-prepare
+              - pre-update-run
+              - pre-update-converge
+              - post-update
+          {{ validation_init_prefix }}_{{ _role_name }}_debug: false
+        roles:
+          - {{ validation_init_prefix }}_{{ _role_name }}
+    dest: "{{ validation_init_playbooks_dir }}/{{ validation_init_prefix }}-{{ dashed_role_name }}.yaml"
+
+- when: validation_init_enabling_ci | default(true) | bool
+  block:
+    - name: Read zuul molecule file
+      slurp:
+        src: "{{ validation_init_zuuld_molecule }}"
+      register: molecule_yaml
+
+    - name: Create molecule entry
+      copy:
+        content: |-
+          ---
+          {% set items = molecule_yaml['content'] | b64decode | from_yaml %}
+          {% set job_index = [] %}
+          {% set new_job_name = "tripleo-validations-centos-8-molecule-" ~ _role_name %}
+          {% for item in items %}
+          {%   if 'project-template' in item %}
+          {%     if item['project-template']['name'] == "tripleo-validations-molecule-jobs" %}
+          {%       if not (new_job_name in item['project-template']['check']['jobs']) %}
+          {%         set _ = item['project-template']['check']['jobs'].append(new_job_name) %}
+          {%         set check_jobs = (item['project-template']['check']['jobs'] | sort) %}
+          {%         set _ = item['project-template']['check'].update({'jobs': check_jobs}) %}
+          {%       endif %}
+          {%       if not (new_job_name in item['project-template']['gate']['jobs']) %}
+          {%         set _ = item['project-template']['gate']['jobs'].append(new_job_name) %}
+          {%         set gate_jobs = (item['project-template']['gate']['jobs'] | sort) %}
+          {%         set _ = item['project-template']['gate'].update({'jobs': gate_jobs}) %}
+          {%       endif %}
+          {%     endif %}
+          {%   else %}
+          {%     if item['job']['name'] == new_job_name %}
+          {%       set _ = job_index.append(new_job_name) %}
+          {%     endif %}
+          {%   endif %}
+          {% endfor %}
+          {% if (job_index | length) < 1 %}
+          {%   set new_job = {
+                  "name": new_job_name,
+                  "parent": "tripleo-validations-centos-8-base",
+                  "files": [
+                    "^roles/" ~ validation_init_prefix ~ "_" ~ _role_name ~ "/.*",
+                    "^tests/prepare-test-host.yml",
+                    "^ci/playbooks/pre.yml",
+                    "^ci/playbooks/run.yml",
+                    "^molecule-requirements.txt"
+                  ],
+                  "vars": {
+                    "tripleo_validations_role_name": validation_init_prefix ~ "_" ~ _role_name
+                  }
+                }
+          %}
+          {%   set _ = items.append({"job": new_job}) %}
+          {% endif %}
+          {{ items | to_nice_yaml(indent=2, width=1337) }}
+        dest: "{{ validation_init_zuuld_molecule }}"
+
+    - name: Create role documentation
+      copy:
+        content: |
+          {% set opening = _role_name %}
+          {{ '=' * (opening | length) }}
+          {{ opening }}
+          {{ '=' * (opening | length) }}
+
+          .. literalinclude:: ../../../roles/{{ validation_init_prefix }}_{{ _role_name}}/README.md
+
+          .. ansibleautoplugin::
+            :role: {{ validation_init_roles_dir }}/{{ validation_init_prefix }}_{{ _role_name }}
+        dest: "{{ validation_init_roles_doc_dir }}/role-{{ validation_init_prefix }}_{{ _role_name }}.rst"
