@@ -13,7 +13,9 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations
 # under the License.
-
+"""switch_vlans module
+Used by the switch_vlans validation.
+"""
 import collections
 
 try:
@@ -37,6 +39,8 @@ description:
     - Validate that the VLANs defined in TripleO nic config files are in the
       LLDP info received from network switches.  The LLDP data is stored in
       Ironic introspection data per interface.
+    - Used by the switch_vlans validation
+    - Owned by the DF Networking
 options:
     path:
         required: true
