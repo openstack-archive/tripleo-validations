@@ -1,0 +1,90 @@
+---
+# Copyright 2021 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+- name: Set folder name fact
+  set_fact:
+    local_folder_name: "{{ oslo_config_validator_report_path }}/{{ inventory_hostname }}"
+
+- name: Making sure local folder exists
+  changed_when: false
+  file:
+    path: "{{ local_folder_name }}"
+    state: directory
+    recurse: true
+  delegate_to: localhost
+
+- name: Saving filtered outputs from validation to files
+  changed_when: false
+  copy:
+    content: "{{ service.output | join('\n') }}\n"
+    dest: "{{ local_folder_name }}/{{ service.service }}-{{ service.config_file | basename }}"
+  loop: "{{ validation_output }}"
+  loop_control:
+    loop_var: service
+  delegate_to: localhost
+
+- name: Saving invalidation to files
+  changed_when: false
+  when:
+    - invalid_settings | default([]) | count
+  copy:
+    content: "{{ invalid_settings | join('\n') }}\n"
+    dest: "{{ local_folder_name }}/invalid_settings.log"
+  delegate_to: localhost
+
+- name: Setting report generation default message
+  set_fact:
+    report_msg: "Reports are available in {{ oslo_config_validator_report_path }}"
+
+- name: Archive report
+  when:
+    - oslo_config_validator_report_archive | bool
+  block:
+    - name: Zipping fetched files
+      changed_when: false
+      archive:
+        path:
+          - "{{ oslo_config_validator_report_path }}/*"
+        dest: "{{ oslo_config_validator_report_path }}.tar.xz"
+        remove: true
+        format: xz
+      run_once: true
+      delegate_to: localhost
+      delegate_facts: true
+      register: archive_out
+
+    - name: Delete local files
+      changed_when: false
+      file:
+        path: "{{ oslo_config_validator_report_path }}"
+        state: absent
+      run_once: true
+      delegate_to: localhost
+
+    - name: Setting report generation archived message
+      set_fact:
+        report_msg: |
+          Reports are archived in {{ oslo_config_validator_report_path }}.tar.xz and contains
+          {{ archive_out.archived | list | default([]) | count }} file(s)
+
+
+- name: Report path
+  run_once: true
+  warn:
+    msg: "{{ report_msg }}"
+
+- name: Role terminated after reports are ready.
+  meta: end_play
