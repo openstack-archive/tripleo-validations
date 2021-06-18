@@ -1,7 +1,3 @@
-===================
-TripleO Validations
-===================
-
 .. image:: https://governance.openstack.org/tc/badges/tripleo-validations.svg
     :target: https://governance.openstack.org/tc/reference/tags/index.html
 
@@ -15,8 +11,9 @@ prevent field engineers from wasting time on misconfiguration or hardware
 issues in their environments.
 
 All validations are written in Ansible and are written in a way that's
-consumable by the `Mistral validation framework`_ or by Ansible directly.
-They are available independently from the UI or the command line client.
+consumable by the `Validation Framework Command Line Interface (CLI)
+<https://docs.openstack.org/validations-libs/latest/reference/api/validations_libs.cli.html>`_
+or by Ansible directly.
 
 * Free software: Apache license
 * Documentation: https://docs.openstack.org/tripleo-validations/latest/
@@ -24,4 +21,3 @@ They are available independently from the UI or the command line client.
 * Source: https://opendev.org/openstack/tripleo-validations
 * Bugs: https://storyboard.openstack.org/#!/project/openstack/tripleo-validations
 
-.. _Mistral validation framework: https://specs.openstack.org/openstack/tripleo-specs/specs/newton/validations.html
