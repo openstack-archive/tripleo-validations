@@ -1,0 +1,13 @@
+---
+features:
+  - |
+    RHEL-8.3 kernel disabled the Intel “TSX” (Transactional
+    Synchronization Extensions) feature by default as a preemptive
+    security measure, but it breaks live migration from RHEL-7.9
+    (or even RHEL-8.1 or RHEL-8.2) to RHEL-8.3.
+
+    Operators are expected to explicitly define the TSX flag in
+    their KernelArgs for the compute role to prevent live-migration
+    issues during the upgrade process.
+
+    This also impacts upstream CentOS systems.
