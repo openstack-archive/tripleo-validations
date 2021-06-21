@@ -1,0 +1,106 @@
+---
+- hosts: all
+  name: Coverage change
+  pre_tasks:
+    - name: Ensure pip is available
+      include_role:
+        name: ensure-pip
+    - name: Ensure virtualenv is available
+      include_role:
+        name: ensure-virtualenv
+    - name: Ensure tox is available
+      include_role:
+        name: ensure-tox
+      vars:
+        ensure_global_symlinks: true
+  tasks:
+    - name: Environment setup
+      shell:
+        cmd: |
+          set -e
+          virtualenv --system-site-packages {{ ansible_user_dir }}/.venv
+      args:
+        chdir: "{{ ansible_user_dir }}/{{ zuul.project.src_dir }}"
+    - name: Measure coverage with the submitted change
+      # `awk` will work on lines starting with an alphabetic char,
+      # followed by an arbitrary number of chars and finally '.py'
+      # this should leave us with table of file coverage measurements.
+      # The selected lines will only be procesed if the second column value,
+      # representing total number of lines in file, is greater than '0'.
+      # This prevents zero division erros, and provides important sanity check on type of the value
+      # and on the form of the `tox -e cover` output in general.
+      shell:
+        cmd: |
+          set -e
+          source {{ ansible_user_dir }}/.venv/bin/activate
+          tox -e cover | awk '/^[[:alpha:]].*\.py/{if ($2 > 0){ print $1 ":" 1-$3/$2; }}'
+      args:
+        chdir: "{{ ansible_user_dir }}/{{ zuul.project.src_dir }}"
+      register: coverage_after
+    - name: Transform to dict
+      set_fact:
+        coverage_after_dict: "{{ coverage_after_dict | default({}) | combine({ item.split(':')[0]: item.split(':')[1] }) }}"
+      loop: "{{ coverage_after.stdout_lines }}"
+    - name: Record total after change
+      shell:
+        cmd: |
+          set -e
+          source {{ ansible_user_dir }}/.venv/bin/activate
+          tox -e cover | awk '/TOTAL/{ print 1-$3/$2 }'
+      args:
+        chdir: "{{ ansible_user_dir }}/{{ zuul.project.src_dir }}"
+      register: coverage_after_total
+    - name: Checkout previous commit
+      shell:
+        cmd: |
+          set -e
+          source {{ ansible_user_dir }}/.venv/bin/activate
+          git checkout HEAD^
+      args:
+        chdir: "{{ ansible_user_dir }}/{{ zuul.project.src_dir }}"
+    - name: Measure coverage before submitted change
+      # `awk` will work on lines starting with an alphabetic char,
+      # followed by an arbitrary number of chars and finally '.py'
+      # this should leave us with table of file coverage measurements.
+      # The selected lines will only be procesed if the second column value,
+      # representing total number of lines in file, is greater than '0'.
+      # This prevents zero division erros, and provides important sanity check on type of the value
+      # and on the form of the `tox -e cover` output in general.
+      shell:
+        cmd: |
+          set -e
+          source {{ ansible_user_dir }}/.venv/bin/activate
+          tox -e cover | awk '/^[[:alpha:]].*\.py/{if ($2 > 0){ print $1 ":" 1-$3/$2; }}'
+      args:
+        chdir: "{{ ansible_user_dir }}/{{ zuul.project.src_dir }}"
+      register: coverage_before
+    - name: Transform to dict
+      set_fact:
+        coverage_before_dict: "{{ coverage_before_dict | default({}) | combine({ item.split(':')[0]: item.split(':')[1] }) }}"
+      loop: "{{ coverage_before.stdout_lines }}"
+    - name: Record total before change
+      shell:
+        cmd: |
+          set -e
+          source {{ ansible_user_dir }}/.venv/bin/activate
+          tox -e cover | awk '/TOTAL/{ print 1-$3/$2 }'
+      args:
+        chdir: "{{ ansible_user_dir }}/{{ zuul.project.src_dir }}"
+      register: coverage_before_total
+    - name: Coverage comparison per file - Check
+      assert:
+        that: "{{coverage_before_dict[item] | float}} <= {{ coverage_after_dict[item] | float}}"
+        fail_msg: |
+            Before the change {{ (coverage_before_dict[item] | float)*100 }}% of the lines were covered.
+            Now it's {{ (coverage_after_dict[item] | float )*100 }}%. Did you write your unit tests?
+        success_msg: |
+            File by file code coverage check successful.
+      loop: "{{ coverage_after_dict.keys() | intersect(coverage_before_dict.keys()) | sort }}"
+    - name: Coverage comparison Total - Check
+      assert:
+        that: "{{ (coverage_after_total.stdout | float) }} >= {{ (coverage_before_total.stdout | float) }}"
+        fail_msg: |
+          Before the change {{ (coverage_before.stdout | float)*100 }}% of the lines were covered.
+          Now it's {{ (coverage_after_total.stdout | float )*100 }}%. Did you write your unit tests?
+        success_msg: |
+          Code coverage check successful, {{ (coverage_before_total.stdout | float) * 100 }}% of code is now covered.

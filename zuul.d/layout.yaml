@@ -32,6 +32,7 @@
               - tripleo-ci-centos-8-content-provider
         - openstack-tox-py36
         - openstack-tox-py39
+        - tripleo-validations-coverchange
     gate:
       jobs:
         - openstack-tox-linters
