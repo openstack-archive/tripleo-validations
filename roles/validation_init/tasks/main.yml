@@ -62,11 +62,6 @@
   args:
     creates: "{{ validation_init_roles_dir }}/{{ validation_init_prefix }}_{{ _role_name }}"
 
-- name: Create overcloud deploy script
-  template:
-    src: README.md.j2
-    dest: "{{ validation_init_roles_dir }}/{{ validation_init_prefix }}_{{_role_name }}/README.md"
-
 - name: Create the playbook
   copy:
     content: |
@@ -173,7 +168,45 @@
           {{ opening }}
           {{ '=' * (opening | length) }}
 
-          .. literalinclude:: ../../../roles/{{ validation_init_prefix }}_{{ _role_name}}/README.md
+          --------------
+          About The Role
+          --------------
+
+          <Description of your role here>
+
+          Requirements
+          ============
+
+          <List all the requirements needed by this new role>
+
+          Dependencies
+          ============
+
+          <List all the dependencies needed by this new role>
+
+          Example Playbook
+          ================
+
+          .. code-block:: yaml
+
+              - hosts: localhost
+                gather_facts: false
+                roles:
+                  - { role: {{ validation_init_prefix }}_{{ _role_name }} }
+
+          Licence
+          =======
+
+          Apache
+
+          Author Information
+          ==================
+
+          **Red Hat TripleO DFG:<DFG_NAME> Squad:<SQUAD_NAME>**
+
+          ----------------
+          Full Description
+          ----------------
 
           .. ansibleautoplugin::
             :role: {{ validation_init_roles_dir }}/{{ validation_init_prefix }}_{{ _role_name }}
