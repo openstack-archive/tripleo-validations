@@ -10,4 +10,5 @@ rules:
     indent-sequences: true
     check-multi-line-strings: false
 ignore: |
+  zuul.d/molecule.yaml
   releasenotes/notes/*.yaml
