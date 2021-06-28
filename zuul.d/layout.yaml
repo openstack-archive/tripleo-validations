@@ -19,28 +19,21 @@
               - ^roles/.*
               - ^playbooks/.*
               - ^library/.*
-        - tripleo-ci-centos-8-content-provider:
-            dependencies:
-              - openstack-tox-linters
         - tripleo-ci-centos-8-standalone-tv-validation:
             vars: &consumer_vars
-              consumer_job: true
-              build_container_images: false
-              remove_tags:
-                - build
+              build_container_images: true
             dependencies:
-              - tripleo-ci-centos-8-content-provider
+              - openstack-tox-linters
         - openstack-tox-py36
         - openstack-tox-py39
     gate:
       jobs:
         - openstack-tox-linters
         - openstack-tox-docs: *tripleo-docs
-        - tripleo-ci-centos-8-content-provider
         - tripleo-ci-centos-8-standalone-tv-validation:
             vars: *consumer_vars
             dependencies:
-              - tripleo-ci-centos-8-content-provider
+              - openstack-tox-linters
         - openstack-tox-py36
         - openstack-tox-py39
 
