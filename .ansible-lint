@@ -1,6 +1,5 @@
 exclude_paths:
     - releasenotes/
-    - playbooks/ceph-pg.yaml
 parseable: true
 quiet: false
 rulesdir:
