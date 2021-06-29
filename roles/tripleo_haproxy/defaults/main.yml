@@ -1,0 +1,21 @@
+---
+# Path to the haproxy.cfg file
+haproxy_config_file: '/var/lib/config-data/puppet-generated/haproxy/etc/haproxy/haproxy.cfg'
+
+# Global mininum per-process number of concurrent connections
+global_maxconn_min: 20480
+
+# Defaults mininum per-process number of concurrent connections
+defaults_maxconn_min: 4096
+
+# Time to wait in the queue for a connection slot to be free
+defaults_timeout_queue: '2m'
+
+# Inactivity time on the client side
+defaults_timeout_client: '2m'
+
+# Inactivity time on the server side
+defaults_timeout_server: '2m'
+
+# Additional check timeout
+defaults_timeout_check: '10s'
