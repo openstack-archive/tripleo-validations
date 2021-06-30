@@ -1,0 +1,35 @@
+---
+# inherits tripleo-validations/.config/molecule/config.yml
+# To override default values, please take a look at the config.yml.
+
+provisioner:
+  name: ansible
+  playbooks:
+    prepare: ../../resources/playbooks/prepare.yml
+    converge: ../../resources/playbooks/converge.yml
+  inventory:
+    hosts:
+      all:
+        hosts:
+          ubi8:
+            ansible_python_interpreter: /usr/bin/python3
+  log: true
+  env:
+    ANSIBLE_STDOUT_CALLBACK: yaml
+    ANSIBLE_LIBRARY: "${ANSIBLE_LIBRARY:-/usr/share/ansible/plugins/modules}:../../resources/library"
+    MOLECULE_OCV:
+      service_name: nova_compute
+      config_file: etc/nova/nova.conf
+      config_folder: /var/lib/config-data/puppet-generated/nova_libvirt
+      # yamllint disable rule:line-length
+      validator_out: |
+        ERROR:root:DEFAULT/ovsdb_connection not found
+        ERROR:root:cinder/region_name not found
+        INFO:root:Ignoring missing option "auth_url" from group "keystone_authtoken" because the group is known to have incomplete sample config data and thus cannot be validated properly.
+        INFO:root:Ignoring missing option "username" from group "keystone_authtoken" because the group is known to have incomplete sample config data and thus cannot be validated properly.
+        INFO:root:Ignoring missing option "password" from group "keystone_authtoken" because the group is known to have incomplete sample config data and thus cannot be validated properly.
+        INFO:root:Ignoring missing option "user_domain_name" from group "keystone_authtoken" because the group is known to have incomplete sample config data and thus cannot be validated properly.
+        INFO:root:Ignoring missing option "project_name" from group "keystone_authtoken" because the group is known to have incomplete sample config data and thus cannot be validated properly.
+        INFO:root:Ignoring missing option "project_domain_name" from group "keystone_authtoken" because the group is known to have incomplete sample config data and thus cannot be validated properly.
+        ERROR:root:service_user/region_name not found
+      # yamllint enable rule:line-length
