@@ -20,14 +20,17 @@
   block:
     - name: Set container_cli fact from undercloud.conf
       block:
-        - name: Get the path of tripleo undercloud config file
-          become: true
-          hiera:
-            name: "tripleo_undercloud_conf_file"
+        - name: Ensure we get needed facts
+          setup:
+            gather_subset:
+              - '!all'
+              - '!any'
+              - '!min'
+              - env
 
         - name: Get container client from undercloud.conf
           validations_read_ini:
-            path: "{{ tripleo_undercloud_conf_file }}"
+            path: "{{ ansible_env.HOME }}/undercloud.conf"
             section: DEFAULT
             key: container_cli
             ignore_missing_file: true

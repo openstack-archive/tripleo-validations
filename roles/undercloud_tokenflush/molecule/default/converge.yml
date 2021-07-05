@@ -18,7 +18,6 @@
 - name: Converge
   hosts: all
   gather_facts: false
-
   tasks:
     - name: working detection
       include_role:
@@ -28,7 +27,7 @@
       block:
         - name: Override container_cli
           copy:
-            dest: /undercloud.conf
+            dest: "{{ ansible_env.HOME }}/undercloud.conf"
             content: |
               [DEFAULT]
               container_cli = docker

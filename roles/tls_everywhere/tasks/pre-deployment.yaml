@@ -1,17 +1,20 @@
 ---
+- name: Ensure we get needed facts
+  setup:
+    gather_subset:
+      - '!all'
+      - '!any'
+      - '!min'
+      - env
+
 - name: Set facts for undercloud handlers to clean up
   set_fact:
     novajoin_temp_krb_caches: []
 
-- name: Get the path of tripleo undercloud config file
-  become: true
-  hiera: name="tripleo_undercloud_conf_file"
-  check_mode: false
-
 - name: Get the Container CLI from the undercloud.conf file (stein+)
   become: true
   validations_read_ini:
-    path: "{{ tripleo_undercloud_conf_file }}"
+    path: "{{ ansible_env.HOME }}/undercloud.conf"
     section: DEFAULT
     key: container_cli
   register: container_cli
