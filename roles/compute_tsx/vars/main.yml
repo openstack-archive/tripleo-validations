@@ -20,4 +20,6 @@
 # intended to be modified.
 
 # All variables within this role should have a prefix of "compute_tsx"
+
+# This is the kernel version that changed the tsx default from true to false
 compute_tsx_8_3_version: "4.18.0-240"
