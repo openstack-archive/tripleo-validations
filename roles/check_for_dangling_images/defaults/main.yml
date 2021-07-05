@@ -18,4 +18,6 @@
 # All variables intended for modification should place placed in this file.
 
 # All variables within this role should have a prefix of "check_for_dangling_images"
+
+# Debugging mode
 check_for_dangling_images_debug: false
