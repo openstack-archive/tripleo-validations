@@ -18,10 +18,21 @@
 # All variables intended for modification should place placed in this file.
 
 # All variables within this role should have a prefix of "overcloud_service_status"
+
+# Debugging mode, whether or no to log the token request
 overcloud_service_status_debug: false
+
+# Overcloud API to validate against
 overcloud_service_api:
   - nova
   - cinderv3
+
+# A list of services that shouldn't be registered any more
 overcloud_deprecated_services:
   nova:
     - nova-consoleauth
+
+# These variables are normally set as host variables for the undercloud when generating
+# the inventory with tripleo-ansible-inventory:
+# - overcloud_keystone_url
+# - overcloud_admin_password
