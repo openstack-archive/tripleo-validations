@@ -5,7 +5,9 @@ rules:
   line-length:
     # matches hardcoded 160 value from ansible-lint
     max: 160
-
+  indentation:
+    spaces: consistent
+    indent-sequences: true
+    check-multi-line-strings: false
 ignore: |
-  zuul.d/*.yaml
   releasenotes/notes/*.yaml
