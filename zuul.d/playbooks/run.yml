@@ -22,7 +22,7 @@
       shell: |-
         . {{ ansible_user_dir }}/test-python/bin/activate
         . {{ tripleo_validations_project_path }}/ansible-test-env.rc
-        pytest --color=no \
+        pytest --color=yes \
                --html={{ ansible_user_dir }}/zuul-output/logs/reports.html \
                --self-contained-html \
                --ansible-args='{{ tripleo_job_ansible_args | default("") }}' \
