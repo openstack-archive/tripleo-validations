@@ -100,7 +100,7 @@
       assert:
         that: "{{ (coverage_after_total.stdout | float) }} >= {{ (coverage_before_total.stdout | float) }}"
         fail_msg: |
-          Before the change {{ (coverage_before.stdout | float)*100 }}% of the lines were covered.
+          Before the change {{ (coverage_before_total.stdout | float)*100 }}% of the lines were covered.
           Now it's {{ (coverage_after_total.stdout | float )*100 }}%. Did you write your unit tests?
         success_msg: |
           Code coverage check successful, {{ (coverage_before_total.stdout | float) * 100 }}% of code is now covered.
