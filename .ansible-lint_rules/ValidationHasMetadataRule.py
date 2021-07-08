@@ -1,5 +1,4 @@
 import os
-import six
 import yaml
 
 from ansiblelint import AnsibleLintRule
@@ -106,7 +105,7 @@ class ValidationHasMetadataRule(AnsibleLintRule):
                                 '*metadata* should contain a %s key' % info))
                             continue
                         if not isinstance(metadata.get(info),
-                                          six.string_types):
+                                          str):
                             results.append((
                                 {path: data},
                                 '*%s* should be a string' % info))
