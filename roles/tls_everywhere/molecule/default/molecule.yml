@@ -2,16 +2,13 @@
 # inherits tripleo-validations/.config/molecule/config.yml
 # To override default values, please take a look at the config.yml.
 
-driver:
-  name: podman
-
 platforms:
   - name: ubi8
     hostname: ubi8
     image: ubi8/ubi-init
     registry:
       url: registry.access.redhat.com
-    dockerfile: Dockerfile
+    dockerfile: ../../../../.config/molecule/Dockerfile
     pkg_extras: python*-setuptools python*-pyyaml krb5-workstation
     volumes:
       - /etc/ci/mirror_info.sh:/etc/ci/mirror_info.sh:ro
