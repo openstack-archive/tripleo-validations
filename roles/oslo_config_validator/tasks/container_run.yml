@@ -110,6 +110,7 @@
         detach: false
         rm: true
         user: "0"
+        network: none
         mount: "type=bind,source={{ oslo_config_validator_work_path }},destination=/oslo_config_validation"
         command: "{{ oslo_command }}"
       register: podman_container_run
@@ -155,7 +156,6 @@
     msg: |
       {{ container_name }} validation failed because:
       {{ container_run.stderr }}
-
 
 - name: Printing container run output
   when:
