@@ -22,6 +22,7 @@
         - tripleo-validations-centos-8-molecule-undercloud_debug
         - tripleo-validations-centos-8-molecule-undercloud_heat_purge_deleted
         - tripleo-validations-centos-8-molecule-undercloud_tokenflush
+        - tripleo-validations-centos-8-molecule-validation_init
     gate:
       jobs:
         - tripleo-validations-centos-8-molecule-ceph
@@ -44,6 +45,7 @@
         - tripleo-validations-centos-8-molecule-undercloud_debug
         - tripleo-validations-centos-8-molecule-undercloud_heat_purge_deleted
         - tripleo-validations-centos-8-molecule-undercloud_tokenflush
+        - tripleo-validations-centos-8-molecule-validation_init
     name: tripleo-validations-molecule-jobs
 
 - job:
@@ -467,3 +469,13 @@
     parent: tripleo-validations-centos-8-base
     vars:
       tripleo_validations_role_name: check_for_dangling_images
+- job:
+    files:
+      - ^roles/validation_init/.*
+      - ^tests/prepare-test-host.yml
+      - ^ci/playbooks/pre.yml
+      - ^ci/playbooks/run.yml
+    name: tripleo-validations-centos-8-molecule-validation_init
+    parent: tripleo-validations-centos-8-base
+    vars:
+      tripleo_validations_role_name: validation_init
