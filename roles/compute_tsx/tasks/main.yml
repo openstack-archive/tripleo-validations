@@ -1,0 +1,82 @@
+---
+# Copyright 2021 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+- name: Gathering TSX information
+  shell: |
+    uname -r | grep -oP "^[\d]+\.[\d]+\.[\d-]+"
+    grep -qP "[^a-zA-Z]tsx=(on|off|auto)" /proc/cmdline && echo true || echo false
+    grep -qP "hle|rtm" /proc/cpuinfo && echo true || echo false
+    grep -qP "[^a-zA-Z]tsx=(on|off|auto)"  /etc/default/grub && echo true || echo false
+  register: node_infos
+  check_mode: false
+  changed_when: false
+
+- name: Parse custom node facts
+  set_fact:
+    tsx_rhel_8_2: "{{ node_infos.stdout_lines[0] is version(compute_tsx_8_3_version, '<') }}"
+    tsx_cmdline: "{{ node_infos.stdout_lines[1] | bool }}"
+    tsx_cpu_support: "{{ node_infos.stdout_lines[2] | bool }}"
+    tsx_grub: "{{ node_infos.stdout_lines[3] | bool }}"
+    tsx_kernel_args: "{{ 'tsx' in compute_tsx_kernel_args }}"
+
+- name: Print facts
+  when:
+    - compute_tsx_debug | bool
+  debug:
+    msg: |
+      tsx_rhel_8_2: {{ tsx_rhel_8_2 }}
+      tsx_cmdline: {{ tsx_cmdline }}
+      tsx_cpu_support: {{ tsx_cpu_support }}
+      tsx_grub: {{ tsx_grub }}
+
+# It's cleaner to assert only ANDs so we do a reverse assertion
+- name: Validating facts
+  assert:
+    that:
+      - tsx_rhel_8_2
+      - tsx_cpu_support
+      - not tsx_cmdline
+      - not tsx_grub
+      - not tsx_kernel_args
+    success_msg: |
+      {{ inventory_hostname }} doesn't have TSX flag configured
+    fail_msg: |
+      This is not a failure, assertion is successful.
+      {{ inventory_hostname }} has the right TSX setting according to its running or startup configuration
+  ignore_errors: true
+  register: tsx_assertion
+
+- name: Asserting errors
+  fail:
+    msg: |
+      {{ tsx_assertion.msg }}
+
+      {{ compute_tsx_information_msg }}
+
+      To prevent this validation from failing, you can run it with the compute_tsx_warning flag set to true like this:
+        openstack tripleo validator run  --extra-vars compute_tsx_warning=true --validation compute-tsx
+  when:
+    - not tsx_assertion.failed
+    - not compute_tsx_warning | bool
+
+- name: Displaying errors
+  warn:
+    msg: |
+      {{ tsx_assertion.msg }}
+
+      {{ compute_tsx_information_msg }}
+  when:
+    - not tsx_assertion.failed
+    - compute_tsx_warning | bool

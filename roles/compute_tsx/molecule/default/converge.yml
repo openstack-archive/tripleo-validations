@@ -1,0 +1,79 @@
+---
+# Copyright 2021 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+
+- name: Converge
+  hosts: all
+  vars:
+    tsx_assertion: {}
+  tasks:
+    - name: Assert a failure
+      block:
+        - name: Loading role with failure
+          include_role:
+            name: compute_tsx
+          vars:
+            tsx_rhel_8_2: true
+            tsx_cmdline: false
+            tsx_cpu_support: true
+            tsx_grub: false
+      rescue:
+        - name: Fail if no failure
+          fail:
+            msg: |
+              {{ tsx_assertion }}
+          when:
+            # The logic is reversed here
+            - tsx_assertion.failed
+
+    - name: Assert a failure, with warning only
+      block:
+        - name: Loading role with failure
+          include_role:
+            name: compute_tsx
+          vars:
+            tsx_rhel_8_2: true
+            tsx_cmdline: false
+            tsx_cpu_support: true
+            tsx_grub: false
+            compute_tsx_warning: true
+      rescue:
+        - name: Fail if failure
+          fail:
+            msg: |
+              {{ tsx_assertion }}
+          when:
+            # The logic is reversed here
+            - not tsx_assertion.failed
+
+    - name: Assert a success
+      block:
+        - name: Loading role with passed
+          include_role:
+            name: compute_tsx
+          vars:
+            tsx_rhel_8_2: true
+            tsx_cmdline: true
+            tsx_cpu_support: true
+            tsx_grub: false
+      rescue:
+        - name: Fail if failure
+          fail:
+            msg: |
+              {{ tsx_assertion }}
+          when:
+            # The logic is reversed here
+            - not tsx_assertion.failed
