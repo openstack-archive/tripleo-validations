@@ -1,13 +1,13 @@
 # this is required for the molecule jobs
-ansi2html
-ansible
+ansi2html>=1.6.0
+ansible>=2.4.0
 # https://github.com/sqlalchemy/dogpile.cache/issues/178
 dogpile.cache>=0.6.5,<0.9.1  # MIT
 jinja2>=2.8.0,<3
-mock
+mock>=3.0.5
 molecule>=3.0,<3.1
-pytest
-pytest-cov
-pytest-html
-pytest-xdist
-selinux  # MIT
+pytest>=5.1.2
+pytest-cov>=2.10.1
+pytest-html>=3.1.1 # MPL 2.0
+pytest-xdist>=1.34.0
+selinux>=0.2.1  # MIT
