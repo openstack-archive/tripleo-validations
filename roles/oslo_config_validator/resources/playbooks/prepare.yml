@@ -1,0 +1,30 @@
+---
+- hosts: all
+  tasks:
+    - name: Save test config from environment variable
+      set_fact:
+        test_config: "{{ lookup('env', 'MOLECULE_OCV') }}"
+
+    - name: Print the test configuration
+      debug:
+        var: test_config
+
+    - name: Set config file fact
+      set_fact:
+        config_file: "{{ test_config.config_folder }}/{{ test_config.config_file }}"
+
+    - name: Saving test_config to file
+      copy:
+        content: "{{ test_config }}"
+        dest: "/test.config.yml"
+
+    - name: Creating mocked config folder
+      file:
+        path: "{{ config_file | dirname }}"
+        state: directory
+        recurse: true
+
+    - name: Creating mocked config file
+      file:
+        path: "{{ config_file }}"
+        state: touch
