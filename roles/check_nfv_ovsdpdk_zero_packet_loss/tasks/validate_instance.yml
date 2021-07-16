@@ -55,7 +55,7 @@
   set_fact:
     validation_msg: "{{ validation_msg }} + {{ ['Invalid emulatorpin configured for instance  ' \
                     + instance_id + ': ' + emulatorpin.emulatorpin.cpuset] }}"
-  when: "{{ not emulatorpin.emulatorpin.cpuset in vcpus_list | list }}"
+  when: "{{ emulatorpin.emulatorpin.cpuset in vcpus_list | list }}"
   loop: "{{ xml_emulatorpin.matches }}"
   loop_control:
     loop_var: emulatorpin
