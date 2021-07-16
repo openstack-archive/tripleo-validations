@@ -12,7 +12,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import collections
+import collections.abc
 
 try:
     from unittest import mock
@@ -25,9 +25,9 @@ from tripleo_validations.tests import fakes
 from tripleo_validations import utils
 
 PATH = [
-    ('properties', collections.Mapping, 'dictionary'),
-    ('config', collections.Mapping, 'dictionary'),
-    ('network_config', collections.Iterable, 'list'),
+    ('properties', collections.abc.Mapping, 'dictionary'),
+    ('config', collections.abc.Mapping, 'dictionary'),
+    ('network_config', collections.abc.Iterable, 'list'),
 ]
 
 
