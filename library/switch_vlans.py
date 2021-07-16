@@ -16,12 +16,7 @@
 """switch_vlans module
 Used by the switch_vlans validation.
 """
-import collections
-
-try:
-    collectionsAbc = collections.abc
-except AttributeError:
-    collectionsAbc = collections
+import collections.abc as collectionsAbc
 
 import os.path
 

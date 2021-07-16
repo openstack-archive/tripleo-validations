@@ -16,13 +16,7 @@
 # under the License.
 from six import string_types
 
-import collections
-
-try:
-    collectionsAbc = collections.abc
-except AttributeError:
-    collectionsAbc = collections
-
+import collections.abc as collectionsAbc
 from glanceclient import client as glance_client
 from heatclient import client as heat_client
 from heatclient import exc as heat_exc
