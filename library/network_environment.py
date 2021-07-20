@@ -18,6 +18,7 @@
 Used by the network_environment validation.
 """
 import collections
+import collections.abc
 import itertools
 import netaddr
 import os.path
@@ -148,21 +149,21 @@ def validate_network_environment(network_data, nic_configs):
 def check_nic_configs(path, nic_data):
     errors = []
 
-    if not isinstance(nic_data, collections.Mapping):
+    if not isinstance(nic_data, collections.abc.Mapping):
         return ["The nic_data parameter must be a dictionary."]
 
     # Look though every resources bridges and make sure there is only a single
     # bond per bridge and only 1 interface per bridge if there are no bonds.
     resources = nic_data.get('resources')
-    if not isinstance(resources, collections.Mapping):
+    if not isinstance(resources, collections.abc.Mapping):
         return ["The nic_data must contain the 'resources' key and it must be "
                 "a dictionary."]
     for name, resource in six.iteritems(resources):
         try:
             nested_path = [
-                ('properties', collections.Mapping, 'dictionary'),
-                ('config', collections.Mapping, 'dictionary'),
-                ('network_config', collections.Iterable, 'list'),
+                ('properties', collections.abc.Mapping, 'dictionary'),
+                ('config', collections.abc.Mapping, 'dictionary'),
+                ('network_config', collections.abc.Iterable, 'list'),
             ]
             bridges = get_nested(resource, name, nested_path)
         except ValueError as e:
@@ -226,7 +227,7 @@ def check_nic_configs(path, nic_data):
 def check_cidr_overlap(networks):
     errors = []
     objs = []
-    if not isinstance(networks, collections.Iterable):
+    if not isinstance(networks, collections.abc.Iterable):
         return ["The argument must be iterable."]
     for x in networks:
         try:
@@ -243,14 +244,14 @@ def check_cidr_overlap(networks):
 
 
 def check_allocation_pools_pairing(filedata, pools):
-    if not isinstance(filedata, collections.Mapping):
+    if not isinstance(filedata, collections.abc.Mapping):
         return ["The `filedata` argument must be a dictionary."]
-    if not isinstance(pools, collections.Mapping):
+    if not isinstance(pools, collections.abc.Mapping):
         return ["The `pools` argument must be a dictionary."]
     errors = []
     for poolitem, pooldata in six.iteritems(pools):
         pool_objs = []
-        if not isinstance(pooldata, collections.Iterable):
+        if not isinstance(pooldata, collections.abc.Iterable):
             errors.append('The IP ranges in {} must form a list.'
                           .format(poolitem))
             continue
@@ -315,14 +316,14 @@ def check_static_ip_pool_collision(static_ips, pools):
         'storage': ['192.168.100.45', etc.]
     }
     """
-    if not isinstance(static_ips, collections.Mapping):
+    if not isinstance(static_ips, collections.abc.Mapping):
         return ["The static IPs input must be a dictionary."]
-    if not isinstance(pools, collections.Mapping):
+    if not isinstance(pools, collections.abc.Mapping):
         return ["The Pools input must be a dictionary."]
     errors = []
     pool_ranges = []
     for pool_name, ranges in six.iteritems(pools):
-        if not isinstance(ranges, collections.Iterable):
+        if not isinstance(ranges, collections.abc.Iterable):
             errors.append("The IP ranges in {} must form a list."
                           .format(pool_name))
             continue
@@ -337,11 +338,11 @@ def check_static_ip_pool_collision(static_ips, pools):
             pool_ranges.append((pool_name, ip_range))
 
     for role, services in six.iteritems(static_ips):
-        if not isinstance(services, collections.Mapping):
+        if not isinstance(services, collections.abc.Mapping):
             errors.append("The {} must be a dictionary.".format(role))
             continue
         for service, ips in six.iteritems(services):
-            if not isinstance(ips, collections.Iterable):
+            if not isinstance(ips, collections.abc.Iterable):
                 errors.append("The {}->{} must be an array."
                               .format(role, service))
                 continue
@@ -376,7 +377,7 @@ def ranges_conflicting_with_ip(ip_address, ip_ranges):
 
 
 def check_vlan_ids(vlans):
-    if not isinstance(vlans, collections.Mapping):
+    if not isinstance(vlans, collections.abc.Mapping):
         return ["The vlans parameter must be a dictionary."]
     errors = []
     invertdict = {}
@@ -393,9 +394,9 @@ def check_static_ip_in_cidr(networks, static_ips):
     """Check all static IP addresses are from the corresponding network range.
 
     """
-    if not isinstance(networks, collections.Mapping):
+    if not isinstance(networks, collections.abc.Mapping):
         return ["The networks argument must be a dictionary."]
-    if not isinstance(static_ips, collections.Mapping):
+    if not isinstance(static_ips, collections.abc.Mapping):
         return ["The static_ips argument must be a dictionary."]
     errors = []
     network_ranges = {}
@@ -409,13 +410,13 @@ def check_static_ip_in_cidr(networks, static_ips):
             errors.append("Network '{}' has an invalid CIDR: '{}'"
                           .format(name, cidr))
     for role, services in six.iteritems(static_ips):
-        if not isinstance(services, collections.Mapping):
+        if not isinstance(services, collections.abc.Mapping):
             errors.append("The {} must be a dictionary.".format(role))
             continue
         for service, ips in six.iteritems(services):
             range_name = service.title().replace('_', '') + 'NetCidr'
             if range_name in network_ranges:
-                if not isinstance(ips, collections.Iterable):
+                if not isinstance(ips, collections.abc.Iterable):
                     errors.append("The {}->{} must be a list."
                                   .format(role, service))
                     continue
@@ -433,17 +434,17 @@ def check_static_ip_in_cidr(networks, static_ips):
 
 def duplicate_static_ips(static_ips):
     errors = []
-    if not isinstance(static_ips, collections.Mapping):
+    if not isinstance(static_ips, collections.abc.Mapping):
         return ["The static_ips argument must be a dictionary."]
     ipset = collections.defaultdict(list)
     # TODO(shadower): we're doing this netsted loop multiple times. Turn it
     # into a generator or something.
     for role, services in six.iteritems(static_ips):
-        if not isinstance(services, collections.Mapping):
+        if not isinstance(services, collections.abc.Mapping):
             errors.append("The {} must be a dictionary.".format(role))
             continue
         for service, ips in six.iteritems(services):
-            if not isinstance(ips, collections.Iterable):
+            if not isinstance(ips, collections.abc.Iterable):
                 errors.append("The {}->{} must be a list."
                               .format(role, service))
                 continue
