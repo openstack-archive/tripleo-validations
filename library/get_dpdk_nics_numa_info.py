@@ -62,7 +62,7 @@ def get_dpdk_nics_mapping(module, dpdk_mapping_file, mac):
         err = "Unable to determine DPDK NIC's details"
         module.fail_json(msg=err)
     else:
-        dpdk_nics_map = yaml.load(str(result[1]))
+        dpdk_nics_map = yaml.load(str(result[1]), Loader=yaml.SafeLoader)
         for dpdk_nic_map in dpdk_nics_map:
             if dpdk_nic_map['mac_address'] == mac:
                 return dpdk_nic_map
