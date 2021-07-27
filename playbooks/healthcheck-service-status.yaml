@@ -8,6 +8,16 @@
       groups:
         - backup-and-restore
         - post-deployment
+      categories:
+        - os
+        - system
+        - systemd
+        - healthcheck
+        - services
+        - undercloud
+        - overcloud
+      products:
+        - tripleo
     retries_number: 1
     delay_number: 1
     inflight_healthcheck_services: []

@@ -15,6 +15,11 @@
         is running but before the pools are created to realize the deployment
         will fail.
       groups: []
+      categories:
+        - storage
+      products:
+        - tripleo
+        - ceph
   tasks:
     - include_role:
         name: ceph

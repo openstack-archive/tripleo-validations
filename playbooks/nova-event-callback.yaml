@@ -19,6 +19,12 @@
 
       groups:
         - post-deployment
+      categories:
+        - networking
+        - compute
+        - neutron
+      products:
+        - tripleo
     nova_config_file: /var/lib/config-data/puppet-generated/nova/etc/nova/nova.conf
     neutron_config_file: /var/lib/config-data/puppet-generated/neutron/etc/neutron/neutron.conf
     vif_plugging_fatal_check: "vif_plugging_is_fatal"

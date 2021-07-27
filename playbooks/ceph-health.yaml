@@ -10,6 +10,11 @@
         - backup-and-restore
         - post-deployment
         - post-ceph
+      categories:
+        - storage
+      products:
+        - tripleo
+        - ceph
     tripleo_delegate_to: "{{ groups['ceph_mon'] | default([]) }}"
     osd_percentage_min: 0
   tasks:

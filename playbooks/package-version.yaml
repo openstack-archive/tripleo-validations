@@ -17,6 +17,13 @@
         - pre-overcloud-upgrade
         - pre-overcloud-converge
         - pre-ceph
+      categories:
+        - rpm
+        - os
+        - system
+        - packaging
+      products:
+        - tripleo
     package_version_debug: false
   roles:
     - package_version

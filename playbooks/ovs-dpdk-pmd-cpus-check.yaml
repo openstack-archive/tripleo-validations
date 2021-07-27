@@ -10,5 +10,11 @@
         configured correctly.
       groups:
         - post-deployment
+      categories:
+        - networking
+        - compute
+        - nfv
+      products:
+        - tripleo
   roles:
     - ovs_dpdk_pmd

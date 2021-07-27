@@ -11,5 +11,12 @@
         - pre-upgrade
         - post-update
         - pre-update
+      categories:
+        - os
+        - system
+        - systemd
+        - services
+      products:
+        - tripleo
   roles:
     - undercloud_service_status

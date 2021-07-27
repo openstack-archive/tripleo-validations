@@ -10,5 +10,13 @@
         daemon is not operational.
       groups:
         - post-deployment
+      categories:
+        - container
+        - frrouting
+        - iprouting
+        - undercloud
+        - overcloud
+      products:
+        - tripleo
   roles:
     - frr_status

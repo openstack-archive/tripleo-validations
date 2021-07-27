@@ -8,6 +8,12 @@
         `dhcp_end` fields in `undercloud.conf` is not too low.
       groups:
         - pre-introspection
+      categories:
+        - networking
+        - dhcp
+        - undercloud
+      products:
+        - tripleo
     ctlplane_iprange_min_size: 20
   roles:
     - ctlplane_ip_range

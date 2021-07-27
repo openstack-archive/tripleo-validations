@@ -5,11 +5,15 @@
       name: Verify undercloud.conf correctness
       description: |
         This validation verifies that no deprecated, invalid or
-        incompatible parameters are being passwed in the Undercloud's
+        incompatible parameters are being passed in the Undercloud's
         undercloud.conf configuration file.
       groups:
         - prep
         - pre-undercloud-upgrade
+      categories:
+        - undercloud-config
+      products:
+        - tripleo
     check_undercloud_conf_debug: false
   roles:
     - check_undercloud_conf

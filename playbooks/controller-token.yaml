@@ -10,6 +10,13 @@
         undercloud and overcloud controller after deployment.
       groups:
         - post-deployment
+      categories:
+        - keystone
+        - identity
+        - undercloud
+        - controller
+      products:
+        - tripleo
     keystone_conf_file: "/var/lib/config-data/puppet-generated/keystone/etc/keystone/keystone.conf"
   roles:
     - controller_token

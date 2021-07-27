@@ -19,5 +19,9 @@
       groups:
         - backup-and-restore
         - pre-upgrade
+      categories:
+        - compute
+      products:
+        - tripleo
   roles:
     - nova_status

@@ -7,6 +7,14 @@
         This will check the ulimits of each controller.
       groups:
         - post-deployment
+      categories:
+        - os
+        - system
+        - resources
+        - overcloud
+        - controller
+      products:
+        - tripleo
     nofiles_min: 1024
     nproc_min: 2048
   roles:

@@ -9,5 +9,12 @@
       groups:
         - pre-deployment
         - pre-upgrade
+      categories:
+        - compute
+        - baremetal
+        - provisioning
+        - undercloud
+      products:
+        - tripleo
   roles:
     - collect_flavors_and_verify_profiles

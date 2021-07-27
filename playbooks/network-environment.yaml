@@ -14,6 +14,13 @@
         http://tripleo.org/advanced_deployment/network_isolation.html
       groups:
         - pre-deployment
+      categories:
+        - networking
+        - undercloud
+        - network_isolation
+        - undercloud
+      products:
+        - tripleo
     network_environment_path: environments/network-environment.yaml
     plan_env_path: plan-environment.yaml
     ip_pools_path: environments/ips-from-pool-all.yaml

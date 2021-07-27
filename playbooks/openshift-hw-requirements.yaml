@@ -13,6 +13,13 @@
         - Are there sufficient compute resources available for a default setup? (1 Master node, 1 Infra node, 2 App nodes)
       groups:
         - openshift-on-openstack
+      categories:
+        - hardware
+        - provisioning
+        - compute
+        - storage
+      products:
+        - tripleo
     min_total_ram_testing: 16384    # 4 per node
     min_total_vcpus_testing: 4      # 1 per node
     min_total_disk_testing: 93      # Master: 40, others: 17 per node
