@@ -572,6 +572,16 @@ of the `molecule.yaml` file.
           jobs:
             - tripleo-validations-centos-8-molecule-${NEWROLENAME}
 
+.. note::
+
+    Adding `Molecule` test is highly recommended but remains **optional**. Some
+    validations might require a real OpenStack Infrastructure in order to run
+    them and this, by definition, will make the `Molecule` test very complex to
+    implement.
+
+    If you are in this case when creating a new validation, please
+    add `-e validation_init_molecule=false` to the above `ansible-playbook`
+    command. No molecule directory and no CI Job will be created.
 
 Finally it will add a role documentation file at
 `doc/source/roles/role-${NEWROLENAME}.rst`. This file will need to contain

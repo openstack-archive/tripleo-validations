@@ -1,0 +1,72 @@
+---
+# Copyright 2021 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+- name: Verify with no molecule tests
+  hosts: all
+  gather_facts: false
+  vars:
+    new_role_path: "/tmp/roles/tripleo_skeleton_test_no_molecule"
+    new_role_name: "tripleo_skeleton_test_no_molecule"
+    new_zmol_path: "/tmp/zuul.d/molecule.yaml"
+  tasks:
+    - name: Check new role directory is present
+      stat:
+        path: "{{ new_role_path }}"
+      register: roles_name_dir
+
+    - assert:
+        that:
+          - roles_name_dir.stat.exists | bool
+          - roles_name_dir.stat.isdir | bool
+        fail_msg: |
+          {{ new_role_path }} role directory doesn't exist.
+        success_msg: |
+          {{ new_role_path }} role directory does exist.
+
+    - name: Check the molecule directory presence/absence
+      stat:
+        path: "{{ new_role_path }}/molecule"
+      register: roles_molecule_dir
+
+    - name: Fail if the molecule directory if present
+      fail:
+        msg: |
+          {{ new_role_path }}/molecule directory has not been removed.
+      when: roles_molecule_dir.stat.exists | bool
+
+    - name: Read zuul molecule file
+      slurp:
+        src: "{{ new_zmol_path }}"
+      register: molecule_yaml
+
+    - name: Print returned information
+      debug:
+        msg: "{{ molecule_yaml['content'] | b64decode }}"
+
+    - name: Check no molecule job has been added
+      command: >-
+        grep {{ new_role_name }} {{ new_zmol_path }}
+      changed_when: false
+      ignore_errors: true
+      register: is_molecule_ci_job_definition
+
+    - assert:
+        that:
+          - "{{ is_molecule_ci_job_definition.rc | int }} > 0"
+        fail_msg: |
+          CI Job definition has been added!
+        success_msg: |
+          CI Job definition not found as expected!

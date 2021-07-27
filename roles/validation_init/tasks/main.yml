@@ -62,6 +62,12 @@
   args:
     creates: "{{ validation_init_roles_dir }}/{{ validation_init_prefix }}_{{ _role_name }}"
 
+- name: Remove molecule directory if not needed
+  file:
+    path: "{{ validation_init_roles_dir }}/{{ validation_init_prefix }}_{{ _role_name }}/molecule"
+    state: absent
+  when: not validation_init_molecule | default(true) | bool
+
 - name: Create the playbook
   copy:
     content: |
@@ -182,6 +188,7 @@
           {% set _ = sorted_jobs.insert(0, project) %}
           {{ sorted_jobs | to_nice_yaml(indent=2, width=1337) }}
         dest: "{{ validation_init_zuuld_molecule }}"
+      when: validation_init_molecule | default(true) | bool
 
     - name: Create role documentation
       copy:
