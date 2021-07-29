@@ -18,6 +18,10 @@
 # All variables intended for modification should place placed in this file.
 
 # All variables within this role should have a prefix of "check_uc_hostname"
+
+# Debugging mode
 check_uc_hostname_debug: false
-check_uc_hostname_containers: "{{ ansible_env.HOME }}/containers-prepare-parameter.yaml"
-check_uc_hostname_undercloud: "{{ ansible_env.HOME }}/undercloud.conf"
+
+# Contains the ansible inventory hosts variable,
+# which is used to get the hostvars stack (plan) name
+check_uc_hostname_inventory_host: undercloud
