@@ -331,6 +331,17 @@
     voting: false
 - job:
     files:
+      - ^roles/oslo_config_validator/.*
+      - ^tests/prepare-test-host.yml
+      - ^ci/playbooks/pre.yml
+      - ^ci/playbooks/run.yml
+      - ^molecule-requirements.txt
+    name: tripleo-validations-centos-8-molecule-oslo_config_validator
+    parent: tripleo-validations-centos-8-base
+    vars:
+      tripleo_validations_role_name: oslo_config_validator
+- job:
+    files:
     - ^roles/overcloud_service_status/.*
     - ^tests/prepare-test-host.yml
     - ^ci/playbooks/pre.yml

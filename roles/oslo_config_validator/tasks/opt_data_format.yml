@@ -1,0 +1,66 @@
+---
+# Copyright 2021 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+# These tasks are generating a new opt_data data structure based
+# on the output of oslo-config-generator merged with the opt_data
+# mapping in the config file settings. This has to be looped for
+# each mapping.
+
+- name: Get list value
+  become: true
+  validations_read_ini:
+    path: "{{ config_file.path }}"
+    section: "{{ option_data.index_key.section }}"
+    key: "{{ option_data.index_key.option }}"
+  register: opt_val
+
+- name: Printing templatable values
+  when:
+    - oslo_config_validator_debug | bool
+  debug:
+    var: opt_val
+
+- name: Building list of replaceable data
+  when:
+    - opt_val.value
+    - opt_data | length
+  set_fact:
+    new_sections: >-
+      {% set section_list = {} %}{%
+         set templates = [] %}{%
+         for section in option_data.template_section %}{%
+           set _ = templates.extend(opt_data.options[section].opts) %}{%
+         endfor %}{%
+         if 'separator' in option_data.index_key %}{%
+           set sections = opt_val.value.split(option_data.index_key.separator) | list %}{%
+         else %}{%
+           set sections = [opt_val.value] %}{%
+         endif %}{%
+         for val in sections %}{%
+             set _ = section_list.__setitem__(val, {"opts": templates }) %}{%
+         endfor %}{{ section_list }}
+
+- name: Printing generated sections
+  when:
+    - oslo_config_validator_debug | bool
+  debug:
+    var: new_sections
+
+- name: Adding new sections to opt_data
+  when:
+    - new_sections | default([]) | count
+  set_fact:
+    opt_data: "{{ opt_data | combine({'options': new_sections}, recursive=True) }}"
