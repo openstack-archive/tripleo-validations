@@ -53,6 +53,7 @@ oslo_config_validator_global_ignored_messages:
   - 'WARNING:oslo_config.generator:normalizing group name.*'
   - 'WARNING:stevedore.named:Could not load .*'
   - 'WARNING:root:Deprecated opt .*'
+  - 'INFO:oslo_utils.netutils:Could not determine default network interface, using .*'
   - 'ERROR:root:quotas/quota_[^\s]+ {{ invalid_setting_regex }}'
   - 'Error: error configuring network namespace for container'
   - '.*Ignoring option because it is part of the excluded patterns. This can be changed with the.*'
