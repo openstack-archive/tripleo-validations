@@ -179,7 +179,7 @@ def main():
             utils.get_heat_client(auth_variables),
             utils.get_swift_client(auth_variables))
 
-    if plans is None:
+    if not plans:
         inventory = inv.TripleoInventory(
             session=utils.get_auth_session(auth_variables),
             hclient=utils.get_heat_client(auth_variables),
