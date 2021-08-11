@@ -25,6 +25,8 @@
         - name: Include the oslo_config_validator role
           include_role:
             name: oslo_config_validator
+          vars:
+            oslo_config_validator_debug: true
       rescue:
         - fail:
             msg: "Default test failed"

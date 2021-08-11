@@ -46,7 +46,7 @@
 
 - name: podman - Gather facts for all containers
   become: true
-  podman_container_info:
+  containers.podman.podman_container_info:
   register: containers_facts
 
 - name: Generating config_location dict
