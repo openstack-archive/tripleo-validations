@@ -1,6 +1,14 @@
 ---
 - hosts: all
   tasks:
+    - name: Copy fake podman to path
+      become: true
+      copy:
+        src: "{{ playbook_dir }}/../library/podman"
+        dest: /bin/podman
+        backup: true
+        mode: '0777'
+
     - name: Save test config from environment variable
       set_fact:
         test_config: "{{ lookup('env', 'MOLECULE_OCV') }}"

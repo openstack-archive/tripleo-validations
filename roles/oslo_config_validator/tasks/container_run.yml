@@ -100,13 +100,13 @@
     dest: "{{ oslo_config_validator_work_path }}"
 
 - name: Run oslo-config container
-  podman_container:
+  containers.podman.podman_container:
     name: "{{ container_name }}"
     image: "{{ config_file.image }}"
     state: started
     detach: false
     rm: true
-    user: 0
+    user: "0"
     mount: "type=bind,source={{ oslo_config_validator_work_path }},destination=/oslo_config_validation"
     network: none
     command: "{{ oslo_command }}"
