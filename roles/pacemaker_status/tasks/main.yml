@@ -6,6 +6,11 @@
   changed_when: false
   ignore_errors: true
 
+- name: Check pacemaker service is inactive or failed
+  fail:
+    msg: "Pacemaker service found {{ check_service.stdout.split('=')[-1] }}"
+  when: check_service.stdout != 'ActiveState=active'
+
 - when: "check_service.stdout == 'ActiveState=active'"
   block:
     - name: Get pacemaker status

@@ -7,5 +7,7 @@ metadata:
     A failed status post-deployment indicates something is not configured
     correctly. This should also be run before upgrade as the process will
     likely fail with a cluster that's not completely healthy.
+
+    This validation fails if pacemaker service is found failed or inactive.
   groups:
     - post-deployment
