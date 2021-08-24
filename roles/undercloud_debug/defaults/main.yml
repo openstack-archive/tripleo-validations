@@ -1,6 +1,8 @@
 ---
-
+# Fail if the 'debug' key is set to value of 'debug_check'
 debug_check: true
+
+# Parse following ini files, retrieving value of the 'debug' key
 services_conf_files:
   - /var/lib/config-data/puppet-generated/nova/etc/nova/nova.conf
   - /var/lib/config-data/puppet-generated/neutron/etc/neutron/neutron.conf

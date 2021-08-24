@@ -8,4 +8,4 @@
     ignore_missing_file: true
   register: config_result
   with_items: "{{ services_conf_files }}"
-  failed_when: "debug_check|bool  == config_result.value|bool"
+  failed_when: "debug_check|bool == config_result.value|bool"
