@@ -1,6 +1,6 @@
 ---
 - name: Get instance numa node from xml string
-  xml:
+  community.general.xml:
     xmlstring: "{{ instance_xml_data }}"
     xpath: /domain/numatune/memory
     content: attribute
@@ -13,7 +13,7 @@
 
 # Validates the instance vcpus list.
 - name: Get vcpu list from xml string
-  xml:
+  community.general.xml:
     xmlstring: "{{ instance_xml_data }}"
     xpath: /domain/cputune/vcpupin
     content: attribute
@@ -44,7 +44,7 @@
 
 # Validates instance emulatorpin threads
 - name: Get emulatorpin list from xml string
-  xml:
+  community.general.xml:
     xmlstring: "{{ instance_xml_data }}"
     xpath: /domain/cputune/emulatorpin
     content: attribute
@@ -62,7 +62,7 @@
 
 # Validates instance huge page size length is greater than or equal to 6.
 - name: Get hugepages from xml string
-  xml:
+  community.general.xml:
     xmlstring: "{{ instance_xml_data }}"
     xpath: /domain/memoryBacking/hugepages/page
     content: attribute
@@ -77,7 +77,7 @@
 
 # Validates instance tx rx queue sizes and should be greater than or equal to 1024.
 - name: Get {{ vm_id }} libvirt tx | rx queue sizes from xml string
-  xml:
+  community.general.xml:
     xmlstring: "{{ instance_xml_data }}"
     xpath: /domain/devices/interface/driver
     content: attribute
