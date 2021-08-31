@@ -45,6 +45,9 @@
         virtualenv_command: "{{ ensure_pip_virtualenv_command }}"
         virtualenv_site_packages: true
 
+    - name: Set up collections
+      command: "{{ ansible_user_dir }}/test-python/bin/ansible-galaxy install -fr {{ tripleo_validations_project_path }}/ansible-collections-requirements.yml"
+
     - name: Display test-python virtualenv package versions
       shell: |-
         . {{ ansible_user_dir }}/test-python/bin/activate
