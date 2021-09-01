@@ -120,6 +120,8 @@
     - name: Create molecule entry
       copy:
         content: |-
+          # Managed via ./role-addition.yml, do not edit manually without testing that
+          # new role addition does not reformat it.
           ---
           {% set items = molecule_yaml['content'] | b64decode | from_yaml %}
           {% set job_index = [] %}
@@ -158,11 +160,14 @@
                   "vars": {
                     "tripleo_validations_role_name": validation_init_prefix ~ "_" ~ _role_name
                   }
-                }
+               }
           %}
           {%   set _ = items.append({"job": new_job}) %}
           {% endif %}
-          {{ items | to_nice_yaml(indent=2, width=1337) }}
+          {% set project = items.pop(0) %}
+          {% set sorted_jobs = items | sort(attribute='job.name') %}
+          {% set _ = sorted_jobs.insert(0, project) %}
+          {{ sorted_jobs | to_nice_yaml(indent=2, width=1337) }}
         dest: "{{ validation_init_zuuld_molecule }}"
 
     - name: Create role documentation
