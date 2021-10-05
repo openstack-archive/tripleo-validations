@@ -49,8 +49,13 @@
       loop_control:
         loop_var: option_data
         label: >-
+          {% if 'index_key' in option_data %}
           {{ option_data.index_key.section }} /
           {{ option_data.index_key.option }}
+          {% else %}
+          {{ option_data.group_create.template }} /
+          {{ option_data.group_create.group_name }}
+          {% endif %}
 
     - name: Saving new opt_data content
       become: true
