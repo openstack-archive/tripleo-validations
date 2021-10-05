@@ -1,0 +1,74 @@
+---
+options:
+  DEFAULT:
+    driver_option: ''
+    driver_opts: {}
+    dynamic_group_owner: ''
+    help: ''
+    opts:
+      - advanced: false
+        choices: []
+        default: internal
+        deprecated_for_removal: false
+        deprecated_opts: []
+        deprecated_reason: null
+        deprecated_since: null
+        dest: internal_service_availability_zone
+        max: null
+        metavar: null
+        min: null
+        mutable: false
+        name: internal_service_availability_zone
+        namespace: nova.conf
+        positional: false
+        required: false
+        sample_default: null
+        secret: false
+        short: null
+        type: string value
+  os_vif_linux_bridge:
+    driver_option: ''
+    driver_opts: {}
+    dynamic_group_owner: ''
+    help: ''
+    opts:
+      - advanced: false
+        choices: []
+        default: false
+        dest: use_ipv6
+        help: Use IPv6
+        max: null
+        metavar: null
+        min: null
+        mutable: false
+        name: use_ipv6
+        namespace: os_vif
+        positional: false
+        required: false
+        sample_default: null
+        secret: false
+        short: null
+        type: boolean value
+  os_vif_ovs:
+    driver_option: ''
+    driver_opts: {}
+    dynamic_group_owner: ''
+    help: ''
+    opts:
+      - advanced: false
+        choices: []
+        default: 1500
+        dest: network_device_mtu
+        help: MTU setting for network interface.
+        max: null
+        metavar: null
+        min: null
+        mutable: false
+        name: network_device_mtu
+        namespace: os_vif
+        positional: false
+        required: false
+        sample_default: null
+        secret: false
+        short: null
+        type: integer value
