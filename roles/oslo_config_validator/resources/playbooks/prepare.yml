@@ -26,6 +26,11 @@
         content: "{{ test_config }}"
         dest: "/test.config.yml"
 
+    - name: Saving test_config to file
+      copy:
+        src: "{{ playbook_dir }}/../library/generator.yml"
+        dest: "/generator.yml"
+
     - name: Creating mocked config folder
       file:
         path: "{{ config_file | dirname }}"

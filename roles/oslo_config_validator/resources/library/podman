@@ -267,6 +267,11 @@ def read_config(config='/test.config.yml'):
     return test_config
 
 
+def mock_generator():
+    with open('/generator.yml', 'r') as generator:
+        return "".join(generator.readlines())
+
+
 def container_list():
     test_config = read_config('/test.config.yml')
     config_folder = test_config.get('config_folder')
@@ -286,7 +291,9 @@ if __name__ == '__main__':
         print(dumps([image_get]))
     elif "version" in sys.argv[1]:
         print("podman version 3.3.1")
-    elif len(sys.argv) > 1 and sys.argv[2] == "run":
+    elif "oslo-config-generator" in sys.argv:
+        print(mock_generator())
+    elif len(sys.argv) > 2 and sys.argv[2] == "run":
         print(container_exec())
     elif sys.argv[1] == "container":
         container = container_list()
