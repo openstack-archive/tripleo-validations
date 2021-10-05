@@ -80,10 +80,6 @@ oslo_config_validator_namespaces_config:
   - namespace: glance.store
     ignored_messages:
       - "ERROR:stevedore.extension:Could not load '(glance.store.)*s3(.Store)*': No module named 'boto3'"
-      # NOTE(dvd): openstack/puppet-glance: https://review.opendev.org/775633
-      #            This setting was removed from puppet registry in Wallaby
-      #            but it was removed from Glance a while ago.
-      - 'ERROR:root:DEFAULT/enable_v1_api {{ invalid_setting_regex }}'
 
   - namespace: heat.common.config
     ignored_messages:
@@ -91,15 +87,6 @@ oslo_config_validator_namespaces_config:
       #            heat wasn't including its yaql and cache options by default. This is being worked
       #            on during the Xena cycle and should hopefully be backported down to train.
       - 'ERROR:root:(yaql|(resource_finder_)*cache)/[^\s]+ {{ invalid_setting_regex }}'
-
-  - namespace: ironic
-    ignored_messages:
-      # NOTE(dvd): openstack/puppet-ironic: https://review.opendev.org/789592
-      #            This setting was removed a while ago but puppet registry was updated only only recently
-      - 'ERROR:root:pxe/ipxe_enabled {{ invalid_setting_regex }}'
-      # NOTE(dvd): openstack/puppet-ironic: https://review.opendev.org/790526
-      #            This setting isn't used in ironic since 2013, it was removed in Xena cycle.
-      - 'ERROR:root:conductor/max_time_interval {{ invalid_setting_regex }}'
 
   - namespace: keystonemiddleware.auth_token
     ignored_messages:
@@ -127,10 +114,6 @@ oslo_config_validator_namespaces_config:
         option: notify_nova_on_port_status_changes
         value_list:
           - "True"
-
-    ignored_messages:
-      # NOTE(dvd): openstack/neutron: https://review.opendev.org/789648
-      - 'ERROR:root:placement/[^\s]+ {{ invalid_setting_regex }}'
 
   - namespace: cinder
     invalid_settings:
@@ -164,13 +147,6 @@ oslo_config_validator_namespaces_config:
           - "True"
 
     ignored_messages:
-      # NOTE(dvd): openstack/puppet-nova: https://review.opendev.org/789633
-      #            This was erroneously categorized in the DEFAULT section but it should have been
-      #            under the vif_plug_ovs section.
-      - 'ERROR:root:DEFAULT/ovsdb_connection {{ invalid_setting_regex }}'
-      # NOTE(dvd): openstack/os-vif: https://review.opendev.org/789645
-      #            os_vif had no list_opts entrypoint before Xena.
-      - 'ERROR:root:vif_plug_ovs/ovsdb_connection {{ invalid_setting_regex }}'
       # These settings are used by openstacksdk and not part of oslo_config_opts. They are not taken
       # into account by oslo-config-(generator|validator)
       - 'ERROR:root:(cinder|service_user)/region_name {{ invalid_setting_regex }}'
@@ -196,9 +172,17 @@ oslo_config_validator_service_configs:
     config_files:
       - path: /etc/nova/nova.conf
         namespaces: []
+    opt_data:
+      - group_create:
+          template: os_vif_ovs
+          group_name: vif_plug_ovs
+      - group_create:
+          template: os_vif_linux_bridge
+          group_name: vif_plug_linux_brige
     default_namespaces:
       - nova.conf
       - keystonemiddleware.auth_token
+      - os_vif
       - oslo.log
       - oslo.messaging
       - oslo.policy
