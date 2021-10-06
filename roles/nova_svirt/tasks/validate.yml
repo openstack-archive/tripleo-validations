@@ -2,7 +2,7 @@
 - name: "Parse {{ item.path }}"
   become: true
   register: seclabels
-  xml:
+  community.general.xml:
     path: "{{ item.path }}"
     content: attribute
     xpath: '/domstatus/domain/seclabel'

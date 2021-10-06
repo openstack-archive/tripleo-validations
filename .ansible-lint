@@ -1,5 +1,6 @@
 exclude_paths:
     - releasenotes/
+    - ci/playbooks/
 parseable: true
 quiet: false
 rulesdir:

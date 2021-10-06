@@ -36,7 +36,7 @@ repos:
         always_run: true
         pass_filenames: false
         additional_dependencies:
-          - 'ansible<2.10'
+          - 'ansible-core<2.12'
         verbose: true
         entry: ansible-lint --force-color -p -v
 
