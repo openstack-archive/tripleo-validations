@@ -11,6 +11,13 @@
         - pre-upgrade
         - pre-update
         - pre-deployment
+      categories:
+        - orchestration
+        - os
+        - system
+        - cron
+      products:
+        - tripleo
     cron_check: "heat-manage purge_deleted"
   roles:
     - undercloud_heat_purge_deleted

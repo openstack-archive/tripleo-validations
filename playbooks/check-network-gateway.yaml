@@ -8,5 +8,10 @@
         verify that the gateway exists and is reachable.
       groups:
         - pre-introspection
+      categories:
+        - networking
+        - undercloud-config
+      products:
+        - tripleo
   roles:
     - check_network_gateway

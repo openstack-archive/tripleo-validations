@@ -10,5 +10,12 @@
         - pre-upgrade
         - post-deployment
         - post-upgrade
+      categories:
+        - httpd
+        - container
+        - registry
+        - undercloud
+      products:
+        - tripleo
   roles:
     - image_serve

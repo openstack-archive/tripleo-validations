@@ -9,6 +9,13 @@
         before starting an upgrade.
       groups:
         - pre-upgrade
+      categories:
+        - os
+        - system
+        - packaging
+        - rpm
+      products:
+        - tripleo
     packages_list:
       - python3-tripleoclient
   roles:

@@ -13,6 +13,14 @@
         - post-upgrade
         - post-overcloud-upgrade
         - post-overcloud-converge
+      categories:
+        - api
+        - compute
+        - storage
+        - undercloud
+        - overcloud
+      products:
+        - tripleo
     overcloud_service_status_debug: false
     overcloud_service_api:
       - nova

@@ -10,6 +10,13 @@
         http://tripleo.org/install/environments/baremetal.html#minimum-system-requirements
       groups:
         - pre-upgrade
+      categories:
+        - storage
+        - disk
+        - os
+        - system
+      products:
+        - tripleo
     volumes:
       - {mount: /var/lib/docker, min_size: 10}
       - {mount: /var/lib/config-data, min_size: 3}

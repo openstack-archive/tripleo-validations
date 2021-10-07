@@ -11,5 +11,12 @@
         - pre-update
         - post-deployment
         - post-upgrade
+      categories:
+        - container
+        - undercloud
+        - overcloud
+        - undercloud-config
+      products:
+        - tripleo
   roles:
     - container_status

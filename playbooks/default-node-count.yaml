@@ -8,5 +8,12 @@
         add up.
       groups:
         - pre-deployment
+      categories:
+        - compute
+        - roles
+        - baremetal
+        - undercloud
+      products:
+        - tripleo
   roles:
     - default_node_count

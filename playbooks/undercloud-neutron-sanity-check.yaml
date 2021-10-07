@@ -12,6 +12,15 @@
 
       groups:
         - pre-introspection
+      categories:
+        - networking
+        - neutron
+        - overcloud
+        - controller
+        - undercloud-config
+        - container
+      products:
+        - tripleo
 
     # The list of Neutron configuration files and directories that
     # will be passed to the Neutron services. The order is important

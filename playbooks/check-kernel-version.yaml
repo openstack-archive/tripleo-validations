@@ -9,5 +9,11 @@
         el8 is in kernel (uname -r) version string
       groups:
         - post-deployment
+      categories:
+        - os
+        - kernel
+        - system
+      products:
+        - tripleo
   roles:
     - check_kernel_version

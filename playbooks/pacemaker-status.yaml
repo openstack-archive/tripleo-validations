@@ -14,5 +14,13 @@
       groups:
         - backup-and-restore
         - post-deployment
+      categories:
+        - ha
+        - clustering
+        - system
+        - os
+      products:
+        - tripleo
+        - pacemaker
   roles:
     - pacemaker_status

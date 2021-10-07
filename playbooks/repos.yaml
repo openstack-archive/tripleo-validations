@@ -13,5 +13,13 @@
       groups:
         - pre-upgrade
         - pre-update
+      categories:
+        - os
+        - system
+        - packaging
+        - rpm
+        - repository
+      products:
+        - tripleo
   roles:
     - repos

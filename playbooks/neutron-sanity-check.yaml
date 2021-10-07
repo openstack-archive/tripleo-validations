@@ -10,10 +10,17 @@
 
         The tool expects all the configuration files that are passed
         to the Neutron services.
-
       groups:
         - backup-and-restore
         - post-deployment
-
+      categories:
+        - networking
+        - neutron
+        - overcloud
+        - controller
+        - undercloud-config
+        - container
+      products:
+        - tripleo
   roles:
     - neutron_sanity_check

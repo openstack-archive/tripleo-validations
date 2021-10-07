@@ -12,6 +12,14 @@
         interface specified in ironic-inspector.conf.
       groups:
         - pre-introspection
+      categories:
+        - networking
+        - dhcp
+        - dnsmasq
+        - undercloud
+        - baremetal
+      products:
+        - tripleo
   tasks:
     - include_role:
         name: dhcp_validations
