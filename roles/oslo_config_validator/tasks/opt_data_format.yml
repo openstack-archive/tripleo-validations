@@ -19,38 +19,46 @@
 # mapping in the config file settings. This has to be looped for
 # each mapping.
 
-- name: Get list value
-  become: true
-  validations_read_ini:
-    path: "{{ config_file.path }}"
-    section: "{{ option_data.index_key.section }}"
-    key: "{{ option_data.index_key.option }}"
-  register: opt_val
+- name: Get list of templatable sections from config file
+  when: "'index_key' in option_data"
+  block:
+    - name: Reading config file to get template
+      become: true
+      validations_read_ini:
+        path: "{{ config_file.path }}"
+        section: "{{ option_data.index_key.section }}"
+        key: "{{ option_data.index_key.option }}"
+      register: opt_val
 
-- name: Printing templatable values
-  when:
-    - oslo_config_validator_debug | bool
-  debug:
-    var: opt_val
+    - name: Printing templatable values
+      when:
+        - oslo_config_validator_debug | bool
+      debug:
+        var: opt_val
 
 - name: Building list of replaceable data
   when:
-    - opt_val.value
     - opt_data | length
+    - "('index_key' in option_data and opt_val.value) or 'group_create' in option_data"
   set_fact:
     new_sections: >-
       {% set section_list = {} %}{%
          set templates = [] %}{%
-         for section in option_data.template_section %}{%
-           set _ = templates.extend(opt_data.options[section].opts) %}{%
-         endfor %}{%
-         if 'separator' in option_data.index_key %}{%
-           set sections = opt_val.value.split(option_data.index_key.separator) | list %}{%
-         else %}{%
-           set sections = [opt_val.value] %}{%
+         if 'template_section' in option_data %}{%
+           for section in option_data.template_section %}{%
+             set _ = templates.extend(opt_data.options[section].opts) %}{%
+           endfor %}{%
+           if 'separator' in option_data.index_key %}{%
+             set sections = opt_val.value.split(option_data.index_key.separator) | list %}{%
+           else %}{%
+             set sections = [opt_val.value] %}{%
+           endif %}{%
+         elif 'group_create' in option_data %}{%
+           set _ = templates.extend(opt_data.options[option_data.group_create.template].opts) %}{%
+           set sections = [option_data.group_create.group_name] %}{%
          endif %}{%
          for val in sections %}{%
-             set _ = section_list.__setitem__(val, {"opts": templates }) %}{%
+           set _ = section_list.__setitem__(val, {"opts": templates }) %}{%
          endfor %}{{ section_list }}
 
 - name: Printing generated sections

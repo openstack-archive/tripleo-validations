@@ -21,8 +21,6 @@ provisioner:
       config_file: etc/nova/nova.conf
       config_folder: /var/lib/config-data/puppet-generated/nova_libvirt
       validator_out: >-
-        ERROR:root:DEFAULT/ovsdb_connection not found
-
         ERROR:root:cinder/region_name not found
 
         INFO:root:Ignoring missing option "auth_url" from group "keystone_authtoken" because the group
