@@ -28,6 +28,7 @@
 - name: Invalidate configuration
   when:
     - oslo_config_validator_invalid_settings | bool
+    - config_invalidations is defined
   include_tasks: invalidate_config.yml
 
 - name: Config validation reporting
