@@ -303,21 +303,17 @@ up to SSH to them.
 .. code-block:: console
 
     $ source ~/stackrc
-    $ /bin/run-validations.sh --help
-    Usage:
-        run-validations.sh [--help]
-                           [--debug]
-                           [--ansible-default-callback]
-                           [--plan <overcloud>]
-                           --validation-name <validation_name>
+    $ tripleo-validation.py
+    usage: tripleo-validation.py [-h] [--inventory INVENTORY]
+                                [--extra-vars EXTRA_VARS [EXTRA_VARS ...]]
+                                [--validation <validation_id>[,<validation_id>,...]]
+                                [--group <group>[,<group>,...]] [--quiet]
+                                [--validation-dir VALIDATION_DIR]
+                                [--ansible-base-dir ANSIBLE_BASE_DIR]
+                                [--output-log OUTPUT_LOG]
+                                {run,list,show}
 
-    --debug:                      Enable ansible verbose mode (-vvvv connection debugging)
-    --ansible-default-callback:   Use the 'default' Ansible callback plugin instead of the
-                                  tripleo-validations custom callback 'validation_output'
-    --plan:                       Stack name to use for generating the inventory data
-    --validation-name:            The name of the validation
-
-    $ /bin/run-validations.sh --validation-name validation
+    $ tripleo-validation.py run --validation <validation_name>
 
 
 Example: Verify Undercloud RAM requirements
