@@ -296,6 +296,7 @@ oslo_config_validator_service_configs:
       - ironic_lib.disk_utils
       - ironic_lib.disk_partitioner
       - ironic_lib.exception
+      - ironic_lib.json_rpc
       - ironic_lib.mdns
       - ironic_lib.metrics
       - ironic_lib.metrics_statsd
