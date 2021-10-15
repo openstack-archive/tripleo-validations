@@ -115,8 +115,7 @@
         command: "{{ oslo_command }}"
       register: podman_container_run
       failed_when:
-        - not podman_container_run.stderr_lines | default([]) | count
-        - not podman_container_run.stdout_lines | default([]) | count
+        - false
 
     - name: Setting container_run fact
       set_fact:
@@ -141,8 +140,7 @@
         command: "{{ oslo_command }}"
       register: docker_container_run
       failed_when:
-        - not docker_container_run.stderr_lines | default([]) | count
-        - not docker_container_run.stdout_lines | default([]) | count
+        - false
 
     - name: Setting container_run fact
       set_fact:
