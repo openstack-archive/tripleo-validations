@@ -27,7 +27,6 @@
               enable_validation: true
               playbooks:
                 - multinode.yml
-                - validations.yml
               remove_tags:
                 - build
             dependencies:
@@ -69,7 +68,6 @@
               enable_validation: true
               playbooks:
                 - multinode.yml
-                - validations.yml
               remove_tags:
                 - build
             dependencies:
