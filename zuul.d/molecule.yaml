@@ -5,6 +5,7 @@
     check:
       jobs:
       - tripleo-validations-centos-8-molecule-ceph
+      - tripleo-validations-centos-8-molecule-check_fips_status
       - tripleo-validations-centos-8-molecule-check_for_dangling_images
       - tripleo-validations-centos-8-molecule-check_kernel_version
       - tripleo-validations-centos-8-molecule-check_network_gateway
@@ -35,6 +36,7 @@
     gate:
       jobs:
       - tripleo-validations-centos-8-molecule-ceph
+      - tripleo-validations-centos-8-molecule-check_fips_status
       - tripleo-validations-centos-8-molecule-check_for_dangling_images
       - tripleo-validations-centos-8-molecule-check_kernel_version
       - tripleo-validations-centos-8-molecule-check_network_gateway
@@ -73,6 +75,17 @@
     parent: tripleo-validations-centos-8-base
     vars:
       tripleo_validations_role_name: ceph
+- job:
+    files:
+    - ^roles/fips_enabled/.*
+    - ^tests/prepare-test-host.yml
+    - ^ci/playbooks/pre.yml
+    - ^ci/playbooks/run.yml
+    - ^molecule-requirements.txt
+    name: tripleo-validations-centos-8-molecule-check_fips_status
+    parent: tripleo-validations-centos-8-base
+    vars:
+      tripleo_validations_role_name: fips_enabled
 - job:
     files:
     - ^roles/check_for_dangling_images/.*
