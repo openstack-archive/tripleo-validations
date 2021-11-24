@@ -13,9 +13,16 @@
       set_fact:
         tripleo_validations_roles_paths:
           - "{{ tripleo_validations_project_path }}/roles/roles.galaxy/tripleo-ansible/tripleo_ansible/roles"
-          - "{{ tripleo_validations_project_path }}/roles/roles.galaxy/tripleo-ansible/tripleo-ansible/tripleo_ansible/roles"
+          - "{{ tripleo_validations_project_path }}/roles/roles.galaxy/validations-common/validations_common/roles"
           - "{{ tripleo_validations_project_path }}/roles"
           - "/usr/share/ansible/roles"
+
+    - name: Set library path fact
+      set_fact:
+        tripleo_validations_library_paths:
+          - "{{ tripleo_validations_project_path }}/roles/roles.galaxy/validations-common/validations_common/library"
+          - "{{ tripleo_validations_project_path }}/library"
+          - "/usr/share/ansible/library"
 
   tasks:
     - name: Run role test job
@@ -32,3 +39,4 @@
         executable: /bin/bash
       environment:
         ANSIBLE_ROLE_PATH: "{{ tripleo_validations_roles_paths | join(':') }}"
+        ANSIBLE_LIBRARY: "{{ tripleo_validations_library_paths | join(':') }}"

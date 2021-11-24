@@ -46,7 +46,7 @@
       include_role:
         name: check_uc_hostname
       vars:
-        check_uc_hostname_inventory_host: ubi8
+        check_uc_hostname_inventory_host: centos
 
     - name: Working 2 - openstack multiple entry in list
       copy:
@@ -83,7 +83,7 @@
       include_role:
         name: check_uc_hostname
       vars:
-        check_uc_hostname_inventory_host: ubi8
+        check_uc_hostname_inventory_host: centos
 
     - name: Working 3 - openstack multiple entry in list
       copy:
@@ -117,7 +117,7 @@
       include_role:
         name: check_uc_hostname
       vars:
-        check_uc_hostname_inventory_host: ubi8
+        check_uc_hostname_inventory_host: centos
 
     - name: Working 4 - openstack multiple entry in list
       copy:
@@ -149,7 +149,7 @@
       include_role:
         name: check_uc_hostname
       vars:
-        check_uc_hostname_inventory_host: ubi8
+        check_uc_hostname_inventory_host: centos
 
     - name: Failing 1 - we fail if DockerInsecureRegistryAddress is not found
       copy:
@@ -176,7 +176,7 @@
         - include_role:
             name: check_uc_hostname
           vars:
-            check_uc_hostname_inventory_host: ubi8
+            check_uc_hostname_inventory_host: centos
 
       rescue:
         - name: Clear host errors
@@ -219,7 +219,7 @@
         - include_role:
             name: check_uc_hostname
           vars:
-            check_uc_hostname_inventory_host: ubi8
+            check_uc_hostname_inventory_host: centos
 
       rescue:
         - name: Clear host errors
