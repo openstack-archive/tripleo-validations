@@ -12,4 +12,3 @@ This module provides for the following ansible plugin:
    :module: library/ip_range.py
    :documentation: true
    :examples: true
-
