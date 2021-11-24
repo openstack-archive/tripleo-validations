@@ -20,4 +20,3 @@ or by Ansible directly.
 * Release notes: https://docs.openstack.org/releasenotes/tripleo-validations/
 * Source: https://opendev.org/openstack/tripleo-validations
 * Bugs: https://storyboard.openstack.org/#!/project/openstack/tripleo-validations
-

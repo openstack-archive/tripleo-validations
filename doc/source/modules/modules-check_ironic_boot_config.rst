@@ -12,4 +12,3 @@ This module provides for the following ansible plugin:
    :module: library/check_ironic_boot_config.py
    :documentation: true
    :examples: true
-

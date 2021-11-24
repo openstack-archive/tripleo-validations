@@ -7,4 +7,3 @@ Contents:
    :glob:
 
    roles/*
-
