@@ -45,4 +45,3 @@ Full Description
 
 .. ansibleautoplugin::
    :role: roles/overcloud_service_status
-

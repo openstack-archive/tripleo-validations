@@ -12,4 +12,3 @@ This module provides for the following ansible plugin:
    :module: library/check_flavors.py
    :documentation: true
    :examples: true
-

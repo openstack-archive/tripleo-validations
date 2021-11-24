@@ -71,4 +71,3 @@ Full Description
 
 .. ansibleautoplugin::
    :role: roles/compute_tsx
-

@@ -12,4 +12,3 @@ This module provides for the following ansible plugin:
    :module: library/network_environment.py
    :documentation: true
    :examples: true
-

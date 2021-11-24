@@ -12,4 +12,3 @@ This module provides for the following ansible plugin:
    :module: library/check_cpus_aligned_with_dpdk_nics.py
    :documentation: true
    :examples: true
-

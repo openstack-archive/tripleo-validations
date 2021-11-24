@@ -11,7 +11,6 @@ repos:
       - id: check-merge-conflict
       - id: check-symlinks
       - id: debug-statements
-      - id: check-yaml
         files: .*\.(yaml|yml)$
 
   - repo: https://gitlab.com/pycqa/flake8
