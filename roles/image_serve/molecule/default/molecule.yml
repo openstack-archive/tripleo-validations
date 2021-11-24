@@ -3,11 +3,11 @@
 # To override default values, please take a look at the config.yml.
 
 platforms:
-  - name: ubi8
-    hostname: ubi8
-    image: ubi8/ubi:8.2
+  - name: centos
+    hostname: centos
+    image: centos/centos:stream8
     registry:
-      url: registry.access.redhat.com
+      url: quay.io
     etc_hosts:
       undercloud.ctlplane.mydomain.tld: "127.0.0.1"
     dockerfile: ../../../../.config/molecule/Dockerfile

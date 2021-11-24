@@ -11,7 +11,7 @@ provisioner:
     hosts:
       all:
         hosts:
-          ubi8:
+          centos:
             ansible_python_interpreter: /usr/bin/python3
             overcloud_keystone_url: http://127.0.0.1:8080
             overcloud_admin_password: hello
