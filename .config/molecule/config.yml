@@ -12,9 +12,9 @@
 # you will have to redefine them completely in your molecule.yml (at the role
 # level) and add your extra configuration!
 #
-# For instance, if you need to add an extra package in your ubi8 container, you
-# will have to add the entire "platforms" key into your molecule.yml file and
-# add your package name in the pkg_extras key.
+# For instance, if you need to add an extra package in your CentOS 8 Stream
+# container, you will have to add the entire "platforms" key into your
+# molecule.yml file and add your package name in the pkg_extras key.
 #
 # No merge will happen between your molecule.yml and this config.yml
 # files. That's why you will have to redefine them completely.
@@ -25,11 +25,11 @@ driver:
 log: true
 
 platforms:
-  - name: ubi8
-    hostname: ubi8
-    image: ubi8/ubi-init
+  - name: centos
+    hostname: centos
+    image: centos/centos:stream8
     registry:
-      url: registry.access.redhat.com
+      url: quay.io
     dockerfile: ../../../../.config/molecule/Dockerfile
     pkg_extras: python*-setuptools python*-pyyaml
     volumes:
@@ -47,7 +47,7 @@ provisioner:
     hosts:
       all:
         hosts:
-          ubi8:
+          centos:
             ansible_python_interpreter: /usr/bin/python3
   log: true
   options:
