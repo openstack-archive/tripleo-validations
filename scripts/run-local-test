@@ -75,6 +75,7 @@ fi
 # Run local test
 source "${PROJECT_DIR}/ansible-test-env.rc"
 export ANSIBLE_ROLES_PATH="${ANSIBLE_ROLES_PATH}:${HOME}/zuul-jobs/roles"
+ansible-galaxy install -fr "${PROJECT_DIR}/ansible-collections-requirements.yml"
 ansible-playbook -i "${PROJECT_DIR}/tests/hosts.ini" \
                  -e "tripleo_src=$(realpath --relative-to="${HOME}" "${PROJECT_DIR}")" \
                  -e "tripleo_validations_role_name=${ROLE_NAME}" \

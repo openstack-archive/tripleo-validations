@@ -2,4 +2,5 @@
 collections:
   - containers.podman
   - community.general
+  - community.crypto
   - ansible.posix

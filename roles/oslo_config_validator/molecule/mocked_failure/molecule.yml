@@ -11,7 +11,7 @@ provisioner:
     hosts:
       all:
         hosts:
-          ubi8:
+          centos:
             ansible_python_interpreter: /usr/bin/python3
   log: true
   env:
