@@ -3,11 +3,11 @@
 # To override default values, please take a look at the config.yml.
 
 platforms:
-  - name: ubi8
-    hostname: ubi8
-    image: ubi8/ubi-init
+  - name: centos
+    hostname: centos
+    image: centos/centos:stream8
     registry:
-      url: registry.access.redhat.com
+      url: quay.io
     dockerfile: ../../../../.config/molecule/Dockerfile
     pkg_extras: python*-setuptools python*-pyyaml krb5-workstation
     volumes:
