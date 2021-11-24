@@ -12,4 +12,3 @@ This module provides for the following ansible plugin:
    :module: library/pmd_threads_siblings_check.py
    :documentation: true
    :examples: true
-

@@ -12,4 +12,3 @@ This module provides for the following ansible plugin:
    :module: library/check_other_processes_pmd_usage.py
    :documentation: true
    :examples: true
-
