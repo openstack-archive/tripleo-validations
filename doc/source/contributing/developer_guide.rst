@@ -767,6 +767,10 @@ a role with tags.
     $ export TRIPLEO_JOB_ANSIBLE_ARGS="--skip-tags tag_one,tag_two"
     $ ./scripts/run-local-test ${ROLENAME}
 
+
+Running molecule tests manually
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Role based testing with molecule can be executed directly from within
 the role directory.
 
@@ -785,9 +789,26 @@ the role directory.
 
 .. note::
 
-    Some roles depend on some packages which are available only through the EPEL
-    repositories. So, please ensure you have installed them on your CentOS 8 host
-    before running molecule tests.
+   Each molecule tests are configured to bind mount a read-only volume on the
+   container where the tests are running:
+
+   .. code-block:: yaml
+
+      volumes:
+        - /etc/ci/mirror_info.sh:/etc/ci/mirror_info.sh:ro
+
+   It is an OpenStack Zuul requirement for detecting if we are on a CI node.  Of
+   course, when running your molecule test on your workstation, it is going
+   to fail because you don't have the empty `mirror_info.sh` script in the
+   `/etc/ci/` directory. You can workaround this by creating it in your
+   workstation or removing the volume key in the global configuration file for
+   molecule.
+
+   .. code-block:: console
+
+      $ sudo mkdir -p /etc/ci
+      $ sudo touch /etc/ci/mirror_info.sh
+
 
 
 Before running basic molecule tests, it is recommended to install all
@@ -795,22 +816,35 @@ of the python dependencies in a virtual environment.
 
 .. code-block:: console
 
-    $ python -m virtualenv --system-site-packages "${HOME}/test-python"
-    $ ${HOME}/test-python/bin/pip install -r requirements.txt \
-                                          -r test-requirements.txt \
-                                          -r molecule-requirements.txt
-    $ source ${HOME}/test-python/bin/activate
+    $ sudo dnf install python3 python3-virtualenv
+    $ python3 -m virtualenv --system-site-packages "${HOME}/test-python"
+    $ source "${HOME}/test-python/bin/activate"
+    (test-python) $ python3 -m pip install "pip>=19.1.1" setuptools bindep --upgrade
+    (test-python) $ scripts/./bindep-install
+    (test-python) $ python3 -m pip install -r requirements.txt \
+                                           -r test-requirements.txt \
+                                           -r molecule-requirements.txt
+    (test-python) $ ansible-galaxy install -fr ansible-collections-requirements.txt
 
 
 Now, it is important to install validations-common and tripleo-ansible as
 dependencies.
 
+.. note::
+
+    `validation-common` contains Ansible Custom modules needed by
+    `tripleo-validations` roles. That's the reason why we will need to clone it
+    beforehand.
+
+    Cloning `tripleo-ansible` project is only necessary in order to run the
+    `molecule` test(s) for the `image_serve` role. Otherwise, you probably won't
+    need it.
+
+
 .. code-block:: console
 
     $ cd tripleo-validations/
-    $ for REPO in validations-common tripleo-ansible; do
-        git clone https://opendev.org/openstack/${REPO} roles/roles.galaxy/${REPO}
-      done
+    $ for REPO in validations-common tripleo-ansible; do git clone https://opendev.org/openstack/${REPO} roles/roles.galaxy/${REPO}; done
 
 
 To run a basic molecule test, simply source the `ansible-test-env.rc`
@@ -818,6 +852,7 @@ file from the project root, and then execute the following commands.
 
 .. code-block:: console
 
+    (test-python) $ source ansible-test-env.rc
     (test-python) $ cd roles/${NEWROLENAME}/
     (test-python) $ molecule test --all
 
@@ -829,7 +864,7 @@ the `--scenario-name` flag with the name of the desired scenario.
 
 .. code-block:: console
 
-    (test-python) $ cd tripleo-validations/roles/${NEWROLENAME}/
+    (test-python) $ cd roles/${NEWROLENAME}/
     (test-python) $ molecule test --scenario-name ${EXTRA_SCENARIO_NAME}
 
 
