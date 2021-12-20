@@ -18,27 +18,22 @@ gcc-c++           [platform:rpm]
 git               [platform:rpm]
 libffi-devel      [platform:rpm]
 openssl-devel     [platform:rpm]
-
-libxml2-dev       [platform:dpkg]
-libxml2-devel     [platform:rpm]
-libxslt-devel     [platform:rpm]
-libxslt1-dev      [platform:dpkg]
-
-# RH Mechanisms
-python-rhsm-certificates [platform: redhat]
-
 podman            [platform:rpm]
-python-devel      [platform:rpm !platform:rhel-8 !platform:centos-8]
+python-devel      [platform:rpm !platform:rhel-8 !platform:centos-8 !platform:fedora]
 python3-devel     [platform:rpm !platform:rhel-7 !platform:centos-7]
-PyYAML            [platform:rpm !platform:rhel-8 !platform:centos-8]
+PyYAML            [platform:rpm !platform:rhel-8 !platform:centos-8 !platform:fedora]
 python3-pyyaml    [platform:rpm !platform:rhel-7 !platform:centos-7]
 python3-dnf       [platform:rpm !platform:rhel-7 !platform:centos-7]
 
-# For SELinux
-libselinux-python  [platform:rpm !platform:rhel-8 !platform:centos-8]
-libsemanage-python [platform:redhat !platform:rhel-8 !platform:centos-8]
-libselinux-python3  [platform:rpm !platform:rhel-7 !platform:centos-7]
-libsemanage-python3 [platform:redhat !platform:rhel-7 !platform:centos-7]
+# RH Mechanisms
+python-rhsm-certificates                [platform:redhat]
+
+# SELinux cent7
+libselinux-python3  [platform:rpm !platform:rhel-8 !platform:centos-8]
+libsemanage-python3 [platform:redhat !platform:rhel-8 !platform:centos-8]
+# SELinux cent8
+python3-libselinux  [platform:rpm !platform:rhel-7 !platform:centos-7]
+python3-libsemanage [platform:redhat !platform:rhel-7 !platform:centos-7]
 
 # Required for compressing collected log files in CI
 gzip
