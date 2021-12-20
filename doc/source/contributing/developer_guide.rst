@@ -754,6 +754,7 @@ To use this script execute the following command.
 
 .. code-block:: console
 
+    $ cd tripleo-validations
     $ ./scripts/run-local-test ${NEWROLENAME}
 
 When using the `run-local-test` script, the TRIPLEO_JOB_ANSIBLE_ARGS
