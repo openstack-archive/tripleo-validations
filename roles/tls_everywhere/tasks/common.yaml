@@ -1,6 +1,14 @@
 ---
 # These tasks apply to all nodes.
 
+- name: Ensure we get needed facts
+  setup:
+    gather_subset:
+      - '!all'
+      - '!any'
+      - '!min'
+      - network
+
 # variable for handlers to clean up
 - name: set facts for handlers to clean up
   set_fact:
