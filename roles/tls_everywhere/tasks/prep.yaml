@@ -54,23 +54,20 @@
   register: undercloud_enable_novajoin
   check_mode: false
 
-- name: Set facts undercloud.conf enable novajoin is disabled
-  set_fact:
-    undercloud_conf_enable_novajoin_status: "{{ helper_status_error }}"
-    undercloud_conf_enable_novajoin_reason: "enable_novajoin is not enabled undercloud.conf"
-    undercloud_conf_enable_novajoin_recommendations:
-      - "Please set 'enable_novajoin' to True in undercloud.conf"
-  when: not undercloud_enable_novajoin.value|bool
-
 - name: Set facts undercloud.conf enable novajoin is enabled
   set_fact:
     undercloud_conf_enable_novajoin_status: "{{ helper_status_ok }}"
     undercloud_conf_enable_novajoin_reason: "enable_novajoin is enabled undercloud.conf"
-    undercloud_conf_enable_novajoin_recommendations: null
-  when: undercloud_enable_novajoin.value|bool
+  when: undercloud_enable_novajoin|bool
+
+- name: Set facts undercloud.conf enable novajoin is disabled
+  set_fact:
+    undercloud_conf_enable_novajoin_status: "{{ helper_status_ok }}"
+    undercloud_conf_enable_novajoin_reason: "enable_novajoin is disabled undercloud.conf, using tripleo-ipa"
+  when: not undercloud_enable_novajoin|bool
 
 - name: Report on enable novajoin setup in undercloud.conf check
   reportentry:
     report_status: "{{ undercloud_conf_enable_novajoin_status }}"
     report_reason: "{{ undercloud_conf_enable_novajoin_reason }}"
-    report_recommendations: "{{ undercloud_conf_enable_novajoin_recommendations }}"
+    report_recommendations: null

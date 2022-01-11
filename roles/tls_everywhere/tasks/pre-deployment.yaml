@@ -1,4 +1,12 @@
 ---
+- name: Ensure we get needed facts
+  setup:
+    gather_subset:
+      - '!all'
+      - '!any'
+      - '!min'
+      - env
+
 - name: Set facts for undercloud handlers to clean up
   set_fact:
     novajoin_temp_krb_caches: []
@@ -7,4 +15,18 @@
   set_fact:
     command_prefix: "podman"
 
-- include: pre-deployment-containerized.yaml
+- name: Get enable_novajoin flag from undercloud.conf
+  become: true
+  validations_read_ini:
+    path: "{{ ansible_env.HOME }}/undercloud.conf"
+    section: DEFAULT
+    key: enable_novajoin
+    ignore_missing_file: false
+  register: undercloud_enable_novajoin
+  check_mode: false
+
+- include: pre-deployment-novajoin.yaml
+  when: undercloud_enable_novajoin|bool
+
+- include: pre-deployment-tripleo-ipa.yaml
+  when: not undercloud_enable_novajoin|bool
