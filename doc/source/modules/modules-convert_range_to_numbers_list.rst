@@ -12,4 +12,3 @@ This module provides for the following ansible plugin:
    :module: library/convert_range_to_numbers_list.py
    :documentation: true
    :examples: true
-

@@ -6,4 +6,3 @@ compute_tsx
 
 .. ansibleautoplugin::
    :role: roles/compute_tsx
-

@@ -12,4 +12,3 @@ This module provides for the following ansible plugin:
    :module: library/ceph_pools_pg_protection.py
    :documentation: true
    :examples: true
-
