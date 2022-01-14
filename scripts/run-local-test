@@ -65,11 +65,11 @@ PS1="[\u@\h \W]\$" source "${HOME}/test-python/bin/activate"
 source "${PROJECT_DIR}/ansible-test-env.rc"
 export ANSIBLE_ROLES_PATH="${ANSIBLE_ROLES_PATH}:${HOME}/zuul-jobs/roles"
 ansible-playbook -i "${PROJECT_DIR}/tests/hosts.ini" \
-                 -e "tripleo_src=$(realpath --relative-to="${HOME}" "${PROJECT_DIR}")" \
-                 -e "tripleo_validations_role_name=${ROLE_NAME}" \
-                 -e "tripleo_job_ansible_args='${TRIPLEO_JOB_ANSIBLE_ARGS}'" \
-                 -e "ansible_user=${USER}" \
-                 -e "ansible_user_dir=${HOME}" \
-                 "${PROJECT_DIR}/tests/prepare-test-host.yml" \
-                 "${PROJECT_DIR}/ci/playbooks/run-local.yml"  \
-                 -v
+    -e "tripleo_src=$(realpath --relative-to="${HOME}" "${PROJECT_DIR}")" \
+    -e "tripleo_validations_role_name=${ROLE_NAME}" \
+    -e "tripleo_job_ansible_args='${TRIPLEO_JOB_ANSIBLE_ARGS}'" \
+    -e "ansible_user=${USER}" \
+    -e "ansible_user_dir=${HOME}" \
+    "${PROJECT_DIR}/tests/prepare-test-host.yml" \
+    "${PROJECT_DIR}/ci/playbooks/run-local.yml"  \
+    -v

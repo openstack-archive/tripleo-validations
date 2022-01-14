@@ -579,10 +579,7 @@ Molecule.
   driver to delegate the task of creating instances.
 * The ``Platforms`` definitions: Molecule relies on this to know which instances
   to create, name and to which group each instance
-  belongs. ``Tripleo-validations`` uses ``Universal Base Images (UBI8)`` which
-  are container images based on a foundation of Red Hat Enterprise Linux
-  software. See `Using Red Hat Universal Base Images`_ for details on using Red
-  Hat UBI container images.
+  belongs. ``Tripleo-validations`` uses ``CentOS 8 Stream image``.
 * The ``Provisioner``: Molecule only provides an Ansible provisioner. Ansible
   manages the life cycle of the instance based on this configuration.
 * The ``Scenario`` definition: Molecule relies on this configuration to control
@@ -590,8 +587,6 @@ Molecule.
 * The ``Verifier`` framework. Molecule uses Ansible by default to provide a way
   to write specific stat checking tests (such as deployment smoke tests) on the
   target instance.
-
-.. _Using Red Hat Universal Base Images: https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/building_running_and_managing_containers/index/#using_red_hat_universal_base_images_standard_minimal_and_runtimes
 
 Local testing of new roles
 --------------------------
