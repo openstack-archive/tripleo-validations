@@ -1,32 +1,4 @@
 ---
-### check for certmonger user service ###
-- name: Check if the certmonger user service has been enabled
-  become: true
-  hiera:
-    name: "certmonger_user_enabled"
-  check_mode: false
-
-- name: Set facts for certmonger user service not enabled
-  set_fact:
-    certmonger_user_service_status: "{{ helper_status_error }}"
-    certmonger_user_service_reason: "The certmonger user service is not enabled for this role"
-    certmonger_user_service_recommendations:
-      - "Please add the 'OS::TripleO::Services::CertmongerUser' service to all of your TripleO roles."
-  when: certmonger_user_enabled != "true"
-
-- name: Set facts for certmonger user service enabled
-  set_fact:
-    certmonger_user_service_status: "{{ helper_status_ok }}"
-    certmonger_user_service_reason: "This role contains the certmonger user service"
-    certmonger_user_service_recommendations: null
-  when: certmonger_user_enabled == "true"
-
-- name: Report on Certmonger user service check
-  reportentry:
-    report_status: "{{ certmonger_user_service_status }}"
-    report_reason: "{{ certmonger_user_service_reason }}"
-    report_recommendations: "{{ certmonger_user_service_recommendations }}"
-
 ### certificate checks ###
 
 # Get all the certificates that certmonger is tracking. Given the
