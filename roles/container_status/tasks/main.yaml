@@ -41,5 +41,5 @@
 - name: Fail if we detect failed containers
   fail:
     msg: "Failed container detected: {{ item }}."
-  when: item is not match(".* Exited \(0\) .* ago")
+  when: item is not match(".* Exited \((0|137|142|143)\) .* ago")
   loop: "{{ failed_containers.stdout_lines }}"
