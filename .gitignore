@@ -62,3 +62,6 @@ releasenotes/build
 # Ansible specific
 hosts
 *.retry
+
+# Roles testing
+roles/roles.galaxy
