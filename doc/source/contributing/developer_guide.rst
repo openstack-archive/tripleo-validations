@@ -754,7 +754,7 @@ of the python dependencies in a virtual environment.
     (test-python) $ python3 -m pip install -r requirements.txt \
                                            -r test-requirements.txt \
                                            -r molecule-requirements.txt
-    (test-python) $ ansible-galaxy install -fr ansible-collections-requirements.txt
+    (test-python) $ ansible-galaxy install -fr ansible-collections-requirements.yml
 
 
 Now, it is important to install `validations-common` and `tripleo-ansible` as
