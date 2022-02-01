@@ -6,8 +6,7 @@
       - check-requirements
     check:
       jobs:
-        - openstack-tox-linters: &tripleo-linters
-            nodeset: centos-8-stream
+        - openstack-tox-linters
         - openstack-tox-py36
         - openstack-tox-py39
         - tripleo-ci-centos-8-content-provider:
