@@ -46,8 +46,7 @@
     command: "{{ oslo_command }}"
   register: container_run
   failed_when:
-    - not container_run.stderr_lines | default([]) | count
-    - not container_run.stdout_lines | default([]) | count
+    - false
 
 - name: Printing container run output
   when:
