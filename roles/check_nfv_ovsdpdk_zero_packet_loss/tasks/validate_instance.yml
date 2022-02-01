@@ -4,7 +4,6 @@
     xmlstring: "{{ instance_xml_data }}"
     xpath: /domain/numatune/memory
     content: attribute
-    attribute: nodeset
   register: xml_instance_node
 
 - name: Get instance associated numa nodes
@@ -17,7 +16,6 @@
     xmlstring: "{{ instance_xml_data }}"
     xpath: /domain/cputune/vcpupin
     content: attribute
-    attribute: cpuset
   register: xml_vcpus
 
 - name: Get instance vcpus list
@@ -48,7 +46,6 @@
     xmlstring: "{{ instance_xml_data }}"
     xpath: /domain/cputune/emulatorpin
     content: attribute
-    attribute: cpuset
   register: xml_emulatorpin
 
 - name: Check emulatorpin valid or not
@@ -66,7 +63,6 @@
     xmlstring: "{{ instance_xml_data }}"
     xpath: /domain/memoryBacking/hugepages/page
     content: attribute
-    attribute: size
   register: xmlhugepages
 
 - name: Set instance {{ vm_id }} hugepages details
