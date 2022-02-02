@@ -10,17 +10,23 @@
         - openstack-tox-py36
         - openstack-tox-py39
         - tripleo-ci-centos-9-content-provider:
+            irrelevant-files: &docs_only_files
+              - ^.*\.rst$
+              - ^doc/.*$
+              - ^releasenotes/.*$
             dependencies:
               - openstack-tox-linters
               - openstack-tox-py36
               - openstack-tox-py39
         - tripleo-ci-centos-9-standalone-tv-validation:
+            irrelevant-files: *docs_only_files
             vars: &consumer_vars
               consumer_job: true
               build_container_images: false
             dependencies:
               - tripleo-ci-centos-9-content-provider
         - tripleo-ci-centos-9-containers-multinode:
+            irrelevant-files: *docs_only_files
             vars:
               <<: *consumer_vars
               enable_validation: true
@@ -30,10 +36,6 @@
                 - build
             dependencies:
               - tripleo-ci-centos-9-content-provider
-            irrelevant-files:
-              - ^.*\.rst$
-              - ^doc/.*$
-              - ^releasenotes/.*$
         - openstack-tox-docs: &tripleo-docs
             files:
               - ^doc/.*
@@ -52,16 +54,19 @@
         - openstack-tox-py36
         - openstack-tox-py39
         - tripleo-ci-centos-9-content-provider:
+            irrelevant-files: *docs_only_files
             dependencies:
               - openstack-tox-linters
               - openstack-tox-py36
               - openstack-tox-py39
         - openstack-tox-docs: *tripleo-docs
         - tripleo-ci-centos-9-standalone-tv-validation:
+            irrelevant-files: *docs_only_files
             vars: *consumer_vars
             dependencies:
               - tripleo-ci-centos-9-content-provider
         - tripleo-ci-centos-9-containers-multinode:
+            irrelevant-files: *docs_only_files
             vars:
               <<: *consumer_vars
               enable_validation: true
@@ -71,10 +76,6 @@
                 - build
             dependencies:
               - tripleo-ci-centos-9-content-provider
-            irrelevant-files:
-              - ^.*\.rst$
-              - ^doc/.*$
-              - ^releasenotes/.*$
 
     promote:
       jobs:
