@@ -15,9 +15,14 @@
               - ^requirements.txt
               - ^README.rst
         - tripleo-ci-centos-8-content-provider: &content_provider_deps
+            irrelevant-files: &docs_only_files
+              - ^.*\.rst$
+              - ^doc/.*$
+              - ^releasenotes/.*$
             dependencies:
               - openstack-tox-linters
         - tripleo-ci-centos-8-standalone-tv-validation:
+            irrelevant-files: *docs_only_files
             vars: &consumer_vars
               consumer_job: true
               build_container_images: false
@@ -27,6 +32,7 @@
               - tripleo-ci-centos-8-content-provider
         - tripleo-ci-centos-9-content-provider: *content_provider_deps
         - tripleo-ci-centos-9-standalone-tv-validation: &9_tv_validation_all
+            irrelevant-files: *docs_only_files
             vars: *consumer_vars
             dependencies:
               - tripleo-ci-centos-9-content-provider
@@ -35,8 +41,10 @@
       jobs:
         - openstack-tox-linters
         - openstack-tox-docs: *tripleo-docs
-        - tripleo-ci-centos-8-content-provider
+        - tripleo-ci-centos-8-content-provider:
+            irrelevant-files: *docs_only_files
         - tripleo-ci-centos-8-standalone-tv-validation:
+            irrelevant-files: *docs_only_files
             vars: *consumer_vars
             dependencies:
               - tripleo-ci-centos-8-content-provider
