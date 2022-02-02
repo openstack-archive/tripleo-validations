@@ -44,6 +44,24 @@
   debug:
     var: service_config
 
+- name: Overriding namespace configuration
+  set_fact:
+    namespaces_config: >-
+      {% set override_config = [] %}{%
+         for config in oslo_config_validator_namespaces_config | default([]) %}{%
+           set _ = override_config.append(
+             oslo_config_validator_namespaces_config_override | default([]) |
+             selectattr('namespace', 'eq', config.namespace) | first | default(config, true)
+           ) %}{%
+         endfor %}{{
+       override_config }}
+
+- name: Printing overriden namespace config
+  when:
+    - oslo_config_validator_debug | bool
+  debug:
+    var: namespaces_config
+
 - name: podman - Gather facts for all containers
   become: true
   containers.podman.podman_container_info:
@@ -133,7 +151,7 @@
             %}{%
                if svc_config | count %}{%
                  for ns in svc_config[0].namespaces | list %}{%
-                   set ns_config = oslo_config_validator_namespaces_config |
+                   set ns_config = namespaces_config |
                                    selectattr('namespace', 'equalto', ns) |
                                    selectattr('invalid_settings', 'defined') | list %}{%
                    if ns_config | count %}{%
