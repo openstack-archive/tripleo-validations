@@ -20,7 +20,7 @@
     path: "{{ service.0.path }}"
     section: "{{ service.1.section }}"
     key: "{{ service.1.option }}"
-  loop: "{{ config_invalidations | subelements('invalid_settings') }}"
+  loop: "{{ config_invalidations | default([]) | subelements('invalid_settings') }}"
   loop_control:
     loop_var: service
     label: "{{ service.1.section }}/{{ service.1.option }} in {{ service.0.path }}"
