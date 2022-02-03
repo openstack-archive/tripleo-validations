@@ -17,13 +17,13 @@
 - name: Ensure port is open
   wait_for:
     port: "{{ container_registry_port }}"
-    host: "{{ virthost_name.stdout }}"
+    host: "{{ virthost_name.stdout | regex_replace('^\\*$', 'localhost')}}"
     timeout: 10
 
 - name: Ensure registry does answer
   uri:
     method: HEAD
-    url: "http://{{ virthost_name.stdout }}:{{ container_registry_port }}/v2/index.json"
+    url: "http://{{ virthost_name.stdout | regex_replace('^\\*$', 'localhost')}}:{{ container_registry_port }}/v2/index.json"
     status_code:
       - 200
       - 204
