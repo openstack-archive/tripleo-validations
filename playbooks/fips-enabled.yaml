@@ -1,0 +1,19 @@
+---
+- hosts: all
+  gather_facts: false
+  vars:
+    metadata:
+      name: Confirm that undercloud has fips enabled
+      description: |
+        Check if the undercloud is ready to deploy an environment
+        using fips.
+      groups:
+        - prep
+        - post-deployment
+      categories:
+        - security
+        - fips
+      products:
+        - tripleo
+  roles:
+    - fips_enabled
