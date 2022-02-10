@@ -1,6 +1,14 @@
 ---
 # These tasks apply to all nodes.
 
+- name: Ensure we get needed facts
+  setup:
+    gather_subset:
+      - '!all'
+      - '!any'
+      - '!min'
+      - network
+
 # variable for handlers to clean up
 - name: set facts for handlers to clean up
   set_fact:
@@ -41,7 +49,7 @@
 - name: Firewall validations
   when: ipa_ca_ping_status.rc == 0
   block:
-    - name: Check all relevant ports for IdM/FreeIPA are accessible from {{ ansible_hostname }}
+    - name: Check all relevant ports for IdM/FreeIPA are accessible from {{ ansible_facts['hostname'] }}
       wait_for:
         host: ipa-ca
         port: "{{ item }}"
@@ -62,14 +70,14 @@
     - name: Set facts for ok firewall settings
       set_fact:
         firewall_status: "{{ helper_status_ok }}"
-        firewall_reason: "The host {{ ansible_hostname }} can access FreeIPA through all relevant ports"
+        firewall_reason: "The host {{ ansible_facts['hostname'] }} can access FreeIPA through all relevant ports"
         firewall_recommendations: null
       when: "'failed' not in port_status"
 
     - name: Set facts for issues in firewall settings
       set_fact:
         firewall_status: "{{ helper_status_error }}"
-        firewall_reason: "The host {{ ansible_hostname }} could NOT access IdM/FreeIPA on some ports"
+        firewall_reason: "The host {{ ansible_facts['hostname'] }} could NOT access IdM/FreeIPA on some ports"
         firewall_recommendations:
           - "Please make sure that the following ports are open on the IdM/FreeIPA node: {{ firewall_query }}"
       vars:
@@ -81,7 +89,7 @@
 - name: Set facts for skipping firewall checks
   set_fact:
     firewall_status: "{{ helper_status_skipped }}"
-    firewall_reason: "skipped {{ ansible_hostname }} firewall checks because DNS wasn't set correctly."
+    firewall_reason: "skipped {{ ansible_facts['hostname'] }} firewall checks because DNS wasn't set correctly."
     firewall_recommendations: null
   when: ipa_ca_ping_status.rc != 0
 
