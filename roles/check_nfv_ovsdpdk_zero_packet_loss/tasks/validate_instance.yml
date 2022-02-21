@@ -51,7 +51,7 @@
 - name: Check emulatorpin valid or not
   set_fact:
     validation_msg: "{{ validation_msg }} + {{ ['Invalid emulatorpin configured for instance  ' \
-                    + instance_id + ': ' + emulatorpin.emulatorpin.cpuset] }}"
+                    + instance_name + ': ' + emulatorpin.emulatorpin.cpuset] }}"
   when: "{{ emulatorpin.emulatorpin.cpuset in vcpus_list | list }}"
   loop: "{{ xml_emulatorpin.matches }}"
   loop_control:
@@ -65,21 +65,21 @@
     content: attribute
   register: xmlhugepages
 
-- name: Set instance {{ vm_id }} hugepages details
+- name: Set instance {{ instance_name }} hugepages details
   set_fact:
     msg: |-
       Huge page size '{{ xmlhugepages.matches[0].page.size }}'
   when: "{{ xmlhugepages.matches[0].page.size | length >= 6 }}"
 
 # Validates instance tx rx queue sizes and should be greater than or equal to 1024.
-- name: Get {{ vm_id }} libvirt tx | rx queue sizes from xml string
+- name: Get {{ instance_name }} libvirt tx | rx queue sizes from xml string
   community.general.xml:
     xmlstring: "{{ instance_xml_data }}"
     xpath: /domain/devices/interface/driver
     content: attribute
   register: xmlqueues
 
-- name: Set instance {{ vm_id }} devices tx and rx queue size details
+- name: Set instance {{ instance_name }} devices tx and rx queue size details
   set_fact:
     validation_msg: "{{ validation_msg }} + {{ ['Invalid tx/rx queues configured for instance '
                     + instance_id + ', tx queue size: ' + xmlqueues.matches[0].driver.tx_queue_size + ' \
