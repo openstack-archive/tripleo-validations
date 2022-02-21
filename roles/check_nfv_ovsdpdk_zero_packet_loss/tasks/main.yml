@@ -193,7 +193,7 @@
 - name: Get instances list on node
   become: true
   shell: >-
-    "{{ container_cli }}" exec -u root nova_libvirt virsh list --all | awk 'NR > 2 { printf $1 "\n"}'
+    "{{ container_cli }}" exec -u root nova_libvirt virsh list --all | awk 'NR > 2 { printf $2 "\n"}'
   register: instances_list
 
 - name: Get instances id list
@@ -203,10 +203,10 @@
 # Validate all the instances using instances xml
 - name: Loop on all instances and validate xml
   include_tasks: check_nfv_instances.yml
-  when: "{{ vm_id }}"
+  when: "{{ vm_name }}"
   loop: "{{ vm_list }}"
   loop_control:
-    loop_var: vm_id
+    loop_var: vm_name
 
 # Prints all the validation errors if found.
 - name: Validation errors
