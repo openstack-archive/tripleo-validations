@@ -1,0 +1,22 @@
+---
+- hosts: undercloud
+  vars:
+    metadata:
+      name: Verify undercloud services state before running update or upgrade
+      description: |
+        Check undercloud status before running a stack update - especially minor update and major upgrade.
+      groups:
+        - backup-and-restore
+        - post-upgrade
+        - pre-upgrade
+        - post-update
+        - pre-update
+      categories:
+        - os
+        - system
+        - systemd
+        - services
+      products:
+        - tripleo
+  roles:
+    - undercloud_disabled_services
