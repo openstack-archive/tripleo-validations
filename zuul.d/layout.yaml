@@ -14,7 +14,7 @@
               - ^molecule-requirements.txt
               - ^requirements.txt
               - ^README.rst
-        - tripleo-ci-centos-8-content-provider:
+        - tripleo-ci-centos-8-content-provider: &content_provider_deps
             dependencies:
               - openstack-tox-linters
         - tripleo-ci-centos-8-standalone-tv-validation:
@@ -25,6 +25,11 @@
                 - build
             dependencies:
               - tripleo-ci-centos-8-content-provider
+        - tripleo-ci-centos-9-content-provider: *content_provider_deps
+        - tripleo-ci-centos-9-standalone-tv-validation: &9_tv_validation_all
+            vars: *consumer_vars
+            dependencies:
+              - tripleo-ci-centos-9-content-provider
         - openstack-tox-py36
     gate:
       jobs:
@@ -35,6 +40,8 @@
             vars: *consumer_vars
             dependencies:
               - tripleo-ci-centos-8-content-provider
+        - tripleo-ci-centos-9-content-provider: *content_provider_deps
+        - tripleo-ci-centos-9-standalone-tv-validation: *9_tv_validation_all
         - openstack-tox-py36
 
     promote:

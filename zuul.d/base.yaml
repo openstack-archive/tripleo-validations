@@ -17,8 +17,13 @@
 - job:
     name: tripleo-ci-centos-8-standalone-tv-validation
     parent: tripleo-ci-centos-8-standalone
-    vars:
+    vars: &standalone_validation_vars
       featureset: '052'
       validate_services: true
       enable_validation: true
       validation_component: validation
+
+- job:
+    name: tripleo-ci-centos-9-standalone-tv-validation
+    parent: tripleo-ci-centos-9-standalone
+    vars: *standalone_validation_vars
