@@ -108,10 +108,12 @@ oslo_config_validator_namespaces_config:
           - service
       - section: DEFAULT
         option: notify_nova_on_port_data_changes
+        operator: not
         value_list:
           - "True"
       - section: DEFAULT
         option: notify_nova_on_port_status_changes
+        operator: not
         value_list:
           - "True"
 
