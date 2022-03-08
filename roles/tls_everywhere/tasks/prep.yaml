@@ -44,54 +44,6 @@
     report_reason: "{{ undercloud_conf_dns_reason }}"
     report_recommendations: "{{ undercloud_conf_dns_recommendations }}"
 
-# undercloud neutron domain check
-- name: Block for neutron domain check in undercloud.conf
-  when: undercloud_conf_dns_query|default('NXDOMAIN') != "NXDOMAIN"
-  block:
-    # NOTE(jaosorior): This returns a complete answer about the
-    # query. We're just gonna get the FQDN out of this.
-    - name: Get IdM/FreeIPA hostname from ip
-      shell: host {{ undercloud_conf_dns_query }} | awk '{print $5}'
-      register: host_from_ip_reg
-      changed_when: false
-      check_mode: false
-
-    - name: Get domain as set in undercloud.conf
-      become: true
-      validations_read_ini:
-        path: "{{ ansible_env.HOME }}/undercloud.conf"
-        section: DEFAULT
-        key: overcloud_domain_name
-        ignore_missing_file: false
-      register: undercloud_overcloud_domain
-      check_mode: false
-
-    - name: Set facts undercloud.conf domain is not configured correctly
-      set_fact:
-        undercloud_conf_domain_status: "{{ helper_status_error }}"
-        undercloud_conf_domain_reason: "Domain is not set up correctly in undercloud.conf"
-        undercloud_conf_domain_recommendations:
-          - "Please set the 'overcloud_domain_name' parameter to point to the IdM/FreeIPA's domain in undercloud.conf"
-      when: undercloud_overcloud_domain.value | length == 0 or
-            undercloud_overcloud_domain.value == [] or
-            undercloud_overcloud_domain.value not in host_from_ip_reg.stdout
-
-    - name: Set facts undercloud.conf domain is configured correctly
-      set_fact:
-        undercloud_conf_domain_status: "{{ helper_status_ok }}"
-        undercloud_conf_domain_reason: "Domain is set up correctly in undercloud.conf"
-        undercloud_conf_domain_recommendations: null
-      when:
-        - undercloud_overcloud_domain.value | length > 0
-        - undercloud_overcloud_domain.value != []
-        - undercloud_overcloud_domain.value in host_from_ip_reg.stdout
-
-    - name: Report on domain setup in undercloud.conf check
-      reportentry:
-        report_status: "{{ undercloud_conf_domain_status }}"
-        report_reason: "{{ undercloud_conf_domain_reason }}"
-        report_recommendations: "{{ undercloud_conf_domain_recommendations }}"
-
 - name: Get enable_novajoin flag from undercloud.conf
   become: true
   validations_read_ini:
