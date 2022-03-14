@@ -1,12 +1,12 @@
 ---
 # Gets only NFV instances and validates all the NFV instances.
-- name: Get instance {{ vm_id }} xml
+- name: Get instance {{ vm_name }} xml
   become: true
   shell: >-
-    "{{ container_cli }}" exec -u root nova_libvirt virsh dumpxml "{{ vm_id }}"
+    "{{ container_cli }}" exec -u root nova_libvirt virsh dumpxml "{{ vm_name }}"
   register: instance_xml
 
-- name: Set instance {{ vm_id }} xml data
+- name: Set instance {{ vm_name }} xml data
   set_fact:
     instance_xml_data: "{{ instance_xml.stdout }}"
 
@@ -18,11 +18,11 @@
   register: xmlinterfacetype
   ignore_errors: true
 
-- name: Set default no valid nfv instance {{ vm_id }}
+- name: Set default no valid nfv instance {{ vm_name }}
   set_fact:
     valid_nfv_instance: false
 
-- name: Check whether valid nfv instance {{ vm_id }}
+- name: Check whether valid nfv instance {{ vm_name }}
   set_fact:
     valid_nfv_instance: true
   when: "{{ interface_type.interface.type == 'vhostuser' }}"
@@ -33,6 +33,6 @@
 
 - name: Validate NFV instance
   vars:
-    instance_id: "{{ vm_id }}"
+    instance_name: "{{ vm_name }}"
   import_tasks: validate_instance.yml
   when: valid_nfv_instance
