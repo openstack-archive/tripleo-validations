@@ -211,7 +211,9 @@
 # Prints all the validation errors if found.
 - name: Validation errors
   fail:
-    msg: "Failed NFV zero packet loss rules:\n{{ validation_msg | join('\n') }}"
+    msg:
+      - "Failed NFV zero packet loss rules:"
+      - "{{ validation_msg }}"
   when:
     - validation_msg is defined
     - validation_msg | length > 0
