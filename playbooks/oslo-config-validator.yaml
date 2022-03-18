@@ -29,6 +29,21 @@
         - identity
       products:
         - tripleo
+
+    # Overriding simple namespaces config can be done on a per-namespace basis.
+    # We simply need to add a dict to this list of dictionnary. It will replace
+    # its corresponding entry from the default config
+    # This is usefull if we want to target the validation on a set of hosts
+    # that would otherwise trigger an error.
+    # oslo_config_validator_namespaces_config_override:
+    #   - namespace: nova.conf
+    #     invalid_settings:
+    #       - section: filter_scheduler
+    #         option: enabled_filters
+    #         separator: ","
+    #         value_list:
+    #           - SomeBadFilter
+
     # Debug log level
     oslo_config_validator_debug: false
 
@@ -68,5 +83,6 @@
       - placement
       - neutron
       - keystone
+
   roles:
     - oslo_config_validator

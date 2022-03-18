@@ -42,7 +42,7 @@
   set_fact:
     validation_output: >-
       {% set ignored_patterns = oslo_config_validator_global_ignored_messages | default("") %}{%
-         for ns in oslo_config_validator_namespaces_config | default([]) %}{%
+         for ns in namespaces_config | default([]) %}{%
            if ns.namespace in out.config_file.namespaces %}{%
              for ignored in ns.ignored_messages | default([]) %}{%
                set _ = ignored_patterns.append(ignored) %}{%
