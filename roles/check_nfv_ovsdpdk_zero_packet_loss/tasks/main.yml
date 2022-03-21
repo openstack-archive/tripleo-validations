@@ -58,7 +58,7 @@
 - name: Get nova_libvirt_launcher Process
   become: true
   shell: |-
-    ps -Leaf | grep nova_libvirt_launcher.sh | grep -v pts | awk '{printf "%s", $2}'
+    ps -Leaf | grep nova_libvirt_launcher.sh | grep -v pts -m 1 | awk '{print $2}'
   register: nova_libvirt_launcher
 
 - name: Get nova libvirt namespace processes
