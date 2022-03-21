@@ -138,6 +138,7 @@ oslo_config_validator_namespaces_config:
           - CoreFilter
           - RamFilter
           - DiskFilter
+          - RetryFilter
       - section: DEFAULT
         option: vif_plugging_timeout
         operator: lt
