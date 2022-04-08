@@ -8,6 +8,11 @@
       groups:
         - pre-deployment
         - pre-ceph
+      categories:
+        - storage
+      products:
+        - tripleo
+        - ceph
     fail_without_ceph_ansible: false
     ceph_ansible_repo: "centos-ceph-nautilus"
   tasks:

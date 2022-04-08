@@ -1,6 +1,6 @@
 import os
 import yaml
-
+from ansiblelint.errors import MatchError
 from ansiblelint.rules import AnsibleLintRule
 
 
@@ -20,6 +20,14 @@ class ValidationHasMetadataRule(AnsibleLintRule):
         - group1
         - group2
         - group3
+      categories:
+        - category1
+        - category2
+        - category3
+      products:
+        - product1
+        - product2
+        - product3
 """
 
     description = (
@@ -35,102 +43,155 @@ class ValidationHasMetadataRule(AnsibleLintRule):
         "The validation playbook must contain "
         "a 'metadata' dictionary under vars"
     )
-    no_groups_found = \
-        "*metadata* should contain a list of group (groups)"
+    no_classification_found = \
+        "*metadata* should contain a list of {classification}"
 
-    unknown_groups_found = (
-        "Unkown group(s) '{}' found! "
-        "The official list of groups are '{}'. "
-        "To add a new validation group, please add it in the groups.yaml "
-        "file at the root of the tripleo-validations project."
+    unknown_classifications_found = (
+        "Unkown {classification_key}(s) '{unknown_classification}' found! "
+        "The official list of {classification_key} are '{known_classification}'. "
     )
 
-    def get_groups(self):
-        """Returns a list of group names supported by
-        tripleo-validations by reading 'groups.yaml'
-        file located in the base direcotry.
+    how_to_add_classification = {
+        'groups': (
+            "To add a new validation group, please add it in the groups.yaml "
+            "file at the root of the tripleo-validations project."
+        )
+    }
+
+    def get_classifications(self, classification='groups'):
+        """Returns a list classification names
+        defined for tripleo-validations in the '{classification}.yaml' file
+        located in the base repo directory.
         """
-        results = []
+        file_path = os.path.abspath(classification + '.yaml')
 
-        grp_file_path = os.path.abspath('groups.yaml')
+        try:
+            with open(file_path, "r") as definitions:
+                contents = yaml.safe_load(definitions)
+        except (PermissionError, OSError):
+            raise RuntimeError(
+                "{}.yaml file at '{}' inacessible.".format(
+                    classification,
+                    file_path))
 
-        with open(grp_file_path, "r") as grps:
-            contents = yaml.safe_load(grps)
-
-        for grp_name, grp_desc in sorted(contents.items()):
-            results.append(grp_name)
+        results = [name for name, _ in contents.items()]
 
         return results
+
+    def check_classification(self, metadata, path,
+                             classification_key, strict=False):
+        """Check validatity of validation classifications,
+        such as groups, categories and products.
+        This one is tricky.
+        Empty lists in python evaluate as false
+        So we can't just check for truth value of returned list.
+        Instead we have to compare the returned value with `None`.
+        """
+        classification = metadata.get(classification_key, None)
+
+        if classification is None:
+            return MatchError(
+                message=self.no_classification_found.format(
+                    classification=classification_key
+                ),
+                filename=path,
+                details=str(metadata))
+        else:
+            if not isinstance(classification, list):
+                return MatchError(
+                    message="*{}* must be a list".format(classification_key),
+                    filename=path,
+                    details=str(metadata))
+            elif strict:
+                classifications = self.get_classifications(classification_key)
+                unknown_classifications = list(
+                    set(classification) - set(classifications))
+                if unknown_classifications:
+                    message = self.unknown_classifications_found.format(
+                        unknown_classification=unknown_classifications,
+                        known_classification=classifications,
+                        classification_key=classification_key)
+                    message += self.how_to_add_classification.get(classification_key, "")
+                    return MatchError(
+                        message=message,
+                        filename=path,
+                        details=str(metadata))
 
     def matchplay(self, file, data):
         results = []
         path = file['path']
 
         if file['type'] == 'playbook':
-            if path.startswith("playbooks/") or \
-               path.find("tripleo-validations/playbooks/") > 0:
+            if path.startswith("playbooks/") \
+               or "tripleo-validations/playbooks/" in path:
 
                 # *hosts* line check
                 hosts = data.get('hosts', None)
                 if not hosts:
-                    return [({
-                        path: data
-                    }, "No *hosts* key found in the playbook")]
+                    results.append(
+                        MatchError(
+                            message="No *hosts* key found in the playbook",
+                            filename=path,
+                            details=str(data)))
 
                 # *vars* lines check
                 vars = data.get('vars', None)
                 if not vars:
-                    return [({
-                        path: data
-                    }, self.no_vars_found)]
+                    results.append(
+                        MatchError(
+                            message=self.no_vars_found,
+                            filename=path,
+                            details=str(data)))
                 else:
                     if not isinstance(vars, dict):
-                        return [({path: data}, '*vars* should be a dictionary')]
+                        results.append(
+                            MatchError(
+                                message='*vars* must be a dictionary',
+                                filename=path,
+                                details=str(data)))
 
                     # *metadata* lines check
                     metadata = data['vars'].get('metadata', None)
                     if metadata:
                         if not isinstance(metadata, dict):
-                            return [(
-                                {path: data},
-                                '*metadata* should be a dictionary')]
+                            results.append(
+                                MatchError(
+                                    message='*metadata* must be a dictionary',
+                                    filename=path,
+                                    details=str(data)))
                     else:
-                        return [({path: data}, self.no_meta_found)]
+                        results.append(
+                            MatchError(
+                                message=self.no_meta_found,
+                                filename=path,
+                                details=str(data)))
 
                     # *metadata>[name|description] lines check
                     for info in ['name', 'description']:
                         if not metadata.get(info, None):
-                            results.append((
-                                {path: data},
-                                '*metadata* should contain a %s key' % info))
+                            results.append(
+                                MatchError(
+                                    message='*metadata* must contain a %s key' % info,
+                                    filename=path,
+                                    details=str(data)))
                             continue
                         if not isinstance(metadata.get(info), str):
-                            results.append((
-                                {path: data},
-                                '*%s* should be a string' % info))
+                            results.append(
+                                MatchError(
+                                    message='*%s* should be a string' % info,
+                                    filename=path,
+                                    details=str(data)))
 
-                    # *metadata>groups* lines check
-                    if not metadata.get('groups', None):
-                        results.append((
-                            {path: data},
-                            self.no_groups_found))
-                    else:
-                        if not isinstance(metadata.get('groups'), list):
-                            results.append((
-                                {path: data},
-                                '*groups* should be a list'))
-                        else:
-                            groups = metadata.get('groups')
-                            group_list = self.get_groups()
-                            unknown_groups_list = list(
-                                set(groups) - set(group_list))
-                            if unknown_groups_list:
-                                results.append((
-                                    {path: data},
-                                    self.unknown_groups_found.format(
-                                        unknown_groups_list,
-                                        group_list)
-                                ))
-            return results
+                    #Checks for metadata we use to classify validations.
+                    #Groups, categories and products
+                    for classification in ['categories', 'products', 'groups']:
+                        classification_error = self.check_classification(
+                            metadata,
+                            path,
+                            classification,
+                            strict=(classification == 'groups'))
+
+                        if classification_error:
+                            results.append(classification_error)
 
         return results
