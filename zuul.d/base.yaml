@@ -22,18 +22,3 @@
       validate_services: true
       enable_validation: true
       validation_component: validation
-
-- job:
-    name: tripleo-validations-coverchange
-    nodeset: centos-8-stream
-    parent: base
-    run: ci/playbooks/coverchange.yaml
-    timeout: 1600
-    voting: false
-    required-projects:
-      - openstack/validations-libs
-      - openstack/tripleo-validations
-    files:
-      - ^tripleo_validations/.*
-      - ^library/.*
-      - ^lookup_plugins/.*
