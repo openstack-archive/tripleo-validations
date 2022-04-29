@@ -47,7 +47,6 @@
               - ^roles/.*
               - ^playbooks/.*
               - ^library/.*
-        - tripleo-validations-coverchange
     gate:
       jobs:
         - openstack-tox-linters
