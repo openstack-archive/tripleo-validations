@@ -34,6 +34,7 @@
                 - multinode.yml
               remove_tags:
                 - build
+              validations_inventory: ""
             dependencies:
               - tripleo-ci-centos-9-content-provider
         - openstack-tox-docs: &tripleo-docs
