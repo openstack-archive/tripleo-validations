@@ -99,3 +99,30 @@ MOCK_FLAVORS_CHECK_EXPECTED = {
             ]
     )
 }
+
+
+MOCK_NODES = [
+    {
+        'uuid': 'foo123',
+        'provision_state': 'active',
+        'properties': {
+            'capabilities': {
+                'foocap': 'foocapdesc'
+            }
+        }
+    },
+    {
+        'uuid': 'bar123',
+        'provision_state': 'active',
+        'properties': {
+            'capabilities': {
+                'barcap': 'bcapdesc'
+            }
+        }
+    }
+]
+
+
+MOCK_PROFILE_FLAVORS = {
+    'fooflavor': (MOCK_FLAVORS['ok'], 1),
+}
