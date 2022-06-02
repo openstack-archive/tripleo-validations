@@ -7,7 +7,7 @@
     check:
       jobs:
         - openstack-tox-linters
-        - openstack-tox-py36
+        - openstack-tox-py38
         - openstack-tox-py39
         - tripleo-ci-centos-9-content-provider:
             irrelevant-files: &docs_only_files
@@ -16,7 +16,7 @@
               - ^releasenotes/.*$
             dependencies:
               - openstack-tox-linters
-              - openstack-tox-py36
+              - openstack-tox-py38
               - openstack-tox-py39
         - tripleo-ci-centos-9-standalone-tv-validation:
             irrelevant-files: *docs_only_files
@@ -52,13 +52,13 @@
     gate:
       jobs:
         - openstack-tox-linters
-        - openstack-tox-py36
+        - openstack-tox-py38
         - openstack-tox-py39
         - tripleo-ci-centos-9-content-provider:
             irrelevant-files: *docs_only_files
             dependencies:
               - openstack-tox-linters
-              - openstack-tox-py36
+              - openstack-tox-py38
               - openstack-tox-py39
         - openstack-tox-docs: *tripleo-docs
         - tripleo-ci-centos-9-standalone-tv-validation:
