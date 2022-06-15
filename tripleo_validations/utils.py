@@ -27,7 +27,6 @@ from keystoneauth1.identity import generic as ks_id
 from novaclient import client as nova_client
 from swiftclient.client import Connection
 from swiftclient import exceptions as swiftexceptions
-from tripleo_validations import constants
 
 
 def get_auth_session(auth_variables):
@@ -79,22 +78,6 @@ def get_ironic_client(auth_variables):
         1,
         session=get_auth_session(auth_variables)
     )
-
-
-def list_plan_and_stack(hclient, swiftclient):
-    try:
-        stacks = [s.stack_name for s in hclient.stacks.list()]
-    except (heat_exc.HTTPNotFound, catalog_exc.EndpointNotFound):
-        return None
-    try:
-        plan_list = []
-        for ac in swiftclient.get_account()[1]:
-            container = swiftclient.get_container(ac['name'])[0]
-            if constants.TRIPLEO_META_USAGE_KEY in container.keys():
-                plan_list.append(ac['name'])
-    except swiftexceptions.ClientException:
-        return None
-    return list(set(stacks).union(plan_list))
 
 
 def filtered(obj):
