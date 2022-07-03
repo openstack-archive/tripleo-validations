@@ -1,5 +1,5 @@
 ---
-- name: Check the services for debug flag
+- name: Get the services for debug flag
   become: true
   validations_read_ini:
     path: "{{ item }}"
@@ -8,4 +8,10 @@
     ignore_missing_file: true
   register: config_result
   with_items: "{{ services_conf_files }}"
-  failed_when: "debug_check|bool == config_result.value|bool"
+
+- name: Check the services for debug flag
+  fail:
+    msg: >
+      debug_check is set to {{ debug_check }} and the result of
+      validation is {{ config_result.results[0].value }}
+  failed_when: "debug_check|bool != config_result.results[0].value|bool"

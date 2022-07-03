@@ -35,12 +35,14 @@
       include_role:
         name: undercloud_debug
       vars:
-        debug_check: false
+        debug_check: true
 
     - name: Should fail due to bad value
       block:
         - include_role:
             name: undercloud_debug
+          vars:
+            debug_check: false
 
       rescue:
         - name: Clear host errors
