@@ -2,6 +2,10 @@
 undercloud_heat_purge_deleted
 =============================
 
+.. warning::
+   This role is not suited for Wallaby and more recent releases.
+   As it expects presence 'heat_api_cron'.
+
 An Ansible role to check if `heat-manage purge_deleted` is enabled in the
 crontab
 
