@@ -1,0 +1,3 @@
+---
+# inherits tripleo-validations/.config/molecule/config.yml
+# To override default values, please take a look at the config.yml.
