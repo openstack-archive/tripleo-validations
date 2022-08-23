@@ -226,6 +226,7 @@ oslo_config_validator_service_configs:
           - backend_defaults
           - backend
     default_namespaces:
+      - castellan.config
       - cinder
       - keystonemiddleware.auth_token
       - oslo.log
