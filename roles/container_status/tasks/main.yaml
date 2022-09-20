@@ -3,7 +3,7 @@
   set_fact:
     oc_container_cli: "{{ hostvars[inventory_hostname].container_cli | default('podman', true) }}"
   when:
-    - "'overcloud' in group_names"
+    - "'overcloud' in group_names or 'allovercloud' in group_names"
     - oc_container_cli is not defined
 
 - when: "'Undercloud' in group_names"
