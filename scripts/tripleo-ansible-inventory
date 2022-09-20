@@ -59,7 +59,7 @@ opts = [
                       'as --plan. If both are specified,'
                       ' --stack will take precedence.')),
     cfg.StrOpt('ansible_ssh_user', default=os.environ.get('ANSIBLE_SSH_USER',
-               'heat-admin')),
+               'tripleo-admin')),
     cfg.StrOpt('undercloud-connection',
                default=inv.UNDERCLOUD_CONNECTION_LOCAL,
                help=('Ansible connection to the undercloud, either "local" '
