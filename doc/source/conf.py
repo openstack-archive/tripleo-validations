@@ -43,7 +43,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-copyright = u'2019, OpenStack Foundation'
+copyright = '2019, OpenStack Foundation'
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 add_function_parentheses = True
@@ -70,8 +70,8 @@ html_theme = 'openstackdocs'
 latex_documents = [
     ('index',
      'tripleo-validations.tex',
-     u'tripleo-validations Documentation',
-     u'OpenStack Foundation', 'manual'),
+     'tripleo-validations Documentation',
+     'OpenStack Foundation', 'manual'),
 ]
 
 # openstackdocstheme options
