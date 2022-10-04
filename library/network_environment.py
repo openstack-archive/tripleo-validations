@@ -23,8 +23,6 @@ import itertools
 import netaddr
 import os.path
 
-import six
-
 from ansible.module_utils.basic import AnsibleModule
 # from os_net_config import validator
 
@@ -89,7 +87,7 @@ def open_network_environment_files(netenv_path, template_files):
                          .format(netenv_path, e)])
     nic_configs = []
     resource_registry = network_data.get('resource_registry', {})
-    for nic_name, relative_path in six.iteritems(resource_registry):
+    for nic_name, relative_path in iter(resource_registry.items()):
         if nic_name.endswith("Net::SoftwareConfig"):
             nic_config_path = os.path.normpath(
                 os.path.join(os.path.dirname(netenv_path), relative_path))
@@ -119,9 +117,9 @@ def validate_network_environment(network_data, nic_configs):
     poolsinfo = {}
     vlaninfo = {}
     staticipinfo = {}
+    parameter_defaults = network_data.get('parameter_defaults', {})
 
-    for item, data in six.iteritems(network_data.get('parameter_defaults',
-                                                     {})):
+    for item, data in parameter_defaults.items():
         if item.endswith('NetCidr'):
             cidrinfo[item] = data
         elif item.endswith('AllocationPools'):
@@ -158,7 +156,7 @@ def check_nic_configs(path, nic_data):
     if not isinstance(resources, collections.abc.Mapping):
         return ["The nic_data must contain the 'resources' key and it must be "
                 "a dictionary."]
-    for name, resource in six.iteritems(resources):
+    for name, resource in iter(resources.items()):
         try:
             nested_path = [
                 ('properties', collections.abc.Mapping, 'dictionary'),
@@ -249,7 +247,7 @@ def check_allocation_pools_pairing(filedata, pools):
     if not isinstance(pools, collections.abc.Mapping):
         return ["The `pools` argument must be a dictionary."]
     errors = []
-    for poolitem, pooldata in six.iteritems(pools):
+    for poolitem, pooldata in iter(pools.items()):
         pool_objs = []
         if not isinstance(pooldata, collections.abc.Iterable):
             errors.append('The IP ranges in {} must form a list.'
@@ -322,7 +320,7 @@ def check_static_ip_pool_collision(static_ips, pools):
         return ["The Pools input must be a dictionary."]
     errors = []
     pool_ranges = []
-    for pool_name, ranges in six.iteritems(pools):
+    for pool_name, ranges in iter(pools.items()):
         if not isinstance(ranges, collections.abc.Iterable):
             errors.append("The IP ranges in {} must form a list."
                           .format(pool_name))
@@ -337,11 +335,11 @@ def check_static_ip_pool_collision(static_ips, pools):
                 continue
             pool_ranges.append((pool_name, ip_range))
 
-    for role, services in six.iteritems(static_ips):
+    for role, services in iter(static_ips.items()):
         if not isinstance(services, collections.abc.Mapping):
             errors.append("The {} must be a dictionary.".format(role))
             continue
-        for service, ips in six.iteritems(services):
+        for service, ips in iter(services.items()):
             if not isinstance(ips, collections.abc.Iterable):
                 errors.append("The {}->{} must be an array."
                               .format(role, service))
@@ -381,7 +379,7 @@ def check_vlan_ids(vlans):
         return ["The vlans parameter must be a dictionary."]
     errors = []
     invertdict = {}
-    for k, v in six.iteritems(vlans):
+    for k, v in vlans.items():
         if v not in invertdict:
             invertdict[v] = k
         else:
@@ -403,17 +401,17 @@ def check_static_ip_in_cidr(networks, static_ips):
     # TODO(shadower): Refactor this so networks are always valid and already
     # converted to `netaddr.IPNetwork` here. Will be useful in the other
     # checks.
-    for name, cidr in six.iteritems(networks):
+    for name, cidr in iter(networks.items()):
         try:
             network_ranges[name] = netaddr.IPNetwork(cidr)
         except (netaddr.AddrFormatError, ValueError):
             errors.append("Network '{}' has an invalid CIDR: '{}'"
                           .format(name, cidr))
-    for role, services in six.iteritems(static_ips):
+    for role, services in iter(static_ips.items()):
         if not isinstance(services, collections.abc.Mapping):
             errors.append("The {} must be a dictionary.".format(role))
             continue
-        for service, ips in six.iteritems(services):
+        for service, ips in iter(services.items()):
             range_name = service.title().replace('_', '') + 'NetCidr'
             if range_name in network_ranges:
                 if not isinstance(ips, collections.abc.Iterable):
@@ -439,18 +437,18 @@ def duplicate_static_ips(static_ips):
     ipset = collections.defaultdict(list)
     # TODO(shadower): we're doing this netsted loop multiple times. Turn it
     # into a generator or something.
-    for role, services in six.iteritems(static_ips):
+    for role, services in iter(static_ips.items()):
         if not isinstance(services, collections.abc.Mapping):
             errors.append("The {} must be a dictionary.".format(role))
             continue
-        for service, ips in six.iteritems(services):
+        for service, ips in iter(services.items()):
             if not isinstance(ips, collections.abc.Iterable):
                 errors.append("The {}->{} must be a list."
                               .format(role, service))
                 continue
             for ip in ips:
                 ipset[ip].append((role, service))
-    for ip, sources in six.iteritems(ipset):
+    for ip, sources in ipset.items():
         if len(sources) > 1:
             msg = "The {} IP address was entered multiple times: {}."
             formatted_sources = ("{}[{}]"
@@ -467,7 +465,7 @@ def validate_node_pool_size(plan_env_path, ip_pools_path, template_files):
     param_defaults = plan_env.get('parameter_defaults')
     node_counts = {
         param.replace('Count', ''): count
-        for param, count in six.iteritems(param_defaults)
+        for param, count in param_defaults.items()
         if param.endswith('Count') and count > 0
     }
 
@@ -481,11 +479,11 @@ def validate_node_pool_size(plan_env_path, ip_pools_path, template_files):
     param_defaults = ip_pools.get('parameter_defaults')
     role_pools = {
         param.replace('IPs', ''): pool
-        for param, pool in six.iteritems(param_defaults)
+        for param, pool in param_defaults.items()
         if param.endswith('IPs') and param.replace('IPs', '') in node_counts
     }
 
-    for role, node_count in six.iteritems(node_counts):
+    for role, node_count in iter(node_counts.items()):
         try:
             pools = role_pools[role]
         except KeyError:
@@ -494,7 +492,7 @@ def validate_node_pool_size(plan_env_path, ip_pools_path, template_files):
                 "pools defined.".format(node_count, role)
             )
             continue
-        for pool_name, pool_ips in six.iteritems(pools):
+        for pool_name, pool_ips in pools.items():
             if len(pool_ips) < node_count:
                 warnings.append(
                     "Insufficient number of IPs in '{}' pool for '{}' role: "

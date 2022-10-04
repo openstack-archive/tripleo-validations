@@ -14,7 +14,6 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations
 # under the License.
-from six import string_types
 
 import collections.abc as collectionsAbc
 from glanceclient import client as glance_client
@@ -83,7 +82,7 @@ def get_ironic_client(auth_variables):
 def filtered(obj):
     """Only return properties of obj whose value can be properly serialized."""
     return {k: v for k, v in obj.__dict__.items()
-            if isinstance(v, (string_types, int, list, dict, type(None)))}
+            if isinstance(v, (str, int, list, dict, type(None)))}
 
 
 def get_nested(data, name, path):

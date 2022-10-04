@@ -14,7 +14,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 import fcntl
-import six
 import socket
 import struct
 import sys
@@ -155,10 +154,7 @@ class DHCPDiscover(object):
     def _checksum(self, msg):
         s = 0
         for i in range(0, len(msg), 2):
-            if six.PY3:
-                w = msg[i] + (msg[i + 1] << 8)
-            else:
-                w = ord(msg[i]) + (ord(msg[i + 1]) << 8)
+            w = msg[i] + (msg[i + 1] << 8)
             s = s + w
         s = (s >> 16) + (s & 0xffff)
         s = s + (s >> 16)
@@ -178,26 +174,18 @@ def get_hw_addresses(interfaces):
 
 def inspect_frame(data):
     eth_type = struct.unpack('!H', data[12:14])[0]
-    protocol = data[23] if six.PY3 else ord(data[23])
+    protocol = data[23]
     src_port = struct.unpack('!H', data[34:36])[0]
     dst_port = struct.unpack('!H', data[36:38])[0]
-    msg_type = data[42] if six.PY3 else ord(data[42])
+    msg_type = data[42]
     # Make sure we got a DHCP Offer
     if eth_type == ETH_P_IP \
             and protocol == socket.IPPROTO_UDP \
             and src_port == 67 \
             and dst_port == 68 \
             and msg_type == 2:  # DHCP Boot Reply
-        if six.PY3:
-            server_ip_address = '.'.join(["%s" % m for m in
-                                         data[26:30]])
-            server_hw_address = ":".join(["%02x" % m for m in
-                                         data[6:12]])
-        else:
-            server_ip_address = '.'.join(["%s" % ord(m) for m in
-                                         data[26:30]])
-            server_hw_address = ":".join(["%02x" % ord(m) for m in
-                                         data[6:12]])
+        server_ip_address = '.'.join(["%s" % m for m in data[26:30]])
+        server_hw_address = ":".join(["%02x" % m for m in data[6:12]])
         dhcp_servers.append([server_ip_address, server_hw_address])
 
 
