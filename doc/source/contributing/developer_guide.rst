@@ -503,17 +503,17 @@ change the value without editing the yaml file!
 
 Let's do that to test both success and failure cases.
 
-This should succeed but saying the RAM requirement is 1 GB::
+This should succeed but saying the RAM requirement is 1 GB:
 
 .. code-block:: console
 
-    ansible-playbook -i /usr/bin/tripleo-ansible-inventory playbooks/undercloud-ram.yaml -e minimum_ram_gb=1
+    $ ansible-playbook -i /usr/bin/tripleo-ansible-inventory playbooks/undercloud-ram.yaml -e minimum_ram_gb=1
 
-And this should fail by requiring much more RAM than is necessary::
+And this should fail by requiring much more RAM than is necessary:
 
 .. code-block:: console
 
-    ansible-playbook -i /usr/bin/tripleo-ansible-inventory playbooks/undercloud-ram.yaml -e minimum_ram_gb=128
+    $ ansible-playbook -i /usr/bin/tripleo-ansible-inventory playbooks/undercloud-ram.yaml -e minimum_ram_gb=128
 
 (the actual values may be different in your configuration -- just make sure one
 is low enough and the other too high)
