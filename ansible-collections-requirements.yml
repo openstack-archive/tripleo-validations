@@ -4,3 +4,4 @@ collections:
   - community.general
   - community.crypto
   - ansible.posix
+  - openstack.cloud
