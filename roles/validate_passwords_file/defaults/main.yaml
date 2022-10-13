@@ -1,0 +1,3 @@
+---
+validate_passwords_file_name: 'tripleo-undercloud-passwords.yaml'
+validate_passwords_file_output_dir: '/home/stack/tripleo-deploy/undercloud'
