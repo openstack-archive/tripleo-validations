@@ -1,2 +1,0 @@
----
-ironic_conf_file: "/var/lib/config-data/puppet-generated/ironic/etc/ironic/ironic.conf"

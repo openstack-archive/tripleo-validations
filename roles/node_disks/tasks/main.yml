@@ -1,25 +1,45 @@
 ---
-- name: Get Ironic Inspector swift auth_url
-  become: true
-  validations_read_ini:
-    path: "{{ ironic_conf_file }}"
-    section: inspector
-    key: auth_url
-  register: ironic_auth_url
+- openstack.cloud.compute_flavor_info:
+    cloud: overcloud
+  register: result
 
-- name: Get Ironic Inspector swift password
-  become: true
-  validations_read_ini:
-    path: "{{ ironic_conf_file }}"
-    section: inspector
-    key: password
-  register: ironic_password
-  no_log: true
+- name: Set required disk size
+  set_fact:
+    disk_sizes: "{{  result | community.general.json_query('openstack_flavors[*].{disk : disk, name : name}') }}"
 
-- name: Check node disks
-  node_disks:
-    nodes: "{{ lookup('ironic_nodes', wantlist=True) }}"
-    flavors: "{{ lookup('nova_flavors', wantlist=True) }}"
-    introspection_data: "{{ lookup('introspection_data',
-                            auth_url=ironic_auth_url.value,
-                            password=ironic_password.value) }}"
+- name: Set minimum required disk size
+  set_fact:
+    min_disk_size: "{{ disk_sizes | max(attribute='disk') }}"
+
+- name: Get list of baremetal nodes
+  openstack.cloud.baremetal_node_info:
+    cloud: undercloud
+  register: baremetal_nodes
+
+- name: Get baremetal node details
+  openstack.cloud.baremetal_node_info:
+    cloud: undercloud
+    node: "{{ item }}"
+  with_items: "{{ baremetal_nodes | community.general.json_query('baremetal_nodes[*].name') }}"
+  register: result
+
+- name: Set baremetal node details
+  set_fact:
+    baremetal_node_details: "{{ result.results | community.general.json_query('[*].baremetal_nodes[0]') }}"
+
+- name: Compare expected with available disk sizes
+  set_fact:
+    nodes_with_undersized_disks: "{{ baremetal_node_details | community.general.json_query('[?to_number(properties.local_gb) < to_number(min_disk_size) ]') }}"
+
+- fail:
+    msg: |
+      Following nodes have less storage available on their primary disks than requested by the flavor {{ min_disk_size.name }} :
+      {{ nodes_with_undersized_disks }}
+      Use node introspection to verify presence of possible additional disks.
+  when: nodes_with_undersized_disks | length > 0
+
+- name: Print recommendation for further steps
+  debug:
+    msg: |
+      Validation was successful. Root disk is sufficient for all flavors.
+      Use node introspection to verify presence of possible additional disks.
