@@ -1,10 +1,11 @@
 ---
-- hosts: undercloud
+- hosts: localhost
   vars:
     metadata:
       name: Check node disk configuration
       description: |
-        Check node disk numbers and sizes and whether root device hints are set.
+        Check node primary/root disk sizes and compare with flavor expectations.
+        Fitness of other disks can be checked manually using introspection.
       groups:
         - pre-deployment
       categories:
@@ -15,6 +16,5 @@
         - undercloud
       products:
         - tripleo
-    ironic_conf_file: "/var/lib/config-data/puppet-generated/ironic/etc/ironic/ironic.conf"
   roles:
     - node_disks
