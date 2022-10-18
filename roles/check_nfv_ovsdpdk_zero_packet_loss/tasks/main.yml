@@ -55,16 +55,16 @@
   when:
     - dpdk_nics_numa is defined
 
-- name: Get nova_libvirt_launcher Process
+- name: Get libvirtd Process
   become: true
   shell: |-
-    ps -Leaf | grep nova_libvirt_launcher.sh | grep -v pts -m 1 | awk '{print $2}'
-  register: nova_libvirt_launcher
+    ps -Leaf | awk '/\/usr\/sbin\/libvirt[d]/ {print $2; exit}'
+  register: libvirtd
 
 - name: Get nova libvirt namespace processes
   become: true
   shell: |-
-    pgrep --ns {{ nova_libvirt_launcher.stdout }}
+    pgrep --ns {{ libvirtd.stdout }}
   register: nova_libvirt_proceses
 
 - name: Update nova libvirt namespace processes pid
