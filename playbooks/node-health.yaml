@@ -1,11 +1,12 @@
 ---
-- hosts: undercloud
+- hosts: localhost
   vars:
     metadata:
       name: Node health check
       description: |
         Check if all overcloud nodes can be connected to before starting a
-        scale-up or an upgrade.
+        scale-up or an upgrade. Validation requires cloud authentication details
+        in the form of accessible clouds.yaml file to be correctly executed.
       groups:
         - pre-upgrade
       categories:
