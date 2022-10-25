@@ -6,3 +6,5 @@ metadata:
   groups:
     - pre-deployment
     - pre-upgrade
+
+baremetal_nodes_details: []
