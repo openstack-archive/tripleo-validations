@@ -1,4 +1,21 @@
 ---
+- name: Get list of baremetal nodes
+  openstack.cloud.baremetal_node_info:
+    cloud: undercloud
+  register: baremetal_nodes
+
+- name: Get baremetal node details
+  openstack.cloud.baremetal_node_info:
+    cloud: undercloud
+    node: "{{ item }}"
+  with_items: "{{ baremetal_nodes | community.general.json_query('baremetal_nodes[*].name') }}"
+  register: result
+
+- name: Get clean node list
+  set_fact:
+    baremetal_nodes_details: "{{ [item] + baremetal_nodes_details  }}"
+  with_items: "{{ result | community.general.json_query('results[*].baremetal_nodes') }}"
+
 - name: Check ironic boot config
   check_ironic_boot_config:
-    nodes: "{{ lookup('ironic_nodes', wantlist=True) }}"
+    nodes: "{{ baremetal_nodes_details }}"
