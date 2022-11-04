@@ -32,7 +32,6 @@
       - tripleo-validations-centos-8-molecule-tripleo_haproxy
       - tripleo-validations-centos-8-molecule-undercloud_debug
       - tripleo-validations-centos-8-molecule-undercloud_heat_purge_deleted
-      - tripleo-validations-centos-8-molecule-undercloud_tokenflush
       - tripleo-validations-centos-8-molecule-validation_init
     gate:
       jobs:
@@ -63,7 +62,6 @@
       - tripleo-validations-centos-8-molecule-tripleo_haproxy
       - tripleo-validations-centos-8-molecule-undercloud_debug
       - tripleo-validations-centos-8-molecule-undercloud_heat_purge_deleted
-      - tripleo-validations-centos-8-molecule-undercloud_tokenflush
       - tripleo-validations-centos-8-molecule-validation_init
     name: tripleo-validations-molecule-jobs
 - job:
@@ -614,17 +612,6 @@
     vars:
       tripleo_validations_role_name: undercloud_process_count
     voting: false
-- job:
-    files:
-    - ^roles/undercloud_tokenflush/.*
-    - ^tests/prepare-test-host.yml
-    - ^ci/playbooks/pre.yml
-    - ^ci/playbooks/run.yml
-    - ^molecule-requirements.txt
-    name: tripleo-validations-centos-8-molecule-undercloud_tokenflush
-    parent: tripleo-validations-centos-8-base
-    vars:
-      tripleo_validations_role_name: undercloud_tokenflush
 - job:
     files:
     - ^roles/validation_init/.*
