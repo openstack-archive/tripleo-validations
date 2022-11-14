@@ -8,9 +8,11 @@ rulesdir:
 
 # Mock modules or roles in order to pass ansible-playbook --syntax-check
 mock_modules:
-  - hiera
-  - validations_read_ini
-  - warn
+  - hiera # Modules can only be installed by rpm
+  - validations_read_ini # Modules can only be installed by rpm
+  - warn # Modules can only be installed by rpm
+  - tripleo_overcloud_role_list # Modules can only be installed by rpm
+  - tripleo_overcloud_role_show # Modules can only be installed by rpm
 mock_roles:
   - check_latest_packages_version
 
