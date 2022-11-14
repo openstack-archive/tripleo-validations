@@ -5,7 +5,7 @@
       name: Verify hypervisor statistics
       description: |
         This validation checks that the nodes and hypervisor statistics
-        add up.
+        add up. Validation requires system installation of tripleo-ansible package.
       groups:
         - pre-deployment
       categories:
