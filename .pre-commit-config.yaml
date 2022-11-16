@@ -12,7 +12,7 @@ repos:
       - id: check-symlinks
       - id: debug-statements
 
-  - repo: https://gitlab.com/pycqa/flake8
+  - repo: https://github.com/pycqa/flake8
     rev: 3.8.3
     hooks:
       - id: flake8
