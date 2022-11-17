@@ -1,0 +1,3 @@
+---
+fail_if_reboot: true
+no_reboot_message: "Reboot should not be necessary."
