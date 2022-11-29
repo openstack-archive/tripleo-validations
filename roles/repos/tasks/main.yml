@@ -3,8 +3,6 @@
   become: true
   shell: |
     {{ ansible_pkg_mgr }} repolist enabled -v 2>&1 || exit 0
-  args:
-    warn: false
   changed_when: false
   register: repositories
 
