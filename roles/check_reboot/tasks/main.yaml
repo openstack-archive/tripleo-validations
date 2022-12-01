@@ -1,0 +1,18 @@
+---
+- name: Make sure yum-utils is installed
+  become: true
+  package:
+    name: yum-utils
+
+- name: Check if reboot is required
+  register: command_output
+  shell: |
+    needs-restarting -r
+
+- name: Fail if core packages need reboot
+  fail:
+    msg: |
+          {{ command_output.stdout }}
+  when:
+    - no_reboot_message not in command_output.stdout
+    - fail_if_reboot

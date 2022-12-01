@@ -1,0 +1,22 @@
+---
+- hosts: all
+  gather_facts: true
+  vars:
+    metadata:
+      name: Verify if a reboot is necessary with yum-utils
+      description: |
+        This validation checks if a reboot is necessary with yum-utils
+        with the option: needs-restarting -r
+      groups:
+        - pre-upgrade
+        - pre-update
+        - post-upgrade
+        - post-update
+      categories:
+        - os
+        - kernel
+        - system
+      products:
+        - tripleo
+  roles:
+    - check_reboot
