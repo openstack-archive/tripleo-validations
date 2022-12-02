@@ -41,7 +41,7 @@
     detach: false
     rm: true
     user: "0"
-    mount: "type=bind,source={{ oslo_config_validator_work_path }},destination=/oslo_config_validation"
+    volume: "{{ oslo_config_validator_work_path }}:/oslo_config_validation"
     network: none
     command: "{{ oslo_command }}"
   register: container_run
