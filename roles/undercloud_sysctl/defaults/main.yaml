@@ -1,0 +1,8 @@
+---
+undercloud_sysctl_options:
+  - net.ipv4.ip_forward
+  - net.ipv4.ip_nonlocal_bind
+
+undercloud_sysctl_ipv6_option: net.ipv6.ip_nonlocal_bind
+missing_options: []
+fail_options: false
