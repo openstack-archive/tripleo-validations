@@ -9,7 +9,7 @@
 
 - name: Set minimum required disk size
   set_fact:
-    min_disk_size: "{{ disk_sizes | max(attribute='disk') }}"
+    min_disk_size: "{{ disk_sizes | community.general.json_query('[*].disk') | max }}"
 
 - name: Get list of baremetal nodes
   openstack.cloud.baremetal_node_info:
