@@ -6,3 +6,5 @@ metadata:
     add up.
   groups:
     - pre-deployment
+
+baremetal_nodes_details: []
