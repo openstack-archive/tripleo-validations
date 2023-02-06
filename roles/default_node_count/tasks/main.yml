@@ -1,39 +1,53 @@
 ---
-- name: Retrieve the hypervisor statistics
-  set_fact:
-    statistics: "{{ lookup('nova_hypervisor_statistics', wantlist=True) }}"
+- name: Get list of baremetal nodes
+  openstack.cloud.baremetal_node_info:
+    cloud: undercloud
+  register: baremetal_nodes
 
-- name: Get default role counts
-  set_fact:
-    roles_info: "{{ lookup('roles_info', wantlist=True) }}"
+- name: Get baremetal node details
+  openstack.cloud.baremetal_node_info:
+    cloud: undercloud
+    node: "{{ item }}"
+  with_items: "{{ baremetal_nodes | community.general.json_query('baremetal_nodes[*].name') }}"
+  register: node_details
 
-- name: Set requested count
+- name: Get clean node list
   set_fact:
-    requested_count: "{{ roles_info|sum(attribute='count') }}"
+    baremetal_nodes_details: "{{ [item] + baremetal_nodes_details  }}"
+  with_items: "{{ node_details | community.general.json_query('results[*].baremetal_nodes') }}"
 
-- name: Get associated nodes
+- name: Get active node count
   set_fact:
-    associated_nodes: "{{ lookup('ironic_nodes', 'associated', wantlist=True) }}"
+    active_nodes: "{{ baremetal_nodes_details | community.general.json_query('[?provision_state==`available`]') | count() }}"
 
-- name: Get available nodes
+- name: Get associated node count
   set_fact:
-    available_nodes: "{{ lookup('ironic_nodes', 'provision_state', ['available'], wantlist=True) }}"
+    associated_nodes: "{{ baremetal_nodes_details | community.general.json_query('[*].associated') | count() }}"
 
-- name: Set count of available nodes
+- name: Set total available node count
   set_fact:
-    available_count: "{{ ((associated_nodes|length) + (available_nodes|length))|int }}"
+    available_count: "{{ active_nodes | int + associated_nodes | int }}"
+
+- name: Get overcloud role list
+  tripleo_overcloud_role_list:
+  register: role_list
+
+- name: Get details for each role
+  tripleo_overcloud_role_show:
+    role_name: "{{ item }}"
+    default_values:
+      CountDefault: 0
+      FlavorDefault: 'baremetal'
+  with_items: "{{ role_list.role_list }}"
+  register: role_details
+
+- name: Get requested node count
+  set_fact:
+    requested_node_count: "{{ role_details | community.general.json_query('results[*].role_detail.CountDefault') | sum() }}"
 
 - name: Fail when requested is more than available
   fail:
     msg: >
       Not enough baremetal nodes - available: {{ available_count }},
-      requested: {{ requested_count }}
-  failed_when: requested_count|int > available_count|int
-
-- name: Fail when hypervisor count is less than available count
-  fail:
-    msg: >
-      Only {{ statistics.count }} nodes are exposed to Nova of
-      {{ available_count }} requests. Check that enough nodes are
-      in 'available' state with maintenance mode off.
-  failed_when: statistics.count < available_count|int
+      requested: {{ requested_node_count }}
+  failed_when: requested_node_count|int > available_count|int
