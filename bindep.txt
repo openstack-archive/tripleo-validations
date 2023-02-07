@@ -39,7 +39,3 @@ gzip
 
 # Required to build language docs
 gettext
-
-# Ansible module and role dependencies
-tripleo-ansible [platform:rpm]
-ansible-collections-openstack [platform:rpm]
