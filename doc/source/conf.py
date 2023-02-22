@@ -15,6 +15,7 @@
 
 import os
 import sys
+from unittest import mock
 
 # Add the project
 sys.path.insert(0, os.path.abspath('../..'))
@@ -35,6 +36,10 @@ extensions = [
 # autodoc generation is a bit aggressive and a nuisance when doing heavy
 # text edit cycles.
 # execute "export SPHINX_DEBUG=1" in your terminal to disable
+
+# Mocking imports that could cause build failure
+autodoc_mock_imports = ['ansible']
+sys.modules['ansible.module_utils.basic'] = mock.Mock()
 
 # The suffix of source filenames.
 source_suffix = '.rst'
