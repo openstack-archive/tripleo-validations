@@ -1,0 +1,13 @@
+---
+- hosts: Compute
+  gather_facts: true
+  vars:
+    metadata:
+      name: Check correctness of installed nova-libvirt version
+      description: >
+        Detect if installed nova-libvirt satisfies constraints.
+      groups:
+        - pre-upgrade
+        - pre-update
+  roles:
+    - nova_libvirt_version

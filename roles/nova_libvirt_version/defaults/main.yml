@@ -1,0 +1,3 @@
+---
+forbidden_version: 16.2.0-55.1638436404
+nova_libvirt_container_name: nova_libvirt

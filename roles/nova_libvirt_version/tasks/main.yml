@@ -1,0 +1,15 @@
+---
+- name: Container present
+  become: true
+  register: nova_libvirt_container_version
+  podman_container_info:
+    name: "{{ nova_libvirt_container_name }}"
+
+- name: Set fact for nova_libvirt container version
+  set_fact:
+    nova_libvirt_version: "{{ nova_libvirt_container_version['containers'][0]['Config']['Image'] | default('') }}"
+
+- name: Fail if nova-libvirt version doesn't satisfy reqs
+  fail:
+    msg: "nova-libvirt container is installed as version {{ forbidden_version }}. Which doesn't satisfy constraints"
+  when: forbidden_version in nova_libvirt_version

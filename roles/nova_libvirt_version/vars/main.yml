@@ -1,0 +1,9 @@
+---
+metadata:
+  name: Check correctness of nova-libvirt package version
+  description: >
+    Detect whether the installed nova-libvirt version satisfies
+    constraints.
+  groups:
+    - pre-upgrade
+    - pre-update
