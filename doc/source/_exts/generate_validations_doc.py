@@ -14,7 +14,6 @@
 
 from glob import glob
 import os
-import six
 import yaml
 
 DEFAULT_METADATA = {
@@ -169,7 +168,7 @@ def get_groups():
     groups = set()
     contents = parse_groups_file()
 
-    for group_name in six.iterkeys(contents):
+    for group_name in contents.keys():
         groups.add(group_name)
 
     return groups, contents

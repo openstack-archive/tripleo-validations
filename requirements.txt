@@ -12,7 +12,6 @@ python-ironicclient>=2.7.0 # Apache-2.0
 python-ironic-inspector-client>=3.1.1 # Apache-2.0
 os-net-config>=7.1.0 # Apache-2.0
 oslo.utils>=3.40.2 # Apache-2.0
-six>=1.11.0 # MIT
 tripleo-common>=7.1.0 # Apache-2.0
 setuptools>=50.3.0 # MIT
 tripleo-ansible>=6.0.0 # Apache-2.0

@@ -20,8 +20,6 @@ import collections.abc as collectionsAbc
 
 import os.path
 
-import six
-
 from ansible.module_utils.basic import AnsibleModule  # noqa
 from tripleo_validations import utils
 from yaml import safe_load as yaml_safe_load
@@ -78,7 +76,7 @@ def open_network_environment_files(netenv_path, template_files):
                          .format(netenv_path, e)])
     nic_configs = []
     resource_registry = network_data.get('resource_registry', {})
-    for nic_name, relative_path in six.iteritems(resource_registry):
+    for nic_name, relative_path in iter(resource_registry.items()):
         if nic_name.endswith("Net::SoftwareConfig"):
             nic_config_path = os.path.normpath(
                 os.path.join(os.path.dirname(netenv_path), relative_path))
@@ -111,10 +109,10 @@ def validate_switch_vlans(netenv_path, template_files, introspection_data):
 
     # Store VLAN IDs from network-environment.yaml.
     vlaninfo = {}
-    for item, data in six.iteritems(network_data.get('parameter_defaults',
-                                                     {})):
+    parameter_defaults = network_data.get('parameter_defaults', {})
+    for item in parameter_defaults.keys():
         if item.endswith('NetworkVlanID'):
-            vlaninfo[item] = data
+            vlaninfo[item] = parameter_defaults[item]
 
     # Get the VLANs which are actually used in nic configs
     for nic_config_name, nic_config_path, nic_config in nic_configs:
@@ -125,7 +123,7 @@ def validate_switch_vlans(netenv_path, template_files, introspection_data):
         if not isinstance(resources, collectionsAbc.Mapping):
             return [], ["The nic_data must contain the 'resources' key "
                         "and it must be a dictionary."]
-        for name, resource in six.iteritems(resources):
+        for name, resource in iter(resources.items()):
             try:
                 nested_path = [
                     ('properties', collectionsAbc.Mapping, 'dictionary'),

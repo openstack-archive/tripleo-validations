@@ -17,8 +17,6 @@
 Used by the ceph-pg validation.
 """
 
-import six
-
 from yaml import safe_load as yaml_safe_load
 from ansible.module_utils.basic import AnsibleModule
 
@@ -162,7 +160,7 @@ def check_pg_num(pool, pg_num, size, num_osds=0, max_pgs_per_osd=200, pools={}):
     projected = 0
     if len(pool) < 0:
         projected = projected + (pg_num * size)
-    for pool_name, pool_sizes in six.iteritems(pools):
+    for pool_name, pool_sizes in pools.items():
         if pool_name == pool:
             projected = projected + (pg_num * size)
         else:
