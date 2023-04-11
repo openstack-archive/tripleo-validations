@@ -13,7 +13,6 @@
           returning all the differences between the current configuration and the
           default configuration
       groups:
-        - backup-and-restore
         - post-deployment
         - post-system-upgrade
         - post-update
