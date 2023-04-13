@@ -10,31 +10,6 @@
 - when: "ceph_mon_enabled is succeeded"
   delegate_to: "{{ tripleo_delegate_to | first | default(omit) }}"
   block:
-    - name: Check for docker cli
-      stat:
-        path: "/var/run/docker.sock"
-      register: check_docker_cli
-      check_mode: false
-
-    - name: Set container_client fact
-      set_fact:
-        container_client: |-
-          {% set container_client = 'podman' %}
-          {%   if check_docker_cli.stat.exists|bool %}
-          {%     set container_client = 'docker' %}
-          {%   endif %}
-          {{ container_client }}
-
-    - name: Set container filter format
-      set_fact:
-        container_filter_format: !unsafe "--format '{{ .Names }}'"
-
-    - name: Set ceph_mon_container name
-      become: true
-      shell: "{{ container_client }} ps {{ container_filter_format }} | grep ceph-mon"
-      register: ceph_mon_container
-      changed_when: false
-
     - name: Set ceph cluster name
       become: true
       shell: find /etc/ceph -name '*.conf' -prune -print -quit | xargs basename -s '.conf'
@@ -43,7 +18,7 @@
 
     - name: Get ceph health
       become: true
-      shell: "{{ container_client }} exec {{ ceph_mon_container.stdout }} ceph --cluster {{ ceph_cluster_name.stdout }} health | awk '{print $1}'"
+      shell: "cephadm shell -- {{ ceph_cluster_name.stdout }} health"
       register: ceph_health
 
     - name: Check ceph health
@@ -79,8 +54,8 @@
         - name: Get OSD stat percentage
           become: true
           shell: >-
-            "{{ container_client }}" exec "{{ ceph_mon_container.stdout }}" ceph
-            --cluster "{{ ceph_cluster_name.stdout }}" osd stat -f json | jq '{{ jq_osd_percentage_filter }}'
+            cephadm shell -- "{{ ceph_cluster_name.stdout }}"
+            osd stat -f json | jq '{{ jq_osd_percentage_filter }}'
           register: ceph_osd_in_percentage
 
         - name: Fail if there is an unacceptable percentage of in OSDs
