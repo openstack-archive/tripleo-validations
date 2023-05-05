@@ -1,0 +1,17 @@
+---
+- name: configured ingress policy for interface {{ interface }}
+  become: true
+  shell: ovs-vsctl list interface {{interface}} | grep -w "ingress_policing_rate"
+  register: ingress_policing_rate
+
+- name: Append port name to validation_msg
+  set_fact:
+    validation_msg: "{{ validation_msg }} + {{ [port] }} + {{ ['\r\n'] }}"
+
+- name: Append drops message to validation_msg
+  set_fact:
+    validation_msg: "{{ validation_msg }} + {{ ['ovs_rx_qos_drops are increasing. Below is the related configuration '] }}"
+
+- name: Append port ingress policy configuration to validation_msg
+  set_fact:
+    validation_msg: "{{ validation_msg }} + {{ [ingress_policing_rate.stdout] }}"

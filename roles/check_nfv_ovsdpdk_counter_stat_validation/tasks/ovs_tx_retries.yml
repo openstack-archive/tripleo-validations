@@ -1,0 +1,30 @@
+---
+- name: Get Interface options
+  shell: ovs-vsctl get interface '{{port}}' options
+  register: retries_conf
+
+- name: Split the retries_conf to search for retries configuration
+  set_fact:
+    data: "{{retries_conf.stdout.split(',')}}"
+
+- name: Mark the flag retries_found False
+  set_fact:
+    retries_found: false
+
+- name: Append port name to validation_msg
+  set_fact:
+    validation_msg: "{{ validation_msg }} + {{ [port] }} + {{ ['\r\n'] }}"
+
+- name: Check for max-retries configuration in options and append to validation_msg
+  set_fact:
+    validation_msg: "{{ validation_msg + ['ovs_tx_retries are increasing. Below is the related configuration'] + [data_item[1:]]}}"
+    retries_found: true
+  when: "'tx-retries-max' in '{{data_item}}'"
+  loop: "{{data}}"
+  loop_control:
+    loop_var: data_item
+
+- name: Append default max-retries to validation_msg when retries conf not found in options
+  set_fact:
+    validation_msg: "{{validation_msg + ['ovs_tx_retries are increasing. Related default configuration is max default_tx_retries'] + [default_tx_retries_max]}}"
+  when: " {{ retries_found }} == false"

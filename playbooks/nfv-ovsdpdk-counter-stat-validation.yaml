@@ -1,0 +1,18 @@
+---
+- hosts: "{{ compute_ovsdpdk_rolename | default('ComputeOvsDpdk') }}"
+  vars:
+    metadata:
+      name: NFV OvS DPDK Counter Stat Validations
+      description: |
+        Run `check-nfv-ovsdpdk-counter-stat-validation` on the compute ovsdpdk nodes
+        to find out the issues with NFV OvS Dpdk interface statistics.
+      groups:
+        - post-deployment
+      categories:
+        - networking
+        - compute
+        - nfv
+      products:
+        - tripleo
+  roles:
+    - check_nfv_ovsdpdk_counter_stat_validation

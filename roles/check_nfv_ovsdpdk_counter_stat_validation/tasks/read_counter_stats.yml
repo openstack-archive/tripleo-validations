@@ -1,0 +1,21 @@
+---
+- name: Get interface statistics
+  become: true
+  shell: "ovs-vsctl get interface {{ port }} statistics"
+  register: if_stat
+
+- name: Parse if_stat
+  set_fact:
+    if_stat: "{{if_stat.stdout[0:-1].split(',')}}"
+
+- name: convert into dictionary
+  set_fact:
+    modified_if_stat: "{{ modified_if_stat | default({}) | combine({ stat[1:].split('=')[0] : stat[1:].split('=')[1]|int })}}"
+  loop: "{{ if_stat }}"
+  loop_control:
+    loop_var: stat
+
+- name: update dictionary stats
+  set_fact:
+    stats: "{{ (stats | default({})) | combine({ port : modified_if_stat})}}"
+  when: if_stat is defined
