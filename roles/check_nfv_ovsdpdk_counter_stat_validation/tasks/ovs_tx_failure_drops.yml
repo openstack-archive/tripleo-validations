@@ -1,0 +1,25 @@
+---
+- name: Get port configurations
+  become: true
+  shell: "ovs-appctl dpctl/show | grep {{port}}"
+  register: stats
+
+- name: Get {{ port }} queues configuration from stats
+  set_fact:
+    stats: "{{stats.stdout.split(':')[2].split(',')}}"
+
+- name: Append port name to validation_msg
+  set_fact:
+    validation_msg: "{{ validation_msg }} + {{ [port] }} + {{ ['\r\n'] }}"
+
+- name: Append drops message to validation_msg
+  set_fact:
+    validation_msg: "{{ validation_msg }} + {{ ['ovs_tx_failure_drops are increasing. Below is the related configuration'] }}"
+
+- name: Loop all collected stats and check for configured tx and rx queues
+  set_fact:
+    validation_msg: "{{ validation_msg }} + {{ [stat] }}"
+  when: "'configured_rx_queues' in '{{stat}}' or 'configured_tx_queues' in '{{stat}}'"
+  loop: "{{ stats }}"
+  loop_control:
+    loop_var: stat

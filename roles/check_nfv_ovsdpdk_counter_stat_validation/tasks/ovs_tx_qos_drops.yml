@@ -1,0 +1,17 @@
+---
+- name: configured Qos/Egress policy for interface {{ interface }}
+  become: true
+  shell: ovs-appctl -t ovs-vswitchd qos/show {{interface}}
+  register: tx_qos_conf
+
+- name: Append port name to validation_msg
+  set_fact:
+    validation_msg: "{{ validation_msg }} + {{ [port] }} + {{ ['\r\n'] }}"
+
+- name: Append drops message to validation_msg
+  set_fact:
+    validation_msg: "{{ validation_msg }} + {{ ['ovs_tx_qos_drops are increasing. Below is the related configuration'] }}"
+
+- name: Append port TX QOS configuration to validation_msg
+  set_fact:
+    validation_msg: "{{ validation_msg }} + {{ [tx_qos_conf.stdout] }}"

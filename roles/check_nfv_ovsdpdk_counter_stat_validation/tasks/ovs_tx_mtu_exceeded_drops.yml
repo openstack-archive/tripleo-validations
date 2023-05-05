@@ -1,0 +1,17 @@
+---
+- name: configured MTU for interface {{ interface }}
+  become: true
+  shell: ovs-vsctl list interface {{interface}} | grep -w "mtu"
+  register: mtu_conf
+
+- name: Append port name to validation_msg
+  set_fact:
+    validation_msg: "{{ validation_msg }} + {{ [port] }} + {{ ['\r\n'] }}"
+
+- name: Append drops message to validation_msg
+  set_fact:
+    validation_msg: "{{ validation_msg }} + {{ ['ovs_tx_mtu_exceeded_drops are increasing. Below is the related configuration '] }} "
+
+- name: Append port MTU configuration to validation_msg
+  set_fact:
+    validation_msg: "{{ validation_msg }} + {{ [mtu_conf.stdout] }}"
