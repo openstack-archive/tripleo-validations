@@ -13,6 +13,8 @@
         - post-upgrade
         - post-overcloud-upgrade
         - post-overcloud-converge
+        - post-update
+        - pre-update
       categories:
         - api
         - compute

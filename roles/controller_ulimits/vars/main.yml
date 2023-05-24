@@ -5,3 +5,5 @@ metadata:
     This will check the ulimits of each controller.
   groups:
     - post-deployment
+    - post-update
+    - pre-update

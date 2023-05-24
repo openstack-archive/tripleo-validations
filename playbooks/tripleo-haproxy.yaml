@@ -6,6 +6,8 @@
       description: Verify the HAProxy configuration has recommended values.
       groups:
         - post-deployment
+        - post-update
+        - pre-update
       categories:
         - os
         - system

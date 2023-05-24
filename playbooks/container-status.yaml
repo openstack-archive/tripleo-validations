@@ -11,6 +11,8 @@
         - pre-update
         - post-deployment
         - post-upgrade
+        - post-update
+        - pre-update
       categories:
         - container
         - undercloud

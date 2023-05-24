@@ -7,6 +7,8 @@
         This validation checks that policy file of manilas configuration folder inside of the container,exists.
       groups:
         - post-deployment
+        - post-update
+        - pre-update
       categories:
         - controller
       products:
