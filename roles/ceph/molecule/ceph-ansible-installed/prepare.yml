@@ -22,8 +22,8 @@
   tasks:
     - name: Inject ceph-ansible repository
       yum_repository:
-        name: tripleo-centos-ceph-nautilus
+        name: tripleo-centos-ceph-pacific
         description: ceph-nautilus repository
-        baseurl: http://mirror.centos.org/centos/8/storage/x86_64/ceph-nautilus/
+        baseurl: http://mirror.centos.org/centos/8-stream/storage/x86_64/ceph-pacific/
         gpgcheck: false
         enabled: true
