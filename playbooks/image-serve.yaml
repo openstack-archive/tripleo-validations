@@ -10,6 +10,8 @@
         - pre-upgrade
         - post-deployment
         - post-upgrade
+        - post-update
+        - pre-update
       categories:
         - httpd
         - container

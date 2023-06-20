@@ -9,6 +9,8 @@
       groups:
         - post-deployment
         - post-upgrade
+        - post-update
+        - pre-update
       categories:
         - compute
         - selinux

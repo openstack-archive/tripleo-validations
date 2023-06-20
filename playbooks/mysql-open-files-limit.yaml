@@ -11,6 +11,8 @@
         https://access.redhat.com/solutions/1598733
       groups:
         - post-deployment
+        - post-update
+        - pre-update
       categories:
         - database
         - overcloud

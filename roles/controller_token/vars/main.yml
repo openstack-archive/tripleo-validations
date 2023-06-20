@@ -6,3 +6,5 @@ metadata:
     undercloud and overcloud controller after deployment.
   groups:
     - post-deployment
+    - post-update
+    - pre-update

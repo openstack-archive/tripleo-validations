@@ -5,3 +5,5 @@ metadata:
     Runs 'show watchfrr' and checks for any non-operational daemon.
   groups:
     - post-deployment
+    - post-update
+    - pre-update

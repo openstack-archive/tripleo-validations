@@ -4,5 +4,7 @@ metadata:
   description: Verify that image-serve service is ready
   groups:
     - pre-upgrade
+    - pre-update
     - post-deployment
     - post-upgrade
+    - post-update

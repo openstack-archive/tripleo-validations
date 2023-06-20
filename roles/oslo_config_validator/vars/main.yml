@@ -33,6 +33,7 @@ metadata:
   groups:
     - backup-and-restore
     - pre-upgrade
+    - pre-update
     - post-deployment
     - post-system-upgrade
     - post-update

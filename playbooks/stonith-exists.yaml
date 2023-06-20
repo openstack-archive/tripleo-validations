@@ -11,6 +11,8 @@
         https://access.redhat.com/documentation/en/red-hat-openstack-platform/8/paged/director-installation-and-usage/86-fencing-the-controller-nodes
       groups:
         - post-deployment
+        - post-update
+        - pre-update
       categories:
         - ha
         - clustering

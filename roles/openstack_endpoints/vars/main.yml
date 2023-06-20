@@ -9,3 +9,5 @@ metadata:
     - post-deployment
     - pre-upgrade
     - post-upgrade
+    - pre-update
+    - post-update

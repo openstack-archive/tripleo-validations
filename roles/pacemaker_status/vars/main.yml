@@ -11,3 +11,5 @@ metadata:
     This validation fails if pacemaker service is found failed or inactive.
   groups:
     - post-deployment
+    - post-update
+    - pre-update

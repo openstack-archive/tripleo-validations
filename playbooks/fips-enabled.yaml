@@ -10,6 +10,8 @@
       groups:
         - prep
         - post-deployment
+        - post-update
+        - pre-update
       categories:
         - security
         - fips

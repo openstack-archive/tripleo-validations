@@ -17,6 +17,7 @@
         - post-system-upgrade
         - post-update
         - post-upgrade
+        - pre-update
       categories:
         - undercloud
         - overcloud

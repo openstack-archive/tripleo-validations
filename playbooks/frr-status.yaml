@@ -10,6 +10,8 @@
         daemon is not operational.
       groups:
         - post-deployment
+        - post-update
+        - pre-update
       categories:
         - container
         - frrouting

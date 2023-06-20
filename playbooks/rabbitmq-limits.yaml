@@ -7,6 +7,8 @@
         Make sure the rabbitmq file descriptor limits are set to reasonable values.
       groups:
         - post-deployment
+        - post-update
+        - pre-update
       categories:
         - container
         - messaging

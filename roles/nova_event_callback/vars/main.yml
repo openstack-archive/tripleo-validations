@@ -9,3 +9,5 @@ metadata:
       [nova]/auth_url = 'http://nova_admin_auth_ip:5000'
   groups:
     - post-deployment
+    - post-update
+    - pre-update
