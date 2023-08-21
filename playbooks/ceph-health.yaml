@@ -10,8 +10,6 @@
         - backup-and-restore
         - post-deployment
         - post-ceph
-        - post-update
-        - pre-update
       categories:
         - storage
       products:

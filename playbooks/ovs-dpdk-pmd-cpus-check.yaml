@@ -10,8 +10,6 @@
         configured correctly.
       groups:
         - post-deployment
-        - post-update
-        - pre-update
       categories:
         - networking
         - compute

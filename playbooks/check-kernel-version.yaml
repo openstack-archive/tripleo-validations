@@ -9,8 +9,6 @@
         el8 is in kernel (uname -r) version string
       groups:
         - post-deployment
-        - post-update
-        - pre-update
       categories:
         - os
         - kernel

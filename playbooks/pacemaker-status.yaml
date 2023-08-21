@@ -14,8 +14,6 @@
       groups:
         - backup-and-restore
         - post-deployment
-        - post-update
-        - pre-update
       categories:
         - ha
         - clustering

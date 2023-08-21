@@ -9,8 +9,6 @@
         MONITORING state.
       groups:
         - post-deployment
-        - post-update
-        - pre-update
       categories:
         - security
         - tls-everywhere

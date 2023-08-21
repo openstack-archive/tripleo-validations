@@ -9,8 +9,8 @@
         with the option: needs-restarting -r
       groups:
         - pre-upgrade
-        - pre-update
         - post-upgrade
+        - pre-update
         - post-update
       categories:
         - os
