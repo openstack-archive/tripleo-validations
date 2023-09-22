@@ -1,0 +1,12 @@
+---
+- name: Get list of dpdk ports
+  become: true
+  shell: "ovs-appctl dpctl/show | grep 'dpdk: configured\\|vhostuser'"
+  register: ports
+
+- name: Get list of dpdk ports name
+  set_fact:
+    ovs_dpdk_ports: "{{ ovs_dpdk_ports | default([]) + [dpdk_port_line.split(': ')[1].split(' ')[0]] }}"
+  loop: "{{ ports.stdout.split('\n') }}"
+  loop_control:
+    loop_var: dpdk_port_line

@@ -1,0 +1,5 @@
+---
+- name: print if there are drops
+  include_tasks: '{{ item }}.yml'
+  when: "'{{item}}' in initial[port] and initial[port]['{{item}}'] < final[port]['{{item}}']"
+  loop: "{{ counters }}"

@@ -1,0 +1,27 @@
+---
+- name: Get list of dpdk ports
+  include_tasks: ovs-dpdk-ports.yml
+
+- name: Initialize validation message list
+  set_fact:
+    validation_msg: []
+
+- name: Collect data
+  include_tasks: datacollection.yml
+
+- name: validate data of ovs_dpdk_ports
+  vars:
+    interface: "{{ port }}"
+  include_tasks: validate.yml
+  loop: "{{ ovs_dpdk_ports }}"
+  loop_control:
+    loop_var: port
+
+- name: Validation errors
+  fail:
+    msg:
+      - "Failed NFV counter stat validation rules:"
+      - "{{ validation_msg | join('\n') }}"
+  when:
+    - validation_msg is defined
+    - validation_msg | length > 0

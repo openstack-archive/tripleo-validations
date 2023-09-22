@@ -1,0 +1,37 @@
+---
+- name: Reset statistics
+  set_fact:
+    stats: {}
+
+- name: Get counter statistics
+  vars:
+    port: "{{ dpdk_port }}"
+  include_tasks: read_counter_stats.yml
+  loop: "{{ ovs_dpdk_ports }}"
+  loop_control:
+    loop_var: dpdk_port
+
+- name: First attempt counter statistics
+  set_fact:
+    initial: "{{ stats | default({}) }}"
+
+- name: Sleep for 15 seconds
+  wait_for:
+    timeout: 15
+  delegate_to: localhost
+
+- name: Reset statistics
+  set_fact:
+    stats: {}
+
+- name: Get counter statistics
+  vars:
+    port: "{{ dpdk_port }}"
+  include_tasks: read_counter_stats.yml
+  loop: "{{ ovs_dpdk_ports }}"
+  loop_control:
+    loop_var: dpdk_port
+
+- name: Second attempt counter statistics
+  set_fact:
+    final: "{{ stats | default({}) }}"
