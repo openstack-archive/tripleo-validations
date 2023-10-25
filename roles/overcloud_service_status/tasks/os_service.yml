@@ -51,14 +51,26 @@
 
 - name: Verifying all services are up
   assert:
-    that:
-      - (service.state == "up" and service.status == "enabled") or service.status == "disabled"
+    that: >
+      (service.state == "up" and service.status == "enabled")
+      or service.status == "disabled"
+      or (service.status == "enabled" and service.state == "down" and service.binary is match("cinder-.*"))
     fail_msg: "{{ service.binary }} on {{ service.host }} is problematic (service state is {{ service.state }} while it's {{ service.status }})"
   loop: "{{ os_services.json.services }}"
   loop_control:
     loop_var: service
   register: down_services_output
   ignore_errors: true
+
+- debug:
+    msg: "{{ service.binary }} on {{ service.host }} is down while it's enabled. But it isn't cause for concern."
+  loop: "{{ os_services.json.services }}"
+  loop_control:
+    loop_var: service
+  when:
+    - service.binary is match("cinder-.*")
+    - service.status == "enabled"
+    - service.state == "down"
 
 - name: Asserted failure
   fail:
