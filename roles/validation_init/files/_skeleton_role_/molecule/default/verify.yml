@@ -18,7 +18,7 @@
   hosts: all
   gather_facts: false
   tasks:
-  # This is an example playbook to execute your ansible tests.
-  - name: Example assertion
-    assert:
-      that: true
+    # This is an example playbook to execute your ansible tests.
+    - name: Example assertion
+      assert:
+        that: true
