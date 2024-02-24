@@ -1,7 +1,0 @@
----
-metadata:
-  name: Check node disk configuration
-  description: >
-    Check node root disk sizes against available flavors.
-  groups:
-    - pre-deployment

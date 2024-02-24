@@ -1,2 +1,0 @@
-"""Lookup plugins tests.
-"""

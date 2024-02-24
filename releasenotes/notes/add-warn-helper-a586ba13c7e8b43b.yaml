@@ -1,5 +1,0 @@
----
-features:
-  - |
-    Add a new `warn` ansible module that simply adds a string to the 'warnings'
-    ansible output.

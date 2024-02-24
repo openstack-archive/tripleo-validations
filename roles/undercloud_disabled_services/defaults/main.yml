@@ -1,4 +1,0 @@
----
-undercloud_disabled_service_list:
-  - libvirtd.service
-  - libvirtd.socket

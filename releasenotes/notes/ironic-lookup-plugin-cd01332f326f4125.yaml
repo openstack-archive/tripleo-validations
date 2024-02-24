@@ -1,5 +1,0 @@
----
-features:
-  - |
-    Adds a lookup plugin for ironic nodes. Nodes can be queried by id or
-    instance uuid.

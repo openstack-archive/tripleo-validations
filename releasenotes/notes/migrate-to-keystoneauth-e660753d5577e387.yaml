@@ -1,5 +1,0 @@
----
-features:
-  - |
-    Migrate tripleo-ansible-inventory to use keystoneauth instead of
-    keystoneclient.

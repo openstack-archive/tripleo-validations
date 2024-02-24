@@ -1,5 +1,0 @@
----
-features:
-  - |
-    New validation to check for the Nova Event Callback feature configuration
-    on the Overcloud Controller(s).

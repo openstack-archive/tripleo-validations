@@ -1,4 +1,0 @@
----
-undercloud_service_list:
-  - tripleo_heat_engine
-  - tripleo_ironic_conductor

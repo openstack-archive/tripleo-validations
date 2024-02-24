@@ -1,4 +1,0 @@
----
-features:
-  - Adds simple undercloud service list (static) to the inventory
-    and uses that for pre-upgrade/update check that services are OK.

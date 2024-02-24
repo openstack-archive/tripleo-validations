@@ -1,4 +1,0 @@
----
-features:
-  - |
-    New validation to check for the SELinux Enforcing mode on the Undercloud.

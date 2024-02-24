@@ -1,5 +1,0 @@
----
-features:
-  - |
-    Added a lookup plugin to access or loop over the current plan's template
-    files in a validation playbook.

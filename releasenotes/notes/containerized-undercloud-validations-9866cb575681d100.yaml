@@ -1,5 +1,0 @@
----
-features:
-  - Validation of required running Docker containers on a containerized
-    undercloud
-  - Validation of open ports running on a containerized undercloud

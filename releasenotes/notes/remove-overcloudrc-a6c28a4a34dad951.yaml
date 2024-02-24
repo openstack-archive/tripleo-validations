@@ -1,6 +1,0 @@
----
-others:
-  - |
-    The 'overcloudrc' validation module was removed as it was not used by any valdiation
-    for a significant period of time. No other party or project was known
-    to have used the module in any capacity.

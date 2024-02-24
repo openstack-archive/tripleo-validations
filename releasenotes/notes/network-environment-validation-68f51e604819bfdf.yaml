@@ -1,6 +1,0 @@
----
-features:
-  - |
-    Added a network environment validation that checks network settings
-    based on environments/network-environment.yaml and nic config files
-    stored in the plan's Swift container.

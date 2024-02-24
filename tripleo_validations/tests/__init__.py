@@ -1,2 +1,0 @@
-"""tripleo_validations tests.
-"""

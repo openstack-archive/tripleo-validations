@@ -1,22 +1,10 @@
-.. image:: https://governance.openstack.org/tc/badges/tripleo-validations.svg
-    :target: https://governance.openstack.org/tc/reference/tags/index.html
+This project is no longer maintained.
 
-.. Change things from this point on
+The contents of this repository are still available in the Git
+source code management system.  To see the contents of this
+repository before it reached its end of life, please check out the
+previous commit with "git checkout HEAD^1".
 
-A collection of Ansible roles and playbooks to detect and report potential
-issues during TripleO deployments.
-
-The validations will help detect issues early in the deployment process and
-prevent field engineers from wasting time on misconfiguration or hardware
-issues in their environments.
-
-All validations are written in Ansible and are written in a way that's
-consumable by the `Validation Framework Command Line Interface (CLI)
-<https://docs.openstack.org/validations-libs/latest/reference/api/validations_libs.cli.html>`_
-or by Ansible directly.
-
-* Free software: Apache license
-* Documentation: https://docs.openstack.org/tripleo-validations/latest/
-* Release notes: https://docs.openstack.org/releasenotes/tripleo-validations/
-* Source: https://opendev.org/openstack/tripleo-validations
-* Bugs: https://storyboard.openstack.org/#!/project/openstack/tripleo-validations
+For any further questions, please email
+openstack-discuss@lists.openstack.org or join #openstack-dev on
+OFTC.

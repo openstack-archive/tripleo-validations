@@ -1,3 +1,0 @@
----
-container_registry_port: 8787
-container_registry_httpd_config: "/etc/httpd/conf.d/image-serve.conf"
